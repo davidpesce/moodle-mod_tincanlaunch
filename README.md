@@ -24,6 +24,13 @@ There are currently two main launch methods in use: the Articlate Storyline meth
 A third method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. 
 
 ##Aims and Scope
+The aim of the project is to develop a Moodle plug in to allow Tin Can e-learning activities to be launched from Moodle. This will then be tracked to an external LRS. The plug in will be developed for Moodle 2.5. Support for earlier versions is out of scope for this project.
+
+The plug in will allow course builders to add launch links to their course sites. The course builder will enter the url of activity and select the launch method to be used. The Rustici and Storyline methods will be implemented. The CMI5 method is out of scope for this project, but may be added later.
+
+The target LRS endpoint will be set as a global property for the Moodle. Later on, we may want to allow reporting to multiple LRS and allow different LRS to be reported to for different learners or cohorts. For now though, that's out of scope. The launch link will need to pull this in when launching the activity.
+
+Basic authorization credentials will be stored on a learner by learner basis to be entered by an administrator, instructor or the user themselves. All credentials will need to be added manually. OAuth is out of scope for this project.
 
 ##Approach
 
