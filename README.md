@@ -11,10 +11,9 @@ Store (LRS) and reporting tools inside an LMS like Moodle, it is equally possibl
 to exist as seprate entities outside of the LMS.
 
 This is the first of a series of small bite-sized projects to add Tin Can capability to Moodle. These projects will 
-assume that a seprate LRS and reporting tools will be used. This will allow us to take advantage of open soruce 
-Tin Can projects outside of the Moodle community. It is hoped that a series
-of small projects will be better suited to the volonteer nature of the Moodle community. It is also hoped that
-each project will add value on its own, building on what has been added in previous projects. 
+assume that a seprate LRS and reporting tools will be used. This will allow us to take advantage of open source 
+Tin Can LRS and reporting tool projects outside of the Moodle community. This first project will deal with 
+launching Tin Can e-learning from Moodle.
 
 One of the key issues in Tin Can is launching e-learning activities in such a way that the activity provider knows:
 * the LRS endpoint
