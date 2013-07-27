@@ -17,9 +17,9 @@ of small projects will be better suited to the volonteer nature of the Moodle co
 each project will add value on its own, building on what has been added in previous projects. 
 
 One of the key issues in Tin Can is launching e-learning activities in such a way that the activity provider knows:
-*the LRS endpoint
-*authorisation credentials
-*user information. 
+* the LRS endpoint
+* authorisation credentials
+* user information. 
 
 There are currently two main launch methods in use: the Articlate Storyline method and the Rustici Software method. 
 A third method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. 
