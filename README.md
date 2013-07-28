@@ -39,7 +39,37 @@ this represents the least secure, but most convienent way of doing Tin Can. It w
 and technically skilled Moodle user to access other users' learning records and create false data. A later project
 may add oAuth authentication to deal with this issues, but that's out of scope for this project.
 
+The learner's name, account homepage (the URL of the Moodle) and account name will be passed in the launch URL, taken from 
+existing Moodle user data. 
+
+Sending a registration id is out of scope for this project. 
+
 ##Existing projects for reference
+###Tin Launcher
+Tin Launcher is an open source JavaScript tool for launching Tin Can activities using the Rustici launch method. We can
+use this as a reference when building the launch URL. This was written by me and we can re-use the code for this 
+project if any of it fits. 
+
+[Demo](http://garemoko.github.io/Tin-launcher/)
+[Github](https://github.com/garemoko/Tin-launcher)
+
+###SCORM Cloud Moodle Module
+The SCORM Cloud Moodle module is designed to intregrate SCORM Cloud into Moodle so that SCORM Cloud is used in
+place of Moodle's SCORM player. This also allows the upload of Tin Can packages. In it's current form this module only
+works with SCORM Cloud LRS. 
+
+This module is licensed under a GNU 3 license so in theory we could take and re-purpose it to talk to any LRS. 
+There's a lot of SCORM related code that we don't need though and it deals with content uploaded to Moodle rather than 
+externally hosted content, so I think it makes more sense to start afresh and use this as a reference. 
+
+[Github](https://github.com/RusticiSoftware/SCORMCloud_MoodleModule)
+
+###Jamie Smith's work
+Jamie Smith has created a couple of Github projects that work together to allow for Tin Can packages to be
+tracked in Moodle as though they are SCORM packages. The aims of his work are different to this project, but
+we'll need to consider if and how we build on or integrate with his work. 
+
+[Github](https://github.com/jgsmitty)
 
 ##Approach
 
