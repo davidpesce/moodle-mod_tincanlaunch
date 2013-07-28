@@ -73,6 +73,10 @@ activties to be tracked back inside Moodle instead of an external LRS.
 
 [Github](https://github.com/jgsmitty)
 
+###The URL mod
+The URL mod included with Moodle is actually quite close to what we need. It even already includes a way of customising
+the URL to include querystring parameters taken from Moodle user data. 
+
 ##Approach
 
 ##Roadmap
