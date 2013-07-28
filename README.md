@@ -66,8 +66,10 @@ externally hosted content, so I think it makes more sense to start afresh and us
 
 ###Jamie Smith's work
 Jamie Smith has created a couple of Github projects that work together to allow for Tin Can packages to be
-tracked in Moodle as though they are SCORM packages. The aims of his work are different to this project, but
-we'll need to consider if and how we build on or integrate with his work. 
+tracked in Moodle as though they are SCORM packages. The aims of his work are different to this project (he's dealing
+with content uplaoded to Moodle), but we'll need to consider if and how we build on or integrate with his work. 
+Perhaps, for example, this project could be used in conjunction with Jamie's work to allow extenrally hosted Tin Can
+activties to be tracked back inside Moodle instead of an external LRS. 
 
 [Github](https://github.com/jgsmitty)
 
