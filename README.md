@@ -80,3 +80,8 @@ activties to be tracked back inside Moodle instead of an external LRS.
 ##Project Team
 
 ##Useful Links
+[The Moodle tracker item relating to Tin Can](https://tracker.moodle.org/browse/MDL-35433)
+
+[A post on the Tin Can Google Groups relating to this project](https://groups.google.com/a/adlnet.gov/forum/#!topic/tincanapi-adopters/7ZwtyXOirJo)
+
+[A post on the Tin Can Google Groups relating to security](https://groups.google.com/a/adlnet.gov/forum/#!topic/tincanapi-adopters/kuP13h7AO4I)
