@@ -71,7 +71,7 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 }
 
 // Replace the following lines with you own code
-echo $OUTPUT->heading('Yay! It works!');
+echo "The activity has opened in a new window. <script>window.open('http://tincanapi.co.uk');</script>";
 
 // Finish the page
 echo $OUTPUT->footer();
