@@ -22,10 +22,9 @@
  * It is not really essential to know about it, but these logs were created as example
  * in the previous 1.9 tincanlaunch.
  *
- * @package    mod
- * @subpackage tincanlaunch
+ * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes mrdownes@hotmail.com
- * @license    http://www.apache.org/licenses/ Apache License v2.0
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();

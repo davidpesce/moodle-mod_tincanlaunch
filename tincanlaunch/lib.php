@@ -24,10 +24,9 @@
  * logic, should go to locallib.php. This will help to save some memory when
  * Moodle is performing actions across all modules.
  *
- * @package    mod
- * @subpackage tincanlaunch
+ * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
- * @license    http://www.apache.org/licenses/ Apache License v2.0
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -319,7 +318,7 @@ function tincanlaunch_get_file_areas($course, $cm, $context) {
 /**
  * File browsing support for tincanlaunch file areas
  *
- * @package mod_tincanlaunch
+  * @package mod_tincanlaunch
  * @category files
  *
  * @param file_browser $browser
@@ -340,7 +339,7 @@ function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $f
 /**
  * Serves the files from the tincanlaunch file areas
  *
- * @package mod_tincanlaunch
+  * @package mod_tincanlaunch
  * @category files
  *
  * @param stdClass $course the course object

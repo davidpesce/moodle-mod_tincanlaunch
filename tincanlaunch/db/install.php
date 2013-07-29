@@ -19,10 +19,9 @@
  * This file replaces the legacy STATEMENTS section in db/install.xml,
  * lib.php/modulename_install() post installation hook and partially defaults.php
  *
- * @package    mod
- * @subpackage tincanlaunch
+ * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes mrdownes@hotmail.com
- * @license    http://www.apache.org/licenses/ Apache License v2.0
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**

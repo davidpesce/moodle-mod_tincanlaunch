@@ -21,10 +21,9 @@
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod
- * @subpackage tincanlaunch
+ * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
- * @license    http://www.apache.org/licenses/ Apache License v2.0
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /// Replace tincanlaunch with the name of your module and remove this line

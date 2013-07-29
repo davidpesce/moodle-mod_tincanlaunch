@@ -21,10 +21,9 @@
  * All the tincanlaunch specific functions, needed to implement the module
  * logic, should go here. Never include this file from your lib.php!
  *
- * @package    mod
- * @subpackage tincanlaunch
+ * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
- * @license    http://www.apache.org/licenses/ Apache License v2.0
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
