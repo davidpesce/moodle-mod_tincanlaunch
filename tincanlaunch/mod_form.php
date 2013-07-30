@@ -61,12 +61,44 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $this->add_intro_editor();
 
         //-------------------------------------------------------------------------------
-        // Adding the rest of tincanlaunch settings, spreeading all them into this fieldset
-        // or adding more fieldsets ('header' elements) if needed for better logic
-        $mform->addElement('static', 'label1', 'tincanlaunchsetting1', 'Your tincanlaunch fields go here. Replace me!');
-
-        $mform->addElement('header', 'tincanlaunchfieldset', get_string('tincanlaunchfieldset', 'tincanlaunch'));
-        $mform->addElement('static', 'label2', 'tincanlaunchsetting2', 'Your tincanlaunch fields go here. Replace me!');
+        //Add the launch URL field
+		$mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), array('size'=>'64'));
+		$mform->setType('tincanlaunchurl', PARAM_TEXT);
+		$mform->addRule('tincanlaunchurl', null, 'required', null, 'client');
+        $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
+		
+		//Add the LRS fieldset. TODO: move these fields as global settings in a separate plugin 
+        $mform->addElement('header', 'tincanlaunchlrsfieldset', get_string('tincanlaunchlrsfieldset', 'tincanlaunch'));
+		
+		//Add LRS endpoint
+		$mform->addElement('text', 'tincanlaunchlrsendpoint', get_string('tincanlaunchlrsendpoint', 'tincanlaunch'), array('size'=>'64'));
+		$mform->setType('tincanlaunchlrsendpoint', PARAM_TEXT);
+		$mform->addRule('tincanlaunchlrsendpoint', null, 'required', null, 'client');
+        $mform->addRule('tincanlaunchlrsendpoint', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanlaunchlrsendpoint', 'tincanlaunchlrsendpoint', 'tincanlaunch');
+		$mform->setDefault('tincanlaunchlrsendpoint','http://example.com/endpoint/'); //TODO: amend to use this format: $this->_customdata['email']
+		
+		//Add basic authorisation login. TODO: OAuth
+		$mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
+		$mform->setType('tincanlaunchlrslogin', PARAM_TEXT);
+		$mform->addRule('tincanlaunchlrslogin', null, 'required', null, 'client');
+        $mform->addRule('tincanlaunchlrslogin', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanlaunchlrslogin', 'tincanlaunchlrslogin', 'tincanlaunch');
+		
+		//Add basic authorisation pass. TODO: OAuth
+		$mform->addElement('text', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
+		$mform->setType('tincanlaunchlrspass', PARAM_TEXT);
+		$mform->addRule('tincanlaunchlrspass', null, 'required', null, 'client');
+        $mform->addRule('tincanlaunchlrspass', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanlaunchlrspass', 'tincanlaunchlrspass', 'tincanlaunch');
+		
+		$mform->addElement('text', 'tincanlaunchlrsversion', get_string('tincanlaunchlrsversion', 'tincanlaunch'), array('size'=>'64'));
+		$mform->setType('tincanlaunchlrsversion', PARAM_TEXT);
+		$mform->addRule('tincanlaunchlrsversion', null, 'required', null, 'client');
+        $mform->addRule('tincanlaunchlrsversion', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
+        $mform->addHelpButton('tincanlaunchlrsversion', 'tincanlaunchlrsversion', 'tincanlaunch');
+		$mform->setDefault('tincanlaunchlrsversion','1.0.0'); //TODO: amend to use this format: $this->_customdata['email']
 
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules

@@ -29,12 +29,35 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'tincanlaunch';
-$string['modulenameplural'] = 'tincanlaunchs';
-$string['modulename_help'] = 'Use the tincanlaunch module for... | The tincanlaunch module allows...';
-$string['tincanlaunchfieldset'] = 'Custom example fieldset';
-$string['tincanlaunchname'] = 'tincanlaunch name';
-$string['tincanlaunchname_help'] = 'This is the content of the help tooltip associated with the tincanlaunchname field. Markdown syntax is supported.';
-$string['tincanlaunch'] = 'tincanlaunch';
-$string['pluginadministration'] = 'tincanlaunch administration';
-$string['pluginname'] = 'tincanlaunch';
+$string['modulename'] = 'Tin Can API Launch Link';
+$string['modulenameplural'] = 'Tin Can API Launch Links';
+$string['modulename_help'] = 'A plug in for Moodle that allows the launch of Tin Can content which is then tracked to a separate LRS.';
+
+$string['tincanlaunchname'] = 'Launch link name';
+$string['tincanlaunchname_help'] = 'The name of the launch link as it will appear to the user';
+
+$string['tincanlaunchurl'] = 'Launch URL';
+$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch';
+
+$string['tincanlaunchurl'] = 'Launch URL';
+$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch';
+
+//Start LRS settings
+$string['tincanlaunchlrsfieldset'] = 'LRS settings (to be moved to global settings in the final version)';
+
+$string['tincanlaunchlrsendpoint'] = 'Endpoint';
+$string['tincanlaunchlrsendpoint_help'] = 'The LRS endpoint e.g. http://example.com/endpoint/';
+
+$string['tincanlaunchlrslogin'] = 'Basic Login';
+$string['tincanlaunchlrslogin_help'] = 'Your LRS login key';
+
+$string['tincanlaunchlrspass'] = 'Basic Password';
+$string['tincanlaunchlrspass_help'] = 'Your LRS password key';
+
+$string['tincanlaunchlrsversion'] = 'Version';
+$string['tincanlaunchlrsversion_help'] = 'The version of Tin Can to use e.g. 1.0.0';
+//End LRS settings
+
+$string['tincanlaunch'] = 'Tin Can API Launch Link';
+$string['pluginadministration'] = 'Tin Can API Launch Link administration';
+$string['pluginname'] = 'Tin Can API Launch Link';
