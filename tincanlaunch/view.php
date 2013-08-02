@@ -30,6 +30,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
+include 'locallib.php';
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // tincanlaunch instance ID - it should be named as the first character of the module
@@ -70,8 +71,9 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     echo $OUTPUT->box(format_module_intro('tincanlaunch', $tincanlaunch, $cm->id), 'generalbox mod_introbox', 'tincanlaunchintro');
 }
 
-// Replace the following lines with you own code
-echo "The activity has opened in a new window. <script>window.open('http://tincanapi.co.uk');</script>";
+
+
+echo "The activity has opened in a new window. <script>window.open('".tincanlaunch_get_launch_url()."');</script>";
 
 // Finish the page
 echo $OUTPUT->footer();
