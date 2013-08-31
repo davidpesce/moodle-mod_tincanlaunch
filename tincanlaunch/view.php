@@ -79,8 +79,9 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 			$('#launchform').submit();
 		}
 	</script>
-
 <?php
+
+echo json_encode(tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations"));
 
 //Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
 ?>
@@ -98,11 +99,11 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 
 //generate a registration id for any new attempt
 
-$registrationid = gen_uuid();
+$registrationid = tincanlaunch_gen_uuid();
 
 //Add a new attempt link below the table
 //On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
-echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\">New Attempt</a>";
+echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a>";
 
 // Finish the page
 echo $OUTPUT->footer();

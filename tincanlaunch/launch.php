@@ -50,7 +50,18 @@ add_to_log($course->id, 'tincanlaunch', 'launch', "launch.php?id={$cm->id}", $ti
 //get the registration id
 $registrationid = $_POST["launchform_registration"];
 
-//save it to the LRS
+//Save a record of this registration to the LRS state API
+//TODO:Get the existing data so we can append this registration rather than overwriting whatever might be there already. 
+
+$datenow = date("c");
+
+$registrationdata = array(
+    "id" => $registrationid,
+    "created" => $datenow,
+    "lastlaunched" => $datenow
+);
+
+tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations");
 
 //launch the experience
 header("Location: ". tincanlaunch_get_launch_url($registrationid));
