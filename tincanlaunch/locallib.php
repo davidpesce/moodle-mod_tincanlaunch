@@ -28,29 +28,46 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
-require_once("$CFG->libdir/filelib.php");
-require_once("$CFG->libdir/resourcelib.php");
-require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
-*/
 
-/**
- * Does something really useful with the passed things
+
+/*
+ * tincanlaunch_get_launch_url
  *
- * @param array $things
- * @return object
+ * Returns a launch link based on various data from Moodle
+ *
+ * @param none
+ * @return string - the launch link to be used. 
  */
- // 
+
  
 function tincanlaunch_get_launch_url() {
 	global $tincanlaunch, $USER, $CFG;
 	
-	//calculate basic authentication
+	//calculate basic authentication 
 	$basicauth = base64_encode($tincanlaunch->tincanlaunchlrslogin.":".$tincanlaunch->tincanlaunchlrspass);
 	
-	$rtnString = $tincanlaunch->tincanlaunchurl."?endpoint=".$tincanlaunch->tincanlaunchlrsendpoint."&auth=Basic%20$".$basicauth."=&actor={%22name%22:%22".fullname($USER)."%22,%22account%22:{%22homePage%22:%22".$CFG->wwwroot."%22,%22name%22:%22".$USER->id."%22},%22objectType%22:%22Agent%22}";
+	//build the actor object
+	$launchActor = array(
+		"name" => fullname($USER),
+		"account" => array(
+			"homePage" => $CFG->wwwroot,
+			"name" => $USER->id
+		),
+		"objectType" => "Agent"
+	);
 	
-	//QUESTION: should I be using $USER->id, $USER->idnumber or even $USER->username ?
+	//$rtnString = $tincanlaunch->tincanlaunchurl."?endpoint=".$tincanlaunch->tincanlaunchlrsendpoint."&auth=Basic%20".$basicauth."=&actor=".json_encode($launchActor);
+	
+	//build the URL to be returned
+	$rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
+	        "endpoint" => $tincanlaunch->tincanlaunchlrsendpoint,
+	        "auth" => "Basic ".$basicauth,
+	        "actor" => json_encode($launchActor)
+	    )
+	);
+	$rtnString = $tincanlaunch->tincanlaunchurl."?endpoint=".."&auth=."=&actor=".;
+	
+	//TODO: QUESTION: should we be using $USER->id, $USER->idnumber or even $USER->username ?
 	
 	return $rtnString;
 }

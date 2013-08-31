@@ -37,10 +37,7 @@ $string['tincanlaunchname'] = 'Launch link name';
 $string['tincanlaunchname_help'] = 'The name of the launch link as it will appear to the user';
 
 $string['tincanlaunchurl'] = 'Launch URL';
-$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch';
-
-$string['tincanlaunchurl'] = 'Launch URL';
-$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch';
+$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch (including scheme)';
 
 //Start LRS settings
 $string['tincanlaunchlrsfieldset'] = 'LRS settings (to be moved to global settings in the final version)';
