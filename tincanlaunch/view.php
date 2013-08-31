@@ -83,18 +83,17 @@ echo "<script src='js/viewfunctions.js'></script>
 
 //generate a registration id for any new attempt
 
-$registrationid = 'foo';
+$registrationid = gen_uuid();
 
 //Add a new attempt link below the table
-//On clicking new attempt, save the registration details to the LRS State and launch a new attempt
-
-?>
-
-<a onclick="myViewFunctions.saveNewRegistration('<?php echo $registrationid ?>')">New Attempt</a>;
-<?php
-echo tincanlaunch_get_launch_url();
-echo "The activity has opened in a new window. 
-<script>window.open('".tincanlaunch_get_launch_url()."');</script>";
+echo "<a ";
+//On clicking new attempt, save the registration details to the LRS State
+echo "onclick=\"myViewFunctions.saveNewRegistration('".$registrationid."')\"";
+//and launch a new attempt (href)
+echo "href=\"".tincanlaunch_get_launch_url($registrationid)."\"";
+//in a new tab/window
+echo "target=\"_blank\"";
+echo ">New Attempt</a>";
 
 // Finish the page
 echo $OUTPUT->footer();
