@@ -133,18 +133,21 @@ function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version,
 	
 	$streamparams = array(
 		'activityId' => $activityid,
-		'agent' => $agent,
+		'agent' => json_encode($agent),
 		'stateId' => $key
 	);
-	
-	$context = stream_context_create($streamopt,$streamparams);
 
-	$stream = fopen($url . 'activities/state', 'rb', false, $context);
+	
+	$context = stream_context_create($streamopt);
+
+	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
 	$ret = stream_get_contents($stream);
 	$meta = stream_get_meta_data($stream);
 	if ($ret) {
 		$ret = json_decode($ret);
 	}
+	
+	
 	return array($ret, $meta);
 }
 
@@ -180,21 +183,18 @@ function tincanlaunch_get_state($url, $basicLogin, $basicPass, $version, $activi
 
 	$streamparams = array(
 		'activityId' => $activityid,
-		'agent' => $agent,
+		'agent' => json_encode($agent),
 		'stateId' => $key
 	);
 	
-	$context = stream_context_create($streamopt,$streamparams);
+	$context = stream_context_create($streamopt);
 	
-	//echo json_encode($context);
+	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
 
-	$stream = fopen($url . 'activities/state', 'rb', false, $context);
+	
 	$ret = stream_get_contents($stream);
 	$meta = stream_get_meta_data($stream);
-	
-	echo "ret:".json_encode($ret);
-	echo "meta:".json_encode($meta);
-	
+
 	if ($ret) {
 		$ret = json_decode($ret);
 	}
