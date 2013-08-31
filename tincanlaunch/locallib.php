@@ -56,16 +56,15 @@ function tincanlaunch_get_launch_url() {
 		"objectType" => "Agent"
 	);
 	
-	//$rtnString = $tincanlaunch->tincanlaunchurl."?endpoint=".$tincanlaunch->tincanlaunchlrsendpoint."&auth=Basic%20".$basicauth."=&actor=".json_encode($launchActor);
-	
 	//build the URL to be returned
 	$rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
 	        "endpoint" => $tincanlaunch->tincanlaunchlrsendpoint,
 	        "auth" => "Basic ".$basicauth,
 	        "actor" => json_encode($launchActor)
-	    )
+	    ), 
+	    '', 
+	    '&'
 	);
-	$rtnString = $tincanlaunch->tincanlaunchurl."?endpoint=".."&auth=."=&actor=".;
 	
 	//TODO: QUESTION: should we be using $USER->id, $USER->idnumber or even $USER->username ?
 	

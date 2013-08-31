@@ -18,9 +18,6 @@
 /**
  * Prints a particular instance of tincanlaunch
  *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
- *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -63,6 +60,7 @@ $PAGE->set_context($context);
 //$PAGE->set_cacheable(false);
 //$PAGE->set_focuscontrol('some-html-id');
 //$PAGE->add_body_class('tincanlaunch-'.$somevar);
+$PAGE->requires->jquery();
 
 // Output starts here
 echo $OUTPUT->header();
@@ -71,9 +69,32 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     echo $OUTPUT->box(format_module_intro('tincanlaunch', $tincanlaunch, $cm->id), 'generalbox mod_introbox', 'tincanlaunchintro');
 }
 
+//Insert JavaScript functions
 
+echo "<script src='js/viewfunctions.js'></script>
+<script>var myViewFunctions = new mod_tincanlaunch_view();</script>";
 
-echo "The activity has opened in a new window. <script>window.open('".tincanlaunch_get_launch_url()."');</script>";
+//TODO: localisation of launch table
+
+//Get a list of registrations from the LRS State
+
+//Create a table of registrations, each with a launch link. 
+//On clicking a launch link, launch the experience with the correct registration
+
+//generate a registration id for any new attempt
+
+$registrationid = 'foo';
+
+//Add a new attempt link below the table
+//On clicking new attempt, save the registration details to the LRS State and launch a new attempt
+
+?>
+
+<a onclick="myViewFunctions.saveNewRegistration('<?php echo $registrationid ?>')">New Attempt</a>;
+<?php
+echo tincanlaunch_get_launch_url();
+echo "The activity has opened in a new window. 
+<script>window.open('".tincanlaunch_get_launch_url()."');</script>";
 
 // Finish the page
 echo $OUTPUT->footer();
