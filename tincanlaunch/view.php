@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/// (Replace tincanlaunch with the name of your module and remove this line)
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
@@ -71,8 +70,24 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 
 //Insert JavaScript functions
 
-echo "<script src='js/viewfunctions.js'></script>
-<script>var myViewFunctions = new mod_tincanlaunch_view();</script>";
+?>
+	<script>
+		function mod_tincanlaunch_launchexperience(registration) {
+			//Set the form paramters
+			$('#launchform_registration').val(registration);			
+			//post it
+			$('#launchform').submit();
+		}
+	</script>
+
+<?php
+
+//Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
+?>
+<form id="launchform" action="launch.php?id=<?php echo $id ?>&n=<?php echo $n ?>" method="post" target="_blank">
+	<input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
+</form>
+<?php
 
 //TODO: localisation of launch table
 
@@ -86,14 +101,8 @@ echo "<script src='js/viewfunctions.js'></script>
 $registrationid = gen_uuid();
 
 //Add a new attempt link below the table
-echo "<a ";
-//On clicking new attempt, save the registration details to the LRS State
-echo "onclick=\"myViewFunctions.saveNewRegistration('".$registrationid."')\"";
-//and launch a new attempt (href)
-echo "href=\"".tincanlaunch_get_launch_url($registrationid)."\"";
-//in a new tab/window
-echo "target=\"_blank\"";
-echo ">New Attempt</a>";
+//On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
+echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\">New Attempt</a>";
 
 // Finish the page
 echo $OUTPUT->footer();
