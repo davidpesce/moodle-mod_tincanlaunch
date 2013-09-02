@@ -82,7 +82,10 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 <?php
 
 //TODO: process this data rather than just spewing it up into the screen. 
-echo json_encode(tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations"));
+
+$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
+$registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
+echo json_encode($registrationdatafromlrs);
 
 //Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
 ?>

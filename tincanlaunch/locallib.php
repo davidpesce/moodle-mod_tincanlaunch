@@ -141,14 +141,27 @@ function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version,
 	$context = stream_context_create($streamopt);
 
 	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
-	$ret = stream_get_contents($stream);
-	$meta = stream_get_meta_data($stream);
-	if ($ret) {
-		$ret = json_decode($ret);
-	}
+	
+	switch($return_code){
+        case 200:
+            $ret = stream_get_contents($stream);
+			$meta = stream_get_meta_data($stream);
+		
+			if ($ret) {
+				$ret = json_decode($ret);
+			}
+            break;
+        	default: //error
+            $ret = NULL;
+			$meta = $return_code;
+            break;
+    }
 	
 	
-	return array($ret, $meta);
+	return array(
+		'contents'=> $ret, 
+		'metadata'=> $meta
+	);
 }
 
 //Query to code reviewer: should getting and setting the state be  a single function with a "method" parameter, or be two separate but very similar functions as I've done here? 
@@ -190,14 +203,29 @@ function tincanlaunch_get_state($url, $basicLogin, $basicPass, $version, $activi
 	$context = stream_context_create($streamopt);
 	
 	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
-
 	
-	$ret = stream_get_contents($stream);
-	$meta = stream_get_meta_data($stream);
-
-	if ($ret) {
-		$ret = json_decode($ret);
-	}
-	return array($ret, $meta);
+	//Handle possible error codes
+	$return_code = @explode(' ', $http_response_header[0]);
+    $return_code = (int)$return_code[1];
+     
+    switch($return_code){
+        case 200:
+            $ret = stream_get_contents($stream);
+			$meta = stream_get_meta_data($stream);
+		
+			if ($ret) {
+				$ret = json_decode($ret);
+			}
+            break;
+        default: //error
+            $ret = NULL;
+			$meta = $return_code;
+            break;
+    }
+	
+	return array(
+		'contents'=> $ret, 
+		'metadata'=> $meta
+	);
 }
 
