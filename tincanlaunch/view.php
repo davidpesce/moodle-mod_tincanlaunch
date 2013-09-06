@@ -85,7 +85,23 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
-echo json_encode($registrationdatafromlrs);
+
+echo "<table>";
+echo "<tr><th>".get_string('tincanlaunchviewattempt', 'tincanlaunch')."</th>"; 
+echo "<th>".get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch')."</th>";
+echo "<th>".get_string('tincanlaunchviewlastlaunched', 'tincanlaunch')."</th>";
+echo "<th>".get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')."</th></tr>";
+
+$index = 0;
+foreach ($registrationdatafromlrs as $thisregistrationid => $thisregistrationdates) {
+	$index++;
+    echo "<tr><td>Attempt ".$index."</td>";
+	echo "<td>".$thisregistrationdates->lastlaunched."</td>";
+	echo "<td>".$thisregistrationdates->created."</td>";
+	echo "<td>".$thisregistrationid."</td></tr>";
+}
+
+echo "</table>";
 
 //Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
 ?>
