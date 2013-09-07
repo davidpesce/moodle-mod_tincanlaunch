@@ -111,6 +111,7 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key)
 //TODO: Put this function in a PHP Tin Can library. 
 //TODO: Handle failure nicely. E.g. retry sending. 
 //TODO: if this is going in a library, it needs to be able to handle registration too
+//TODO: add parameter 'method' for POST/PUT
 function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version, $activityid, $agent, $key) {
 
 
@@ -119,7 +120,7 @@ function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version,
 			'verify-peer' => false, 
 			), 
 		'http' => array(
-			'method' => 'POST', 
+			'method' => 'PUT', 
 			'ignore_errors' => false, 
 			'header' => array(
 				'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
@@ -139,7 +140,7 @@ function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version,
 
 	
 	$context = stream_context_create($streamopt);
-
+	
 	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
 	
 	switch($return_code){
@@ -148,7 +149,7 @@ function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version,
 			$meta = stream_get_meta_data($stream);
 		
 			if ($ret) {
-				$ret = json_decode($ret);
+				$ret = json_decode($ret, TRUE);
 			}
             break;
         	default: //error
@@ -214,7 +215,7 @@ function tincanlaunch_get_state($url, $basicLogin, $basicPass, $version, $activi
 			$meta = stream_get_meta_data($stream);
 		
 			if ($ret) {
-				$ret = json_decode($ret);
+				$ret = json_decode($ret, TRUE);
 			}
             break;
         default: //error

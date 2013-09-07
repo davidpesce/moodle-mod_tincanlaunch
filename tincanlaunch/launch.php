@@ -66,20 +66,28 @@ $registrationdataforthisattempt = array(
 	   )
 );
 
-//if $registrationdatafromlrs is NULL  
-if (is_null($registrationdatafromlrs)){
-	if ($getregistrationdatafromlrsstate["metadata"] = 404){ //if the error is 404 create a new registration data array
+//if $registrationdatafrom is NULL  
+if (is_null($registrationdata)){
+	if ($registrationdata["metadata"] = 404){ //if the error is 404 create a new registration data array
 		$registrationdata = $registrationdataforthisattempt;
 	}
 	else { //Some other error - possibly network connection. 
 		//try again? how many times?
 	}
-} elseif (property_exists($registrationdatafromlrs, $registrationid)) { //elseif the regsitration exists update the lastlaunched date
-	$registrationdatas[$registrationid]["lastlaunched"] = $datenow;
+} elseif (array_key_exists($registrationid,$registrationdata)) { //elseif the regsitration exists update the lastlaunched date
+	$registrationdata[$registrationid]["lastlaunched"] = $datenow;
 } else { //else push the new data on the end
 	$registrationdata[$registrationid] = $registrationdataforthisattempt[$registrationid];
 }
+echo(json_encode($registrationdata). "<br/><br/>");
+//sort the registration data by last launched (most recent first)
+uasort($registrationdata, function($a, $b) {
+    return strtotime($b['lastlaunched']) - strtotime($a['lastlaunched']);
+});
 
+echo(json_encode($registrationdata));
+
+//TODO:currently this is re-PUTting all of the data - it may be better just to POST the new data. This will prevent us sorting, but sorting could be done on output. 
 tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations");
 
 //launch the experience

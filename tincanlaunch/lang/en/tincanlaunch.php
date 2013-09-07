@@ -61,3 +61,11 @@ $string['tincanlaunchlrsversion_help'] = 'The version of Tin Can to use e.g. 1.0
 $string['tincanlaunch'] = 'Tin Can Launch Link';
 $string['pluginadministration'] = 'Tin Can Launch Link administration';
 $string['pluginname'] = 'Tin Can Launch Link';
+
+
+//View settings
+
+$string['tincanlaunchviewfirstlaunched'] = 'First launched';
+$string['tincanlaunchviewlastlaunched'] = 'Last launched';
+$string['tincanlaunchviewlaunchlinkheader'] = 'Launch link';
+$string['tincanlaunchviewlaunchlink'] = 'Launch';

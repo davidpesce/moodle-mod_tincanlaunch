@@ -81,27 +81,35 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 	</script>
 <?php
 
-//TODO: process this data rather than just spewing it up into the screen. 
+//generate a registration id for any new attempt
+$registrationid = tincanlaunch_gen_uuid();
+//On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
+echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a>";
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
 
-echo "<table>";
-echo "<tr><th>".get_string('tincanlaunchviewattempt', 'tincanlaunch')."</th>"; 
-echo "<th>".get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch')."</th>";
-echo "<th>".get_string('tincanlaunchviewlastlaunched', 'tincanlaunch')."</th>";
-echo "<th>".get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')."</th></tr>";
 
-$index = 0;
-foreach ($registrationdatafromlrs as $thisregistrationid => $thisregistrationdates) {
-	$index++;
-    echo "<tr><td>Attempt ".$index."</td>";
-	echo "<td>".$thisregistrationdates->lastlaunched."</td>";
-	echo "<td>".$thisregistrationdates->created."</td>";
-	echo "<td>".$thisregistrationid."</td></tr>";
+//if $registrationdatafromlrs is NULL  
+if (is_null($registrationdatafromlrs)){
+	//do nothing
+} else{
+	echo "<table>";
+	echo "<th>".get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch')."</th>";
+	echo "<th>".get_string('tincanlaunchviewlastlaunched', 'tincanlaunch')."</th>";
+	echo "<th>".get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')."</th></tr>";
+	
+	$index = 0;
+	foreach ($registrationdatafromlrs as $thisregistrationid => $thisregistrationdates) {
+		$index++;
+	    echo "<tr>";
+		echo "<td>".date(DateTime::RSS, strtotime($thisregistrationdates['lastlaunched']))."</td>";
+		echo "<td>".date(DateTime::RSS, strtotime($thisregistrationdates['created']))."</td>";
+		echo "<td><a onclick=\"mod_tincanlaunch_launchexperience('".$thisregistrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a></td></tr>";
+	}
+	
+	echo "</table>";
 }
-
-echo "</table>";
 
 //Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
 ?>
@@ -110,20 +118,6 @@ echo "</table>";
 </form>
 <?php
 
-//TODO: localisation of launch table
-
-//Get a list of registrations from the LRS State
-
-//Create a table of registrations, each with a launch link. 
-//On clicking a launch link, launch the experience with the correct registration
-
-//generate a registration id for any new attempt
-
-$registrationid = tincanlaunch_gen_uuid();
-
-//Add a new attempt link below the table
-//On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
-echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a>";
 
 // Finish the page
 echo $OUTPUT->footer();
