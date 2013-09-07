@@ -63,14 +63,23 @@ function tincanlaunch_gen_uuid() {
 function tincanlaunch_getactor()
 {
 	global $USER, $CFG;
-	return array(
-		"name" => fullname($USER),
-		"account" => array(
-			"homePage" => $CFG->wwwroot,
-			"name" => $USER->id
-		),
-		"objectType" => "Agent"
-	);
+	if ($USER->email){
+		return array(
+			"name" => fullname($USER),
+			"mbox" => "mailto:".$USER->email,
+			"objectType" => "Agent"
+		);
+	}
+	else{
+		return array(
+			"name" => fullname($USER),
+			"account" => array(
+				"homePage" => $CFG->wwwroot,
+				"name" => $USER->id
+			),
+			"objectType" => "Agent"
+		);
+	}
 }
  
 function tincanlaunch_get_launch_url($registrationuuid) {
