@@ -11,11 +11,12 @@
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="course" NEXT="intro"/>
         <FIELD NAME="intro" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the tincanlaunch activity" PREVIOUS="name" NEXT="introformat"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="tincanlaunchurl"/>
-		<FIELD NAME="tincanlaunchurl" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="introformat" NEXT="tincanlaunchlrsendpoint"/>
-		<FIELD NAME="tincanlaunchlrsendpoint" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="tincanlaunchurl" NEXT="tincanlaunchlrslogin"/>
-		<FIELD NAME="tincanlaunchlrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="tincanlaunchlrsendpoint" NEXT="tincanlaunchlrspass"/>
-		<FIELD NAME="tincanlaunchlrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="tincanlaunchlrslogin" NEXT="tincanlaunchlrsversion"/>
-		<FIELD NAME="tincanlaunchlrsversion" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="tincanlaunchlrspass" NEXT="timecreated"/>
+		<FIELD NAME="tincanlaunchurl" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="introformat" NEXT="tincanactivityid"/>
+		<FIELD NAME="tincanactivityid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanlaunchurl" NEXT="tincanlaunchlrsendpoint"/>
+		<FIELD NAME="tincanlaunchlrsendpoint" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS endpoint" PREVIOUS="tincanactivityid" NEXT="tincanlaunchlrslogin"/>
+		<FIELD NAME="tincanlaunchlrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS credentials, login" PREVIOUS="tincanlaunchlrsendpoint" NEXT="tincanlaunchlrspass"/>
+		<FIELD NAME="tincanlaunchlrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS credentials, password" PREVIOUS="tincanlaunchlrslogin" NEXT="tincanlaunchlrsversion"/>
+		<FIELD NAME="tincanlaunchlrsversion" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Specification version" PREVIOUS="tincanlaunchlrspass" NEXT="timecreated"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="tincanlaunchlrsversion" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
       </FIELDS>

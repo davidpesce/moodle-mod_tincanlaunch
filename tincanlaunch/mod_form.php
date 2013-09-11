@@ -68,6 +68,13 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
 		
+		//Add the activity id field
+		$mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
+		$mform->setType('tincanactivityid', PARAM_TEXT);
+		$mform->addRule('tincanactivityid', null, 'required', null, 'client');
+        $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
+		
 		//Add the LRS fieldset. TODO: move these fields as global settings in a separate plugin 
         $mform->addElement('header', 'tincanlaunchlrsfieldset', get_string('tincanlaunchlrsfieldset', 'tincanlaunch'));
 		

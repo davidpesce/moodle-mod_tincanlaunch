@@ -18,15 +18,11 @@
 /**
  * Prints a particular instance of tincanlaunch
  *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
- *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/// (Replace tincanlaunch with the name of your module and remove this line)
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
@@ -63,6 +59,7 @@ $PAGE->set_context($context);
 //$PAGE->set_cacheable(false);
 //$PAGE->set_focuscontrol('some-html-id');
 //$PAGE->add_body_class('tincanlaunch-'.$somevar);
+$PAGE->requires->jquery();
 
 // Output starts here
 echo $OUTPUT->header();
@@ -71,9 +68,56 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     echo $OUTPUT->box(format_module_intro('tincanlaunch', $tincanlaunch, $cm->id), 'generalbox mod_introbox', 'tincanlaunchintro');
 }
 
+//Insert JavaScript functions
+
+?>
+	<script>
+		function mod_tincanlaunch_launchexperience(registration) {
+			//Set the form paramters
+			$('#launchform_registration').val(registration);			
+			//post it
+			$('#launchform').submit();
+		}
+	</script>
+<?php
+
+//generate a registration id for any new attempt
+$registrationid = tincanlaunch_gen_uuid();
+//On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
+echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a>";
+
+$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
+$registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
 
 
-echo "The activity has opened in a new window. <script>window.open('".tincanlaunch_get_launch_url()."');</script>";
+//if $registrationdatafromlrs is NULL  
+if (is_null($registrationdatafromlrs)){
+	//do nothing
+} else{
+	echo "<table>";
+	echo "<th>".get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch')."</th>";
+	echo "<th>".get_string('tincanlaunchviewlastlaunched', 'tincanlaunch')."</th>";
+	echo "<th>".get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')."</th></tr>";
+	
+	$index = 0;
+	foreach ($registrationdatafromlrs as $thisregistrationid => $thisregistrationdates) {
+		$index++;
+	    echo "<tr>";
+		echo "<td>".date(DateTime::RSS, strtotime($thisregistrationdates['lastlaunched']))."</td>";
+		echo "<td>".date(DateTime::RSS, strtotime($thisregistrationdates['created']))."</td>";
+		echo "<td><a onclick=\"mod_tincanlaunch_launchexperience('".$thisregistrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a></td></tr>";
+	}
+	
+	echo "</table>";
+}
+
+//Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
+?>
+<form id="launchform" action="launch.php?id=<?php echo $id ?>&n=<?php echo $n ?>" method="post" target="_blank">
+	<input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
+</form>
+<?php
+
 
 // Finish the page
 echo $OUTPUT->footer();
