@@ -28,29 +28,214 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
-require_once("$CFG->libdir/filelib.php");
-require_once("$CFG->libdir/resourcelib.php");
-require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
-*/
 
-/**
- * Does something really useful with the passed things
+
+/*
+ * tincanlaunch_get_launch_url
  *
- * @param array $things
- * @return object
+ * Returns a launch link based on various data from Moodle
+ *
+ * @param none
+ * @return string - the launch link to be used. 
  */
- // 
+function tincanlaunch_gen_uuid() {
+    return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        // 32 bits for "time_low"
+        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+        // 16 bits for "time_mid"
+        mt_rand( 0, 0xffff ),
+
+        // 16 bits for "time_hi_and_version",
+        // four most significant bits holds version number 4
+        mt_rand( 0, 0x0fff ) | 0x4000,
+
+        // 16 bits, 8 bits for "clk_seq_hi_res",
+        // 8 bits for "clk_seq_low",
+        // two most significant bits holds zero and one for variant DCE1.1
+        mt_rand( 0, 0x3fff ) | 0x8000,
+
+        // 48 bits for "node"
+        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+    );
+}
+
+function tincanlaunch_getactor()
+{
+	global $USER, $CFG;
+	if ($USER->email){
+		return array(
+			"name" => fullname($USER),
+			"mbox" => "mailto:".$USER->email,
+			"objectType" => "Agent"
+		);
+	}
+	else{
+		return array(
+			"name" => fullname($USER),
+			"account" => array(
+				"homePage" => $CFG->wwwroot,
+				"name" => $USER->id
+			),
+			"objectType" => "Agent"
+		);
+	}
+}
  
-function tincanlaunch_get_launch_url() {
-	global $tincanlaunch, $USER, $CFG;
+function tincanlaunch_get_launch_url($registrationuuid) {
+	global $tincanlaunch;
 	
-	//calculate basic authentication
+	//calculate basic authentication 
 	$basicauth = base64_encode($tincanlaunch->tincanlaunchlrslogin.":".$tincanlaunch->tincanlaunchlrspass);
 	
-	$rtnString = $tincanlaunch->tincanlaunchurl."?endpoint=".$tincanlaunch->tincanlaunchlrsendpoint."&auth=Basic%20$".$basicauth."=&actor={%22name%22:%22".fullname($USER)."%22,%22account%22:{%22homePage%22:%22".$CFG->wwwroot."%22,%22name%22:%22".$USER->id."%22},%22objectType%22:%22Agent%22}";
+	//build the URL to be returned
+	$rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
+	        "endpoint" => $tincanlaunch->tincanlaunchlrsendpoint,
+	        "auth" => "Basic ".$basicauth,
+	        "actor" => json_encode(tincanlaunch_getactor()),
+	        "registration" => $registrationuuid,
+	        "version" => $tincanlaunch->tincanlaunchlrsversion
+	    ), 
+	    '', 
+	    '&'
+	);
 	
-	//QUESTION: should I be using $USER->id, $USER->idnumber or even $USER->username ?
+	//TODO: QUESTION: should we be using $USER->id, $USER->idnumber or even $USER->username ?
 	
 	return $rtnString;
 }
+
+function tincanlaunch_myJson_encode($str)
+{
+	return str_replace('\\/', '/',json_encode($str));
+}
+
+//I've split these two functions up so that tincanlaunch_save_state can be potentially re-used outside of Moodle.
+function tincanlaunch_get_global_parameters_and_save_state($data, $key)
+{
+	global $tincanlaunch;
+	return tincanlaunch_save_state($data, $tincanlaunch->tincanlaunchlrsendpoint, $tincanlaunch->tincanlaunchlrslogin, $tincanlaunch->tincanlaunchlrspass, $tincanlaunch->tincanlaunchlrsversion, $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key);
+}
+
+//TODO: Put this function in a PHP Tin Can library. 
+//TODO: Handle failure nicely. E.g. retry sending. 
+//TODO: if this is going in a library, it needs to be able to handle registration too
+//TODO: add parameter 'method' for POST/PUT
+function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version, $activityid, $agent, $key) {
+
+
+	$streamopt = array(
+		'ssl' => array(
+			'verify-peer' => false, 
+			), 
+		'http' => array(
+			'method' => 'PUT', 
+			'ignore_errors' => false, 
+			'header' => array(
+				'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
+				'Content-Type: application/json', 
+				'Accept: application/json, */*; q=0.01',
+				'X-Experience-API-Version: '.$version
+			), 
+			'content' => tincanlaunch_myJson_encode($data), 
+		), 
+	);
+	
+	$streamparams = array(
+		'activityId' => $activityid,
+		'agent' => json_encode($agent),
+		'stateId' => $key
+	);
+
+	
+	$context = stream_context_create($streamopt);
+	
+	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
+	
+	switch($return_code){
+        case 200:
+            $ret = stream_get_contents($stream);
+			$meta = stream_get_meta_data($stream);
+		
+			if ($ret) {
+				$ret = json_decode($ret, TRUE);
+			}
+            break;
+        	default: //error
+            $ret = NULL;
+			$meta = $return_code;
+            break;
+    }
+	
+	
+	return array(
+		'contents'=> $ret, 
+		'metadata'=> $meta
+	);
+}
+
+//Query to code reviewer: should getting and setting the state be  a single function with a "method" parameter, or be two separate but very similar functions as I've done here? 
+
+//I've split these two functions up so that tincanlaunch_save_state can be potentially re-used outside of Moodle.
+function tincanlaunch_get_global_parameters_and_get_state($key)
+{
+	global $tincanlaunch;
+	return tincanlaunch_get_state($tincanlaunch->tincanlaunchlrsendpoint, $tincanlaunch->tincanlaunchlrslogin, $tincanlaunch->tincanlaunchlrspass, $tincanlaunch->tincanlaunchlrsversion, $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key);
+}
+
+//TODO: Put this function in a PHP Tin Can library. 
+//TODO: Handle failure nicely. E.g. retry getting. 
+//TODO: if this is going in a library, it needs to be able to handle registration too
+function tincanlaunch_get_state($url, $basicLogin, $basicPass, $version, $activityid, $agent, $key) {
+
+	$streamopt = array(
+		'ssl' => array(
+			'verify-peer' => false, 
+			), 
+		'http' => array(
+			'method' => 'GET', 
+			'ignore_errors' => false, 
+			'header' => array(
+				'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
+				'Content-Type: application/json', 
+				'Accept: application/json, */*; q=0.01',
+				'X-Experience-API-Version: '.$version
+			)
+		), 
+	);
+
+	$streamparams = array(
+		'activityId' => $activityid,
+		'agent' => json_encode($agent),
+		'stateId' => $key
+	);
+	
+	$context = stream_context_create($streamopt);
+	
+	$stream = fopen($url . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
+	
+	//Handle possible error codes
+	$return_code = @explode(' ', $http_response_header[0]);
+    $return_code = (int)$return_code[1];
+     
+    switch($return_code){
+        case 200:
+            $ret = stream_get_contents($stream);
+			$meta = stream_get_meta_data($stream);
+		
+			if ($ret) {
+				$ret = json_decode($ret, TRUE);
+			}
+            break;
+        default: //error
+            $ret = NULL;
+			$meta = $return_code;
+            break;
+    }
+	
+	return array(
+		'contents'=> $ret, 
+		'metadata'=> $meta
+	);
+}
+

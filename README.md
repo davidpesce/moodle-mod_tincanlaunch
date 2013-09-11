@@ -20,31 +20,87 @@ One of the key issues in Tin Can is launching e-learning activities in such a wa
 * authorisation credentials
 * user information. 
 
-There are currently two main launch methods in use: the Articlate Storyline method and the Rustici Software method. 
-A third method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. 
+Currently, the main launch method in use is the [Rustici Software method](https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md). 
+Another method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. This
+plugin uses the Rustici method. 
 
-##Aims and Scope
-The aim of the project is to develop a Moodle plug in to allow Tin Can e-learning activities to be launched from Moodle. This will then be tracked to an external LRS. The plug in will be developed for Moodle 2.5. Support for earlier versions is out of scope for this project.
+##What you will need
 
-The plug in will allow course builders to add launch links to their course sites. The course builder will enter the 
-url of activity and select the launch method to be used. The Rustici and Storyline methods will be implemented. The 
-CMI5 method is out of scope for this project, but may be added later.
+To use this plugin you will need the following:
 
-The target LRS endpoint will be set as a global property for the Moodle. Later on, we may want to allow reporting to 
-multiple LRS and allow different LRS to be reported to for different learners or cohorts. For now though, that's out 
-of scope. The launch link will need to pull this in when launching the activity.
+* Moodle 2.5 fully set up and running on a server that you have ftp access to 
+* Login details for the admin account 
+* A Moodle course setup where you would like to add the activity
+* A piece of Tin Can compliant e-learning that also implements the launch mechanism outlined HERE, for 
+example e-learning produced using Articulate Storyline or Adobe Captivate. This should be put on the internet 
+somewhere, perhaps on your Moodle server. * A Tin Can compliant LRS (this plugin has been tested with Wax and 
+SCORM Cloud) 
+* A Tin Can compliant reporting tool 
+* A copy of this plugin.
 
-Basic authorization credentials will also be stored as global property for this project. It should be noted that
-this represents the least secure, but most convienent way of doing Tin Can. It will be relatively easy for a malicious 
-and technically skilled Moodle user to access other users' learning records and create false data. A later project
-may add oAuth authentication to deal with this issues, but that's out of scope for this project.
+##Installation
 
-The learner's name, account homepage (the URL of the Moodle) and account name will be passed in the launch URL, taken from 
-existing Moodle user data. 
+This plugin is installed in the same way as any activity plugin. Simply drop the tincanlaunch folder into your 
+mod folder on your moodle and then install via system administration as normal.
 
-Sending a registration id is out of scope for this project. 
+It's a known issue that the upgrade script for this plugin needs some attention.If you have any trouble upgrading 
+from a previous version of this plugin, and you don't know how to fix the upgrade code, please delete the plugin 
+from the mod directory on your server and uninstall the plugin from system administration before trying again. 
+Note that this workaround will delete any instances of the plugin that you have set up in your courses.
 
-##Existing projects for reference
+###Course set up
+
+This plugin can be added to a course like any other course activity. Simply add an activity and select Tin Can 
+Launch from the list.
+
+The settings for this module all have help text which can be accessed by clicking the ? icon next to that setting. 
+I don't intend to repeat that information here. If any of the help text is unclear, then please raise an issue here 
+and suggest an improvement.
+
+##Using the plugin
+
+When the learner clicks the launch link, they are taken to a page listing all of their saved attempts for the 
+activity with the most recent attempt at the top and a new attempt button above that. Learners can choose to 
+launch a new attempt, or return to a previously saved attempt.
+
+Moodle will pass the e-learning a registration id in the form of a universal unique id representing the previous 
+attempt or a newly generated one for a new attempt. It's up to the e-learning what it does with that data, but 
+hopefully it will store its bookmarking state on a per registration basis.
+
+Note that the list of attempts is stored in the LRS, rather than Moodle and can therefore be read and modified 
+by another LMS or by the learning activity itself. Additionally, if another copy of the launch link is installed 
+elsewhere on the Moodle or even on another Moodle, the data will be shared so long as the user email and activity 
+id are the same.
+
+##FAQ
+So far nobody has asked any questions, but here's some I imagine people might ask:
+
+###Where does the tracking data go?
+Tracking data from the learning activity is stored in your LRS and can be retrieved and viewed using any Tin 
+Can compliant reporting tool.
+
+It may be that a reporting tool plugin for Moodle is developed in future, or you could write your own.
+
+###On my Moodle, all/some of my users have the same dummy email address. The plugin is behaving oddly. 
+
+The plugin tells the e-learning to store data based on the learner's email address as stored in moodle. It's therefore 
+important that the Moodle email address is unique for each user, not just within the scope of the Moodle, but within 
+the scope of any system where the tracking data is used or will be used in the future. The safest best is to ensure 
+it's universally unique.
+
+With a little work, the plugin can be modified to use the Moodle account id instead.
+
+###Why doesn't the plugin do x y and z?
+If you'd like the plugin to do something, please raise an issue and perhaps somebody will do it for you for free. 
+If you want to make sure it happens, or get it done quickly, I recommended you hire a developer or add the feature 
+yourself. Email [mrdownes@hotmail.com](mailto:mrdownes@hotmail.com) if you'd like to hire me.
+
+###I'm developing a piece of e-learning or authoring tool and want to make sure it will work with Moodle
+Great! Please get in touch if you have any questions or want to hire a Tin Can expert. 
+[mrdownes@hotmail.com](mailto:mrdownes@hotmail.com)
+
+
+##Other projects for reference
 ###Tin Launcher
 Tin Launcher is an open source JavaScript tool for launching Tin Can activities using the Rustici launch method. We can
 use this as a reference when building the launch URL. This was written by me and we can re-use the code for this 
@@ -73,19 +129,5 @@ activties to be tracked back inside Moodle instead of an external LRS.
 
 [Github](https://github.com/jgsmitty)
 
-###The URL mod
-The URL mod included with Moodle is actually quite close to what we need. It even already includes a way of customising
-the URL to include querystring parameters taken from Moodle user data. 
-
-##Approach
-
-##Roadmap
-
-##Project Team
-
 ##Useful Links
 [The Moodle tracker item relating to Tin Can](https://tracker.moodle.org/browse/MDL-35433)
-
-[A post on the Tin Can Google Groups relating to this project](https://groups.google.com/a/adlnet.gov/forum/#!topic/tincanapi-adopters/7ZwtyXOirJo)
-
-[A post on the Tin Can Google Groups relating to security](https://groups.google.com/a/adlnet.gov/forum/#!topic/tincanapi-adopters/kuP13h7AO4I)
