@@ -90,16 +90,16 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	
 	//build the URL to be returned
 	//Note: when Moodle moves to PHP 5.4 as a minimum auth can be done more smoothly: http://php.net/manual/en/function.http-build-query.php
-	$rtnString = $tincanlaunch->tincanlaunchurl."?".str_replace("+","%20",http_build_query(array(
+	$rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
 	        "endpoint" => $tincanlaunch->tincanlaunchlrsendpoint,
-	        "auth" => "Basic ".$basicauth,
+	        //"auth" => "Basic ".$basicauth,
 	        "actor" => json_encode(tincanlaunch_getactor()),
 	        "registration" => $registrationuuid,
 	        "version" => $tincanlaunch->tincanlaunchlrsversion
 	    ), 
 	    '', 
-	    '&'
-	)); 
+	    '&'//,'PHP_QUERY_RFC3986'
+	)."&auth=". rawurlencode("Basic ".$basicauth); 
 	
 	return $rtnString;
 }
