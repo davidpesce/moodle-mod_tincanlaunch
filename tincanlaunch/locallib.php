@@ -99,7 +99,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	    ), 
 	    '', 
 	    '&'//,'PHP_QUERY_RFC3986'
-	)."&auth=". rawurlencode("Basic ".$basicauth); 
+	)."&auth=". rawurlencode("Basic%20".$basicauth); 
 	
 	return $rtnString;
 }
