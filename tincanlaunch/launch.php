@@ -92,6 +92,7 @@ tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tinc
 
 //launch the experience
 header("Location: ". tincanlaunch_get_launch_url($registrationid));
+
 exit;
 
  

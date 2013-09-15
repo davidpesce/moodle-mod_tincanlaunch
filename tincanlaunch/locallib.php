@@ -89,7 +89,8 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	$basicauth = base64_encode($tincanlaunch->tincanlaunchlrslogin.":".$tincanlaunch->tincanlaunchlrspass);
 	
 	//build the URL to be returned
-	$rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
+	//Note: when Moodle moves to PHP 5.4 as a minimum auth can be done more smoothly: http://php.net/manual/en/function.http-build-query.php
+	$rtnString = $tincanlaunch->tincanlaunchurl."?".str_replace("+","%20",http_build_query(array(
 	        "endpoint" => $tincanlaunch->tincanlaunchlrsendpoint,
 	        "auth" => "Basic ".$basicauth,
 	        "actor" => json_encode(tincanlaunch_getactor()),
@@ -98,9 +99,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	    ), 
 	    '', 
 	    '&'
-	);
-	
-	//TODO: QUESTION: should we be using $USER->id, $USER->idnumber or even $USER->username ?
+	)); 
 	
 	return $rtnString;
 }
@@ -116,6 +115,7 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key)
 	global $tincanlaunch;
 	return tincanlaunch_save_state($data, $tincanlaunch->tincanlaunchlrsendpoint, $tincanlaunch->tincanlaunchlrslogin, $tincanlaunch->tincanlaunchlrspass, $tincanlaunch->tincanlaunchlrsversion, $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key);
 }
+
 
 //TODO: Put this function in a PHP Tin Can library. 
 //TODO: Handle failure nicely. E.g. retry sending. 

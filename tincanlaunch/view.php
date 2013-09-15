@@ -89,7 +89,6 @@ echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" st
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
 
-
 //if $registrationdatafromlrs is NULL  
 if (is_null($registrationdatafromlrs)){
 	//do nothing
