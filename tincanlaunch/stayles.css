@@ -1,0 +1,9 @@
+/*	Left align English text only INPUT fields, when in RTL mode.
+ */
+#page-mod-tincanlaunch-mod.dir-rtl #fitem_id_tincanlaunchurl input, 
+#page-mod-tincanlaunch-mod.dir-rtl #fitem_id_tincanactivityid input,
+#page-mod-tincanlaunch-mod.dir-rtl #fitem_id_tincanlaunchlrsendpoint input,
+#page-mod-tincanlaunch-mod.dir-rtl #fitem_id_tincanlaunchlrslogin input,
+#page-mod-tincanlaunch-mod.dir-rtl #fitem_id_tincanlaunchlrspass input,
+#page-mod-tincanlaunch-mod.dir-rtl #fitem_id_tincanlaunchlrsversion input
+{direction:ltr;text-align:left;}
