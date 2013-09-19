@@ -94,7 +94,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('tincanlaunchlrslogin', 'tincanlaunchlrslogin', 'tincanlaunch');
 		
 		//Add basic authorisation pass. TODO: OAuth
-		$mform->addElement('text', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
+		$mform->addElement('passwordunmask', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
 		$mform->setType('tincanlaunchlrspass', PARAM_TEXT);
 		$mform->addRule('tincanlaunchlrspass', null, 'required', null, 'client');
         $mform->addRule('tincanlaunchlrspass', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
