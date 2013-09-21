@@ -89,17 +89,18 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	$basicauth = base64_encode($tincanlaunch->tincanlaunchlrslogin.":".$tincanlaunch->tincanlaunchlrspass);
 	
 	//build the URL to be returned
-	//Note: when Moodle moves to PHP 5.4 as a minimum auth can be done more smoothly: http://php.net/manual/en/function.http-build-query.php
-	$rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
+	//Note: when Moodle moves to PHP 5.4 as a minimum this can be done more smoothly using http_build_query.
+	//See 'PHP_QUERY_RFC3986' at http://php.net/manual/en/function.http-build-query.php
+	$rtnString = $tincanlaunch->tincanlaunchurl."?".tincanlaunch_http_build_query(array(
 	        "endpoint" => $tincanlaunch->tincanlaunchlrsendpoint,
-	        //"auth" => "Basic ".$basicauth,
+	        "auth" => "Basic ".$basicauth,
 	        "actor" => json_encode(tincanlaunch_getactor()),
 	        "registration" => $registrationuuid,
 	        "version" => $tincanlaunch->tincanlaunchlrsversion
 	    ), 
 	    '', 
-	    '&'//,'PHP_QUERY_RFC3986'
-	)."&auth=". rawurlencode("Basic ".$basicauth); 
+	    '&'
+	);
 	
 	return $rtnString;
 }
@@ -107,6 +108,17 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 function tincanlaunch_myJson_encode($str)
 {
 	return str_replace('\\/', '/',json_encode($str));
+}
+
+//Note: $numeric_prefix is ignored but kept so that this function has the same number of paramters as http_build_query
+function tincanlaunch_http_build_query($query_data, $numeric_prefix, $arg_separator)
+{
+	$rtnArray = array();
+	foreach ($query_data as $key => $value) {
+		$encodedValue = rawurlencode($value);
+		array_push($rtnArray, "{$key}={$encodedValue}");
+	}
+	return implode("&", $rtnArray);
 }
 
 //I've split these two functions up so that tincanlaunch_save_state can be potentially re-used outside of Moodle.
