@@ -117,6 +117,12 @@ if (is_null($registrationdatafromlrs)){
 </form>
 <?php
 
+// Update completion state
+//TODO: put this somewhere where it's likely to be called after the learner finishes the activity. 
+$completion=new completion_info($course);
+if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
+    $completion->update_state($cm,COMPLETION_UNKNOWN);
+}
 
 // Finish the page
 echo $OUTPUT->footer();

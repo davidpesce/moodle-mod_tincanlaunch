@@ -31,6 +31,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+
 /** example constant */
 //define('tincanlaunch_ULTIMATE_ANSWER', 42);
 
@@ -48,6 +49,8 @@ defined('MOODLE_INTERNAL') || die();
 function tincanlaunch_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:         return true;
+		case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
+        case FEATURE_COMPLETION_HAS_RULES: return true;
         default:                        return null;
     }
 }
@@ -394,14 +397,106 @@ function tincanlaunch_extend_settings_navigation(settings_navigation $settingsna
 
 function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     global $CFG,$DB;
-
+	
     $result=$type; // Default return value
-
-
-    if (!empty($forum->tincanverbid)) {
-		$result = true;
+    
+	 // Get tincanlaunch
+    if (!$tincanlaunch= $DB->get_record('tincanlaunch', array('id' => $cm->instance))) {
+        throw new Exception("Can't find activity {$cm->instance}"); //TODO: localise this
+    }
+	
+    if (!empty($tincanlaunch->tincanverbid)) {
+    	//Try to get a statement matching actor, verb and object specified in module settings
+    	$statementquery = tincanlaunch_get_statements($tincanlaunch->tincanlaunchlrsendpoint, $tincanlaunch->tincanlaunchlrslogin, $tincanlaunch->tincanlaunchlrspass, $tincanlaunch->tincanlaunchlrsversion, $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
+    	
+		//if the statement exists, return true else return false
+		if (current($statementquery["contents"]["statements"])){
+			$result = TRUE;
+		}else{
+			$result = FALSE;
+		}
     }
 
     return $result;
 }
+
+//TODO: Put this function in a PHP Tin Can library. 
+//TODO: Handle failure nicely. E.g. retry getting. 
+//TODO: if this is going in a library, it needs to be able to handle registration too
+// Note this has to be incldued in lib rather than locallib as its required by tincanlaunch_get_completion_state
+function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb) {
+
+	$streamopt = array(
+		'ssl' => array(
+			'verify-peer' => false, 
+			), 
+		'http' => array(
+			'method' => 'GET', 
+			'ignore_errors' => false, 
+			'header' => array(
+				'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
+				'Content-Type: application/json', 
+				'Accept: application/json, */*; q=0.01',
+				'X-Experience-API-Version: '.$version
+			)
+		), 
+	);
+
+	$streamparams = array(
+		'activity' => $activityid,
+		'agent' => json_encode($agent),
+		'verb' => $verb
+	);
+	
+	$context = stream_context_create($streamopt);
+	
+	$stream = fopen($url . 'statements'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
+	
+	//Handle possible error codes
+	$return_code = @explode(' ', $http_response_header[0]);
+    $return_code = (int)$return_code[1];
+     
+    switch($return_code){
+        case 200:
+            $ret = stream_get_contents($stream);
+			$meta = stream_get_meta_data($stream);
+		
+			if ($ret) {
+				$ret = json_decode($ret, TRUE);
+			}
+            break;
+        default: //error
+            $ret = NULL;
+			$meta = $return_code;
+            break;
+    }
+	
+	return array(
+		'contents'=> $ret, 
+		'metadata'=> $meta
+	);
+}
+
+function tincanlaunch_getactor()
+{
+	global $USER, $CFG;
+	if ($USER->email){
+		return array(
+			"name" => fullname($USER),
+			"mbox" => "mailto:".$USER->email,
+			"objectType" => "Agent"
+		);
+	}
+	else{
+		return array(
+			"name" => fullname($USER),
+			"account" => array(
+				"homePage" => $CFG->wwwroot,
+				"name" => $USER->id
+			),
+			"objectType" => "Agent"
+		);
+	}
+}
+
 

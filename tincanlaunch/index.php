@@ -80,8 +80,8 @@ foreach ($tincanlaunchs as $tincanlaunch) {
     } else {
         $table->data[] = array($link);
     }
+	
 }
-
 echo $OUTPUT->heading(get_string('modulenameplural', 'tincanlaunch'), 2);
 echo html_writer::table($table);
 echo $OUTPUT->footer();

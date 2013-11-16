@@ -27,7 +27,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
 
 
 /*
@@ -58,28 +58,6 @@ function tincanlaunch_gen_uuid() {
         // 48 bits for "node"
         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
     );
-}
-
-function tincanlaunch_getactor()
-{
-	global $USER, $CFG;
-	if ($USER->email){
-		return array(
-			"name" => fullname($USER),
-			"mbox" => "mailto:".$USER->email,
-			"objectType" => "Agent"
-		);
-	}
-	else{
-		return array(
-			"name" => fullname($USER),
-			"account" => array(
-				"homePage" => $CFG->wwwroot,
-				"name" => $USER->id
-			),
-			"objectType" => "Agent"
-		);
-	}
 }
  
 function tincanlaunch_get_launch_url($registrationuuid) {
@@ -250,4 +228,5 @@ function tincanlaunch_get_state($url, $basicLogin, $basicPass, $version, $activi
 		'metadata'=> $meta
 	);
 }
+
 
