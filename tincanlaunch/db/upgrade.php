@@ -67,7 +67,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 	if ($oldversion < 2013111600) { //New version in version.php
     	// Define field tincanactivityid to be added to newmodule
         $table = new xmldb_table('tincanlaunch');
-        $field = new xmldb_field('tincaverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
+        $field = new xmldb_field('tincanverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
 		
         // Add field tincanactivityid
         if (!$dbman->field_exists($table, $field)) {

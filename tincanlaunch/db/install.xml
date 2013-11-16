@@ -13,7 +13,7 @@
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="tincanlaunchurl"/>
 		<FIELD NAME="tincanlaunchurl" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="introformat" NEXT="tincanactivityid"/>
 		<FIELD NAME="tincanactivityid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanlaunchurl" NEXT="tincaverbid"/>
-		<FIELD NAME="tincaverbid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanactivityid" NEXT="tincanlaunchlrsendpoint"/>
+		<FIELD NAME="tincanverbid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanactivityid" NEXT="tincanlaunchlrsendpoint"/>
 		<FIELD NAME="tincanlaunchlrsendpoint" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS endpoint" PREVIOUS="tincaverbid" NEXT="tincanlaunchlrslogin"/>
 		<FIELD NAME="tincanlaunchlrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS credentials, login" PREVIOUS="tincanlaunchlrsendpoint" NEXT="tincanlaunchlrspass"/>
 		<FIELD NAME="tincanlaunchlrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS credentials, password" PREVIOUS="tincanlaunchlrslogin" NEXT="tincanlaunchlrsversion"/>

@@ -114,4 +114,38 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         // add standard buttons, common to all modules
         $this->add_action_buttons();
     }
+
+	function add_completion_rules() {
+	    $mform =& $this->_form;
+	
+	    $group=array();
+	    $group[] =& $mform->createElement('checkbox', 'completionverbenabled', ' ', get_string('completionverb','tincanlaunch'));
+	    $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array(' '));
+	    $mform->setType('tincanverbid',PARAM_INT);
+	    $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
+	    $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
+	    $mform->disabledIf('tincanverbid','completionverbenabled','notchecked');
+	
+	    return array('completionverbgroup');
+	}
+	
+	function completion_rule_enabled($data) {
+	    return (!empty($data['completionverbenabled']) && $data['tincanverbid']!=0);
+	}
+	
+	function get_data() {
+	    $data = parent::get_data();
+	    if (!$data) {
+	        return $data;
+	    }
+	    if (!empty($data->completionunlocked)) {
+	        // Turn off completion settings if the checkboxes aren't ticked
+	        $autocompletion = !empty($data->completion) && $data->completion==COMPLETION_TRACKING_AUTOMATIC;
+	        if (empty($data->completionverbenabled) || !$autocompletion) {
+	           $data->tincanverbid = '';
+	        }
+	    }
+	    return $data;
+	}
+	
 }
