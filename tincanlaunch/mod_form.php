@@ -84,7 +84,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 		$mform->addRule('tincanlaunchlrsendpoint', null, 'required', null, 'client');
         $mform->addRule('tincanlaunchlrsendpoint', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrsendpoint', 'tincanlaunchlrsendpoint', 'tincanlaunch');
-		$mform->setDefault('tincanlaunchlrsendpoint','http://example.com/endpoint/'); //TODO: amend to use this format: $this->_customdata['email']
+		$mform->setDefault('tincanlaunchlrsendpoint','http://example.com/endpoint/'); 
 		
 		//Add basic authorisation login. TODO: OAuth
 		$mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
@@ -120,11 +120,21 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 	
 	    $group=array();
 	    $group[] =& $mform->createElement('checkbox', 'completionverbenabled', ' ', get_string('completionverb','tincanlaunch'));
-	    $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array(' '));
-	    $mform->setType('tincanverbid',PARAM_INT);
+	    $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size'=>'64'));
+	    $mform->setType('tincanverbid',PARAM_TEXT);
+		
 	    $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
+		$mform->addGroupRule('completionverbgroup', array(
+			'tincanverbid' => array( 
+				array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
+				)
+			)
+		);
+		
 	    $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
 	    $mform->disabledIf('tincanverbid','completionverbenabled','notchecked');
+		$mform->setDefault('tincanverbid','http://adlnet.gov/expapi/verbs/completed'); 
+		
 	
 	    return array('completionverbgroup');
 	}

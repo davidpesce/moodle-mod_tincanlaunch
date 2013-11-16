@@ -63,8 +63,8 @@ $string['pluginadministration'] = 'Tin Can Launch Link administration';
 $string['pluginname'] = 'Tin Can Launch Link';
 
 //verb completion settings
-$string['completionverb'] = 'Completion Verb';
-$string['completionverbgroup'] = 'Completion by Verb Settings';
+$string['completionverb'] = 'Verb';
+$string['completionverbgroup'] = 'Track completion by verb';
 $string['completionverbgroup_help'] = 'Moodle will look for statements where the actor is the current user, the object is the specified activity id and the verb is the one set here. If it finds a matching statement, the activity will be marked complete.';
 
 
