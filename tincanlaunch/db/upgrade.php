@@ -63,6 +63,22 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         // upgraded to the version 2013083101 so the next time this block is skipped
         upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
     }
+	
+	if ($oldversion < 2013111600) { //New version in version.php
+    	// Define field tincanactivityid to be added to newmodule
+        $table = new xmldb_table('tincanlaunch');
+        $field = new xmldb_field('tincaverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
+		
+        // Add field tincanactivityid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Once we reach this point, we can store the new version and consider the module
+        // upgraded to the version 2013083101 so the next time this block is skipped
+        upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
+    }
 
 
     // Final return of upgrade result (true, all went good) to Moodle.

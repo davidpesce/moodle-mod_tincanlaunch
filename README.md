@@ -33,7 +33,8 @@ To use this plugin you will need the following:
 * A Moodle course setup where you would like to add the activity
 * A piece of Tin Can compliant e-learning that also implements the launch mechanism outlined HERE, for 
 example e-learning produced using Articulate Storyline or Adobe Captivate. This should be put on the internet 
-somewhere, perhaps on your Moodle server. * A Tin Can compliant LRS (this plugin has been tested with Wax and 
+somewhere, perhaps on your Moodle server. 
+* A Tin Can compliant LRS (this plugin has been tested with Wax and 
 SCORM Cloud) 
 * A Tin Can compliant reporting tool 
 * A copy of this plugin.
@@ -43,8 +44,8 @@ SCORM Cloud)
 This plugin is installed in the same way as any activity plugin. Simply drop the tincanlaunch folder into your 
 mod folder on your moodle and then install via system administration as normal.
 
-**WARNING:** Some users have experienced issues with installing this plugin by uploading it asd a zip using Moodle's
-addon installer. This method of installion is not currently supported.
+**WARNING:** Some users have experienced issues with installing my plugins by using Moodle's
+addon installer in the admin interface. This method of installion is not currently supported.
 
 ###Course set up
 

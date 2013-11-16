@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="tincanlaunch" COMMENT="Default comment for tincanlaunch, please edit me">
+    <TABLE NAME="tincanlaunch" COMMENT="tincanlaunch table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="course"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course tincanlaunch activity belongs to" PREVIOUS="id" NEXT="name"/>
@@ -12,8 +12,9 @@
         <FIELD NAME="intro" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the tincanlaunch activity" PREVIOUS="name" NEXT="introformat"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="tincanlaunchurl"/>
 		<FIELD NAME="tincanlaunchurl" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="introformat" NEXT="tincanactivityid"/>
-		<FIELD NAME="tincanactivityid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanlaunchurl" NEXT="tincanlaunchlrsendpoint"/>
-		<FIELD NAME="tincanlaunchlrsendpoint" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS endpoint" PREVIOUS="tincanactivityid" NEXT="tincanlaunchlrslogin"/>
+		<FIELD NAME="tincanactivityid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanlaunchurl" NEXT="tincaverbid"/>
+		<FIELD NAME="tincaverbid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL" PREVIOUS="tincanactivityid" NEXT="tincanlaunchlrsendpoint"/>
+		<FIELD NAME="tincanlaunchlrsendpoint" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS endpoint" PREVIOUS="tincaverbid" NEXT="tincanlaunchlrslogin"/>
 		<FIELD NAME="tincanlaunchlrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS credentials, login" PREVIOUS="tincanlaunchlrsendpoint" NEXT="tincanlaunchlrspass"/>
 		<FIELD NAME="tincanlaunchlrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS credentials, password" PREVIOUS="tincanlaunchlrslogin" NEXT="tincanlaunchlrsversion"/>
 		<FIELD NAME="tincanlaunchlrsversion" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Specification version" PREVIOUS="tincanlaunchlrspass" NEXT="timecreated"/>
