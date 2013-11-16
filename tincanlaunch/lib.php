@@ -390,3 +390,18 @@ function tincanlaunch_extend_navigation(navigation_node $navref, stdclass $cours
  */
 function tincanlaunch_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $tincanlaunchnode=null) {
 }
+
+
+function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
+    global $CFG,$DB;
+
+    $result=$type; // Default return value
+
+
+    if (!empty($forum->tincanverbid)) {
+		$result = true;
+    }
+
+    return $result;
+}
+

@@ -121,7 +121,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 	    $group=array();
 	    $group[] =& $mform->createElement('checkbox', 'completionverbenabled', ' ', get_string('completionverb','tincanlaunch'));
 	    $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size'=>'64'));
-	    $mform->setType('tincanverbid',PARAM_TEXT);
+	    $mform->setType('tincanverbid', PARAM_TEXT);
 		
 	    $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
 		$mform->addGroupRule('completionverbgroup', array(
@@ -140,7 +140,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 	}
 	
 	function completion_rule_enabled($data) {
-	    return (!empty($data['completionverbenabled']) && $data['tincanverbid']!=0);
+	    return (!empty($data['completionverbenabled']) && !empty($data['tincanverbid']));
 	}
 	
 	function get_data() {
@@ -157,5 +157,18 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 	    }
 	    return $data;
 	}
+	
+	function data_preprocessing(&$default_values) {
+        parent::data_preprocessing($default_values);
+
+        // Set up the completion checkboxes which aren't part of standard data.
+        // We also make the default value (if you turn on the checkbox) for those
+        // numbers to be 1, this will not apply unless checkbox is ticked.
+        $default_values['completionverbenabled']=
+            !empty($default_values['tincanverbid']) ? 1 : 0;
+        if (empty($default_values['tincanverbid'])) {
+            $default_values['completionverbenabled']=1;
+        }
+    }
 	
 }
