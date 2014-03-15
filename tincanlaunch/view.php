@@ -69,22 +69,44 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 }
 
 //Insert JavaScript functions
-
-?>
+//TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file
+//TODO: Localisation 
+?> 
 	<script>
+		//Function to run when the experience is launched
 		function mod_tincanlaunch_launchexperience(registration) {
 			//Set the form paramters
 			$('#launchform_registration').val(registration);			
 			//post it
 			$('#launchform').submit();
+			//remove the launch links
+			$('#tincanlaunch_newattempt').remove();	
+			$('#tincanlaunch_attempttable').remove();
+			
+			//Add some new content				
+			$('#region-main').append(' \
+				<p id="tincanlaunch_attemptprogress">Attempt in progress.</p> \
+				<p id="tincanlaunch_exit"><a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course">Return to course</a> </p> \
+			');		
 		}
+		
+		//TODO: tidy up this mess!
+		$(document).ready(function() {
+			//check completion once
+			$('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
+			//keep checking at regular intervals
+			setInterval(function() { 
+				$('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
+			}, 60000); //TODO: make this interval a configuration setting
+		});
+		
 	</script>
 <?php
 
 //generate a registration id for any new attempt
 $registrationid = tincanlaunch_gen_uuid();
 //On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
-echo "<a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a>";
+echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a></p>";
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
@@ -93,7 +115,7 @@ $registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
 if (is_null($registrationdatafromlrs)){
 	//do nothing
 } else{
-	echo "<table>";
+	echo "<table id='tincanlaunch_attempttable'>";
 	echo "<th>".get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch')."</th>";
 	echo "<th>".get_string('tincanlaunchviewlastlaunched', 'tincanlaunch')."</th>";
 	echo "<th>".get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')."</th></tr>";
@@ -117,12 +139,6 @@ if (is_null($registrationdatafromlrs)){
 </form>
 <?php
 
-// Update completion state
-//TODO: put this somewhere where it's likely to be called after the learner finishes the activity. 
-$completion=new completion_info($course);
-if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    $completion->update_state($cm,COMPLETION_UNKNOWN);
-}
 
 // Finish the page
 echo $OUTPUT->footer();
