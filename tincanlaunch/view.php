@@ -40,7 +40,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $tincanlaunch->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('tincanlaunch', $tincanlaunch->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    error( get_string('idmissing', 'report_tincan') );
 }
 
 require_login($course, true, $cm);
@@ -55,10 +55,6 @@ $PAGE->set_title(format_string($tincanlaunch->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
-// other things you may want to set - remove if not needed
-//$PAGE->set_cacheable(false);
-//$PAGE->set_focuscontrol('some-html-id');
-//$PAGE->add_body_class('tincanlaunch-'.$somevar);
 $PAGE->requires->jquery();
 
 // Output starts here
@@ -68,77 +64,77 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     echo $OUTPUT->box(format_module_intro('tincanlaunch', $tincanlaunch, $cm->id), 'generalbox mod_introbox', 'tincanlaunchintro');
 }
 
-//Insert JavaScript functions
 //TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file
-//TODO: Localisation 
 ?> 
-	<script>
-		//Function to run when the experience is launched
-		function mod_tincanlaunch_launchexperience(registration) {
-			//Set the form paramters
-			$('#launchform_registration').val(registration);			
-			//post it
-			$('#launchform').submit();
-			//remove the launch links
-			$('#tincanlaunch_newattempt').remove();	
-			$('#tincanlaunch_attempttable').remove();
-			
-			//Add some new content				
-			$('#region-main').append(' \
-				<p id="tincanlaunch_attemptprogress">Attempt in progress.</p> \
-				<p id="tincanlaunch_exit"><a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course">Return to course</a> </p> \
-			');		
+<script>
+	//Function to run when the experience is launched
+	function mod_tincanlaunch_launchexperience(registration) {
+		//Set the form paramters
+		$('#launchform_registration').val(registration);			
+		//post it
+		$('#launchform').submit();
+		//remove the launch links
+		$('#tincanlaunch_newattempt').remove();	
+		$('#tincanlaunch_attempttable').remove();
+		//Add some new content				
+		if (!$('#tincanlaunch_status').length) {
+			var message = "<?php echo get_string('tincanlaunch_progress', 'tincanlaunch'); ?>";
+			$('#region-main').append('\
+				<div id="tincanlaunch_status"> \
+					<p id="tincanlaunch_attemptprogress">'+message+'</p> \
+					<p id="tincanlaunch_exit"><a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course">Return to course</a> </p> \
+				</div>\
+			');
 		}
-		
-		//TODO: tidy up this mess!
-		$(document).ready(function() {
-			//check completion once
+		$('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
+	}
+	
+	//TODO: there may be a better way to check completion. Out of scope for current project. 
+	$(document).ready(function() {
+		setInterval(function() { 
 			$('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
-			//keep checking at regular intervals
-			setInterval(function() { 
-				$('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
-			}, 60000); //TODO: make this interval a configuration setting
-		});
-		
-	</script>
+		}, 30000); //TODO: make this interval a configuration setting
+	});
+</script>
 <?php
 
 //generate a registration id for any new attempt
 $registrationid = tincanlaunch_gen_uuid();
-//On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
-echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">New Attempt</a></p>";
-
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
+$lrsrespond = $getregistrationdatafromlrsstate["metadata"];
 
-//if $registrationdatafromlrs is NULL  
-if (is_null($registrationdatafromlrs)){
-	//do nothing
-} else{
-	echo "<table id='tincanlaunch_attempttable'>";
-	echo "<th>".get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch')."</th>";
-	echo "<th>".get_string('tincanlaunchviewlastlaunched', 'tincanlaunch')."</th>";
-	echo "<th>".get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')."</th></tr>";
-	
-	$index = 0;
-	foreach ($registrationdatafromlrs as $thisregistrationid => $thisregistrationdates) {
-		$index++;
-	    echo "<tr>";
-		echo "<td>".date(DateTime::RSS, strtotime($thisregistrationdates['lastlaunched']))."</td>";
-		echo "<td>".date(DateTime::RSS, strtotime($thisregistrationdates['created']))."</td>";
-		echo "<td><a onclick=\"mod_tincanlaunch_launchexperience('".$thisregistrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a></td></tr>";
-	}
-	
-	echo "</table>";
+if (is_array($lrsrespond)) {
+	$lrsrespond = explode(" ",$lrsrespond['wrapper_data'][0]);
 }
 
-//Add a form to to posted based on the attempt selected TODO: tidy up the querystring building code (post these too?)
+if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
+	//On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
+	echo "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
+}elseif ($registrationdatafromlrs) {
+	//TODO: make multiple attempts a configuration setting
+	//echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
+	foreach($registrationdatafromlrs as $key => $item){
+		array_push($registrationdatafromlrs[$key], "<a onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>".get_string('tincanlaunchviewlaunchlink','tincanlaunch')."</a>");
+		$registrationdatafromlrs[$key]['created'] = date_format(date_create($registrationdatafromlrs[$key]['created']), 'D, d M Y H:i:s');
+		$registrationdatafromlrs[$key]['lastlaunched'] = date_format(date_create($registrationdatafromlrs[$key]['lastlaunched']), 'D, d M Y H:i:s');
+	}
+	$table = new html_table();
+	$table->id ='tincanlaunch_attempttable';
+	$table->head = array(get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'), get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'), get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch'));
+	$table->data = $registrationdatafromlrs;
+	echo html_writer::table($table);
+}else{
+	echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
+}
+
+//Add a form to to posted based on the attempt selected
 ?>
-<form id="launchform" action="launch.php?id=<?php echo $id ?>&n=<?php echo $n ?>" method="post" target="_blank">
+<form id="launchform" action="launch.php" method="get" target="_blank">
 	<input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
+	<input id="id" name="id" type="hidden" value="<?php echo $id ?>">
+	<input id="n" name="n" type="hidden" value="<?php echo $n ?>">
 </form>
 <?php
 
-
-// Finish the page
 echo $OUTPUT->footer();

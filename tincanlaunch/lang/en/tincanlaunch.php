@@ -43,7 +43,7 @@ $string['tincanactivityid'] = 'Activity id';
 $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
 
 //Start LRS settings
-$string['tincanlaunchlrsfieldset'] = 'LRS settings (to be moved to global settings in the final version).';
+$string['tincanlaunchlrsfieldset'] = 'LRS settings';
 
 $string['tincanlaunchlrsendpoint'] = 'Endpoint';
 $string['tincanlaunchlrsendpoint_help'] = 'The LRS endpoint e.g. http://example.com/endpoint/';
@@ -56,6 +56,11 @@ $string['tincanlaunchlrspass_help'] = 'Your LRS password key.';
 
 $string['tincanlaunchlrsversion'] = 'Version';
 $string['tincanlaunchlrsversion_help'] = 'The version of Tin Can to use e.g. 1.0.0.';
+
+// LRS durationn
+$string['tincanlaunchlrsduration'] = 'Duration (min)';
+$string['tincanlaunchlrsduration_help'] = 'Duration should be in minute';
+$string['tincanlaunchlrauthentication'] = 'Module settings';
 //End LRS settings
 
 $string['tincanlaunch'] = 'Tin Can Launch Link';
@@ -69,8 +74,15 @@ $string['completionverbgroup_help'] = 'Moodle will look for statements where the
 
 
 //View settings
-
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';
 $string['tincanlaunchviewlastlaunched'] = 'Last launched';
 $string['tincanlaunchviewlaunchlinkheader'] = 'Launch link';
-$string['tincanlaunchviewlaunchlink'] = 'Launch';
+$string['tincanlaunchviewlaunchlink'] = 'launch';
+
+$string['tincanlaunch_completed'] = 'Experience complete!';
+$string['tincanlaunch_progress'] = 'Attempt in progress.';
+$string['tincanlaunch_attempt'] = 'New Attempt';
+$string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator.';
+$string['tincanlaunch_regidempty'] = 'Registration id not found. Please close this window.';
+
+$string['idmissing'] = 'You must specify a course_module ID or an instance ID';

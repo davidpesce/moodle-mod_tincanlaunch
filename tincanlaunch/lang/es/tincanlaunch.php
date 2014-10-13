@@ -17,10 +17,10 @@
 
 
 /**
- * Defines the version of tincanlaunch
+ * Spanish strings for tincanlaunch
  *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
+ * You can have a rather longer description of the file as well,
+ * if you like, and it can span multiple lines.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -29,10 +29,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version   = 2014072300;      // The current module version (Date: YYYYMMDDXX)
-// $module->requires  = 2013111802;      // Requires this Moodle version
-$module->requires  = 2013051403;      // Requires this Moodle version
-$module->cron      = 0;               // Period for cron to check this module (secs)
-$module->component = 'mod_tincanlaunch'; // To check on upgrade, that module sits in correct place
-$module->maturity = MATURITY_BETA;
-$module->release = '0.3 (Build: 2014031500)';
+//View settings
+$string['tincanlaunchviewfirstlaunched'] = 'Lanzado por primera vez';
+$string['tincanlaunchviewlastlaunched'] = 'Último puesto en marcha';
+$string['tincanlaunchviewlaunchlinkheader'] = 'Vínculo de Inicio';
+$string['tincanlaunchviewlaunchlink'] = 'Lanzamiento';
+
+$string['tincanlaunch_completed'] = 'La experiencia completa!';
+$string['tincanlaunch_progress'] = 'Intento en curso';
+$string['tincanlaunch_attempt'] = 'Nuevo intento';
+$string['tincanlaunch_notavailable'] = 'The Learning Record Store no está disponible. Por favor, póngase en contacto con el administrador del sistema.';
+

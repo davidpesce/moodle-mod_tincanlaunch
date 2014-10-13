@@ -17,10 +17,10 @@
 
 
 /**
- * Defines the version of tincanlaunch
+ * Chinese strings for tincanlaunch
  *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
+ * You can have a rather longer description of the file as well,
+ * if you like, and it can span multiple lines.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -29,10 +29,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version   = 2014072300;      // The current module version (Date: YYYYMMDDXX)
-// $module->requires  = 2013111802;      // Requires this Moodle version
-$module->requires  = 2013051403;      // Requires this Moodle version
-$module->cron      = 0;               // Period for cron to check this module (secs)
-$module->component = 'mod_tincanlaunch'; // To check on upgrade, that module sits in correct place
-$module->maturity = MATURITY_BETA;
-$module->release = '0.3 (Build: 2014031500)';
+//View settings
+$string['tincanlaunchviewfirstlaunched'] = '首次推出';
+$string['tincanlaunchviewlastlaunched'] = '最後 推出';
+$string['tincanlaunchviewlaunchlinkheader'] = '起動リンク';
+$string['tincanlaunchviewlaunchlink'] = '發射';
+
+$string['tincanlaunch_completed'] = '體驗完整的！';
+$string['tincanlaunch_progress'] = '嘗試進行中';
+$string['tincanlaunch_attempt'] = '新的嘗試';
+$string['tincanlaunch_notavailable'] = '學習記錄存儲不可用。請與系統管理員聯繫。';
+

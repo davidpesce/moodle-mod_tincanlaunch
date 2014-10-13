@@ -22,7 +22,7 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+ 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 include 'locallib.php';
@@ -48,14 +48,25 @@ $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 add_to_log($course->id, 'tincanlaunch', 'launch', "launch.php?id={$cm->id}", $tincanlaunch->name, $cm->id);
 
 //get the registration id
-$registrationid = $_POST["launchform_registration"];
-
+$registrationid = $_GET["launchform_registration"];
+if (empty($registrationid)) {
+	echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty','tincanlaunch')."</div>";
+	die();
+}
 
 //Save a record of this registration to the LRS state API
-//TODO:Get the existing data so we can append this registration rather than overwriting whatever might be there already. 
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdata = $getregistrationdatafromlrsstate["contents"];
+
+$errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
+
+$lrsrespond = tincanlaunch_get_lrsresponse($getregistrationdatafromlrsstate["metadata"]);
+if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
+	//Failed to connect to LRS
+	echo $errorhtml;
+	die();
+}
 
 $datenow = date("c");
 
@@ -66,34 +77,62 @@ $registrationdataforthisattempt = array(
 	   )
 );
 
-//if $registrationdatafrom is NULL  
 if (is_null($registrationdata)){
-	if ($registrationdata["metadata"] = 404){ //if the error is 404 create a new registration data array
+	//if the error is 404 create a new registration data array
+	if ($registrationdata["metadata"] = 404){
 		$registrationdata = $registrationdataforthisattempt;
+	}else { 
+		//TODO: Some other error - possibly network connection. Consider re-trying.
 	}
-	else { //Some other error - possibly network connection. 
-		//try again? how many times?
-	}
-} elseif (array_key_exists($registrationid,$registrationdata)) { //elseif the regsitration exists update the lastlaunched date
+} elseif (array_key_exists($registrationid,$registrationdata)) { 
+//elseif the regsitration exists update the lastlaunched date
 	$registrationdata[$registrationid]["lastlaunched"] = $datenow;
 } else { //else push the new data on the end
 	$registrationdata[$registrationid] = $registrationdataforthisattempt[$registrationid];
 }
-echo(json_encode($registrationdata). "<br/><br/>");
+
 //sort the registration data by last launched (most recent first)
 uasort($registrationdata, function($a, $b) {
     return strtotime($b['lastlaunched']) - strtotime($a['lastlaunched']);
 });
 
-echo(json_encode($registrationdata));
-
 //TODO:currently this is re-PUTting all of the data - it may be better just to POST the new data. This will prevent us sorting, but sorting could be done on output. 
-tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations");
+$saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations");
+
+$lrsrespond = tincanlaunch_get_lrsresponse($saveresgistrationdata["metadata"]);
+if ($lrsrespond[1] != 204) {
+	//Failed to connect to LRS
+	echo $errorhtml;
+	die();
+}
+
+
+
+$langpreference = array(
+	"languagePreference" =>  tincanlaunch_get_moodle_langauge()
+);
+
+$saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($langpreference,"CMI5LearnerPreferences");
+
+$lrsrespond = tincanlaunch_get_lrsresponse($saveagentprofile["metadata"]);
+if ($lrsrespond[1] != 204) {
+	//Failed to connect to LRS
+	echo $errorhtml;
+	die();
+}
+
+$savelaunchedstatement = tincan_launched_statement($registrationid);
+
+$lrsrespond = tincanlaunch_get_lrsresponse($savelaunchedstatement ["metadata"]);
+if ($lrsrespond[1] != 204) {
+	//Failed to connect to LRS
+	echo $errorhtml;
+	die();
+}
 
 //launch the experience
 header("Location: ". tincanlaunch_get_launch_url($registrationid));
 
 exit;
 
- 
- ?>
+?>

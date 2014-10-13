@@ -39,7 +39,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $tincanlaunch->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('tincanlaunch', $tincanlaunch->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+	error( get_string('idmissing', 'report_tincan') );
 }
 
 require_login($course, true, $cm);

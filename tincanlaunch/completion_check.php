@@ -39,7 +39,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $tincanlaunch->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('tincanlaunch', $tincanlaunch->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    error(get_string('idmissing', 'report_tincan'));
 }
 
 require_login($course, true, $cm);
@@ -47,21 +47,11 @@ $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 
 add_to_log($course->id, 'tincanlaunch', 'launch', "complete.php?id={$cm->id}", $tincanlaunch->name, $cm->id);
 
-//check for completion
-if (tincanlaunch_get_completion_state($course,$cm,$userid, TRUE))
-{
-	//Update the completion status
-	$completion=new completion_info($course);
-	if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-	    $completion->update_state($cm,COMPLETION_COMPLETE);
-	}
-	
-	//return a status string
-	echo 'Experience complete!'; //TODO: localise
-}
-else {
-	//return a status string
-	echo 'Attempt in progress.'; //TODO: localise
+global $USER;
+
+$completion = new completion_info($course);
+if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
+	$completion->update_state($cm,COMPLETION_COMPLETE);
 }
  
- ?>
+?>
