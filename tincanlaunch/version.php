@@ -34,5 +34,5 @@ $module->version   = 2014072300;      // The current module version (Date: YYYYM
 $module->requires  = 2013051403;      // Requires this Moodle version
 $module->cron      = 0;               // Period for cron to check this module (secs)
 $module->component = 'mod_tincanlaunch'; // To check on upgrade, that module sits in correct place
-$module->maturity = MATURITY_BETA;
-$module->release = '0.3 (Build: 2014031500)';
+$module->maturity = MATURITY_RC;
+$module->release = '1.0 (Build: 2014101300)';
