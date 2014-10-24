@@ -3,6 +3,14 @@ MoodleLaunch
 
 A plug in for Moodle that allows the launch of Tin Can content which is then tracked to a separate LRS. 
 
+##Reporting issues
+Please report any issues with this plugin here: https://github.com/garemoko/moodle-mod_tincanlaunch/issues
+Please provide screenshots of your settings (both at plugin and instance level) and a link to your content. 
+
+The majority of issues are caused by incorrect settings. You can see previous closed issues here: https://github.com/garemoko/moodle-mod_tincanlaunch/issues?q=is%3Aissue+is%3Aclosed
+
+If you're using Storyline please check you've published it for Tin Can tracking, you're using Storyline 2 (not 1) and you've modified the package following this example here: https://github.com/garemoko/StoryCanJS/compare/d3516551b4983a9e7348aaaef6f1c38dee874b8a...master 
+
 ##Background
 The [Tin Can API specification](https://www.tincanapi.co.uk) was released in April 2013 as a replacement for SCORM. 
 Tin Can allows for tracking of any learning experience. Tin Can was designed on the premise of a distributed system
