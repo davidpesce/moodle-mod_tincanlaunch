@@ -369,7 +369,7 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
 	}
 	else
 	{	
-		$EtagHeader = "If-Match : ".tincanlaunch_gextract_etag($GetRequesteturnObj["metadata"]["wrapper_data"]);
+		$EtagHeader = "If-Match : ".tincanlaunch_extract_etag($GetRequesteturnObj["metadata"]["wrapper_data"]);
 	}
 	
 	return tincanlaunch_save_agentprofile($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key, $EtagHeader);
