@@ -128,7 +128,7 @@ if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
 	echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
 }
 
-//Add a form to to posted based on the attempt selected
+//Add a form to be posted based on the attempt selected
 ?>
 <form id="launchform" action="launch.php" method="get" target="_blank">
 	<input id="launchform_registration" name="launchform_registration" type="hidden" value="default">

@@ -58,6 +58,7 @@ if (empty($registrationid)) {
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
 $registrationdata = $getregistrationdatafromlrsstate["contents"];
+$registrationdataetag = tincanlaunch_extract_etag($getregistrationdatafromlrsstate["metadata"]["wrapper_data"]);
 
 $errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
 
@@ -97,11 +98,14 @@ uasort($registrationdata, function($a, $b) {
 });
 
 //TODO:currently this is re-PUTting all of the data - it may be better just to POST the new data. This will prevent us sorting, but sorting could be done on output. 
-$saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations");
+$saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations",$registrationdataetag);
 
 $lrsrespond = tincanlaunch_get_lrsresponse($saveresgistrationdata["metadata"]);
 if ($lrsrespond[1] != 204) {
 	//Failed to connect to LRS
+	/* echo "<pre>";
+	var_dump($saveresgistrationdata);
+	echo "</pre>"; */
 	echo $errorhtml;
 	die();
 }

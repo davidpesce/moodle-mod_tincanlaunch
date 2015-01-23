@@ -208,12 +208,11 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	//Call the function to get the credentials from the LRS
 	$basicLogin = trim($tincanlaunchsettings['tincanlaunchlrslogin']);
 	$basicPass = trim($tincanlaunchsettings['tincanlaunchlrspass']);
-	if ($tincanlaunchsettings['tincanlaunchlrauthentication']) { //LRS integrated basic authentication
+	if ($tincanlaunchsettings['tincanlaunchlrauthentication'] != "0") { //LRS integrated basic authentication is 0
 		$basicauth = base64_encode($basicLogin.":".$basicPass);
 	}else{
-		//calculate basic authentication 
 		$creds = tincanlaunch_get_creds($tincanlaunchsettings['tincanlaunchlrslogin'],$tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);
-		$basicauth = base64_encode($basicLogin.":".$basicPass);
+		$basicauth = base64_encode($creds["contents"]["key"].":".$creds["contents"]["secret"]);
 	}
 
 	//build the URL to be returned
@@ -247,16 +246,25 @@ function tincanlaunch_http_build_query($query_data, $numeric_prefix, $arg_separa
 }
 
 //TODO: use TinCanPHP for PHP 5.4
-function tincanlaunch_get_global_parameters_and_save_state($data, $key){
+function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
 	global $tincanlaunch;
 	$tincanlaunchsettings = tincanlaunch_settigns();
-	return tincanlaunch_save_state($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key);
+	return tincanlaunch_save_state($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key, $etag);
 }
 
 
 //TODO: use TinCanPHP for PHP 5.4
-function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version, $activityid, $agent, $key) {
+function tincanlaunch_save_state($data, $url, $basicLogin, $basicPass, $version, $activityid, $agent, $key, $etag) {
 $return_code = "";
+
+	if ($etag == "")
+	{
+		$EtagHeader = "If-None-Match : *";
+	}
+	else
+	{	
+		$EtagHeader = "If-Match : ".$etag;
+	}
 
 	$streamopt = array(
 		'ssl' => array(
@@ -269,7 +277,8 @@ $return_code = "";
 				'Authorization: Basic ' . base64_encode( trim($basicLogin) . ':' .trim($basicPass)), 
 				'Content-Type: application/json', 
 				'Accept: application/json, */*; q=0.01',
-				'X-Experience-API-Version: '.$version
+				'X-Experience-API-Version: '.$version,
+				$EtagHeader
 			), 
 			'content' => tincanlaunch_myJson_encode($data), 
 		), 
@@ -286,17 +295,21 @@ $return_code = "";
 	
 	$stream = fopen(trim($url) . 'activities/state'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
 	
+	$return_code =  $http_response_header;
+    //$return_code = (int)$return_code[1];
+
 	$ret = stream_get_contents($stream);
 	$meta = stream_get_meta_data($stream);
 
 	if ($ret) {
 		$ret = json_decode($ret, TRUE);
 	}
-            
 	
 	return array(
 		'contents'=> $ret, 
-		'metadata'=> $meta
+		'metadata'=> $meta,
+		'code'=>$return_code,
+		'EtagHeader'=>$EtagHeader
 	);
 }
 
@@ -356,14 +369,7 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
 	}
 	else
 	{	
-		$etag ='x';
-		foreach ($GetRequesteturnObj["metadata"]["wrapper_data"] as $rtnHeader) {
-			if (strpos($rtnHeader, 'ETag') === 0){
-				$etag =substr($rtnHeader, 6);
-				break;
-			}
-		}
-		$EtagHeader = "If-Match : ".$etag;
+		$EtagHeader = "If-Match : ".tincanlaunch_gextract_etag($GetRequesteturnObj["metadata"]["wrapper_data"]);
 	}
 	
 	return tincanlaunch_save_agentprofile($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key, $EtagHeader);
@@ -390,7 +396,7 @@ $return_code = "";
 			'content' => tincanlaunch_myJson_encode($data), 
 		), 
 	);
-	
+
 	$streamparams = array(
 		'agent' => json_encode($agent),
 		'profileId' => $key
@@ -445,8 +451,6 @@ $return_code = "";
 	$context = stream_context_create($streamopt);
 	
 	$stream = fopen(trim($url) . 'agents/profile'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
-	
-	
 
 	$ret = stream_get_contents($stream);
 	$meta = stream_get_meta_data($stream);
@@ -538,3 +542,14 @@ function tincanlaunch_get_lrsresponse($lrsrespond){
 	}
 	return $lrsrespond;
 }
+
+function tincanlaunch_extract_etag($wrapperdata){
+	$etag ='';
+	foreach ($wrapperdata as $rtnHeader) {
+		if (strpos($rtnHeader, 'ETag') === 0){
+			$etag =substr($rtnHeader, 6);
+			return $etag;
+		}
+	}
+}
+
