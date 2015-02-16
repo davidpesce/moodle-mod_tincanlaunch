@@ -91,7 +91,7 @@ function tincanlaunch_get_creds($basicLogin,$basicPass, $data, $url) {
 
 function tincan_launched_statement($registration_id){
 	global $tincanlaunch, $course, $CFG;
-	$tincanlaunchsettings = tincanlaunch_settigns();
+	$tincanlaunchsettings = tincanlaunch_settings();
 	
 	$version = $tincanlaunchsettings['tincanlaunchlrsversion'];
 	if (empty($version)){
@@ -173,7 +173,7 @@ function tincanlaunch_gen_uuid() {
  
 function tincanlaunch_get_launch_url($registrationuuid) {
 	global $tincanlaunch;
-	$tincanlaunchsettings = tincanlaunch_settigns();
+	$tincanlaunchsettings = tincanlaunch_settings();
 	$current_time = new DateTime('NOW');
 	$tincan_duration = $tincanlaunchsettings['tincanlaunchlrsduration'];
 	$current_time->add(new DateInterval('PT'.$tincan_duration.'M'));
@@ -248,7 +248,7 @@ function tincanlaunch_http_build_query($query_data, $numeric_prefix, $arg_separa
 //TODO: use TinCanPHP for PHP 5.4
 function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
 	global $tincanlaunch;
-	$tincanlaunchsettings = tincanlaunch_settigns();
+	$tincanlaunchsettings = tincanlaunch_settings();
 	return tincanlaunch_save_state($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key, $etag);
 }
 
@@ -358,7 +358,7 @@ $return_code = "";
 
 function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
 	global $tincanlaunch;
-	$tincanlaunchsettings = tincanlaunch_settigns();
+	$tincanlaunchsettings = tincanlaunch_settings();
 	
 	$GetRequesteturnObj = tincanlaunch_get_agentprofile($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key);
 	
@@ -468,7 +468,7 @@ $return_code = "";
 
 function tincanlaunch_get_global_parameters_and_get_state($key){
 	global $tincanlaunch;
-	$tincanlaunchsettings = tincanlaunch_settigns();
+	$tincanlaunchsettings = tincanlaunch_settings();
 	return tincanlaunch_get_state($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'],$tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $key);
 }
 

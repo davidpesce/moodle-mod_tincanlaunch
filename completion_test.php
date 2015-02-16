@@ -63,7 +63,7 @@ if (tincanlaunch_get_completion_state_test($course,$cm,$USER->id, TRUE)){
 
 function tincanlaunch_get_completion_state_test($course,$cm,$userid,$type) {
     global $CFG,$DB;
-    $tincanlaunchsettings = tincanlaunch_settigns();
+    $tincanlaunchsettings = tincanlaunch_settings();
     $result=$type; // Default return value
 
 	 // Get tincanlaunch
