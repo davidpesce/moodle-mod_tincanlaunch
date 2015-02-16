@@ -397,7 +397,7 @@ function tincanlaunch_extend_settings_navigation(settings_navigation $settingsna
 
 function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     global $CFG,$DB;
-    $tincanlaunchsettings = tincanlaunch_settigns();
+    $tincanlaunchsettings = tincanlaunch_settings();
     $result=$type; // Default return value
 
 	 // Get tincanlaunch
@@ -548,7 +548,7 @@ function tincanlaunch_getactor(){
 
 
 //  tincan launch global settigns
-function tincanlaunch_settigns(){
+function tincanlaunch_settings(){
     global $DB;
     $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
     $expresult = array();
