@@ -51,6 +51,13 @@ add_to_log($course->id, 'tincanlaunch', 'launch', "launch.php?id={$cm->id}", $ti
 $registrationid = $_GET["launchform_registration"];
 if (empty($registrationid)) {
 	echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty','tincanlaunch')."</div>";
+	//Failed to connect to LRS
+	if ($CFG->debug == 32767) {
+		echo "<p>Error attempting to get registration id querystring parameter.</p>";
+		echo "<pre>";
+		var_dump($saveresgistrationdata);
+		echo "</pre>";
+	}
 	die();
 }
 
@@ -66,6 +73,12 @@ $lrsrespond = tincanlaunch_get_lrsresponse($getregistrationdatafromlrsstate["met
 if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
 	//Failed to connect to LRS
 	echo $errorhtml;
+	if ($CFG->debug == 32767) {
+		echo "<p>Error attempting to get registration data from State API.</p>";
+		echo "<pre>";
+		var_dump($saveresgistrationdata);
+		echo "</pre>";
+	}
 	die();
 }
 
@@ -103,10 +116,13 @@ $saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state($regi
 $lrsrespond = tincanlaunch_get_lrsresponse($saveresgistrationdata["metadata"]);
 if ($lrsrespond[1] != 204) {
 	//Failed to connect to LRS
-	/* echo "<pre>";
-	var_dump($saveresgistrationdata);
-	echo "</pre>"; */
 	echo $errorhtml;
+	if ($CFG->debug == 32767) {
+		echo "<p>Error attempting to set registration data to State API.</p>";
+		echo "<pre>";
+		var_dump($saveresgistrationdata);
+		echo "</pre>";
+	}
 	die();
 }
 
@@ -122,6 +138,12 @@ $lrsrespond = tincanlaunch_get_lrsresponse($saveagentprofile["metadata"]);
 if ($lrsrespond[1] != 204) {
 	//Failed to connect to LRS
 	echo $errorhtml;
+	if ($CFG->debug == 32767) {
+		echo "<p>Error attempting to set learner preferences to Agent Profile API.</p>";
+		echo "<pre>";
+		var_dump($saveresgistrationdata);
+		echo "</pre>";
+	}
 	die();
 }
 
@@ -131,6 +153,12 @@ $lrsrespond = tincanlaunch_get_lrsresponse($savelaunchedstatement ["metadata"]);
 if ($lrsrespond[1] != 204) {
 	//Failed to connect to LRS
 	echo $errorhtml;
+	if ($CFG->debug == 32767) {
+		echo "<p>Error attempting to send 'launched' statement.</p>";
+		echo "<pre>";
+		var_dump($saveresgistrationdata);
+		echo "</pre>";
+	}
 	die();
 }
 
