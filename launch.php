@@ -54,9 +54,6 @@ if (empty($registrationid)) {
 	//Failed to connect to LRS
 	if ($CFG->debug == 32767) {
 		echo "<p>Error attempting to get registration id querystring parameter.</p>";
-		echo "<pre>";
-		var_dump($saveresgistrationdata);
-		echo "</pre>";
 	}
 	die();
 }
@@ -76,7 +73,7 @@ if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
 	if ($CFG->debug == 32767) {
 		echo "<p>Error attempting to get registration data from State API.</p>";
 		echo "<pre>";
-		var_dump($saveresgistrationdata);
+		var_dump($getregistrationdatafromlrsstate);
 		echo "</pre>";
 	}
 	die();
@@ -141,7 +138,7 @@ if ($lrsrespond[1] != 204) {
 	if ($CFG->debug == 32767) {
 		echo "<p>Error attempting to set learner preferences to Agent Profile API.</p>";
 		echo "<pre>";
-		var_dump($saveresgistrationdata);
+		var_dump($saveagentprofile);
 		echo "</pre>";
 	}
 	die();
@@ -156,7 +153,7 @@ if ($lrsrespond[1] != 204) {
 	if ($CFG->debug == 32767) {
 		echo "<p>Error attempting to send 'launched' statement.</p>";
 		echo "<pre>";
-		var_dump($saveresgistrationdata);
+		var_dump($savelaunchedstatement);
 		echo "</pre>";
 	}
 	die();
