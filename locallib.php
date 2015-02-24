@@ -360,16 +360,16 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
 	global $tincanlaunch;
 	$tincanlaunchsettings = tincanlaunch_settings();
 	
-	$GetRequesteturnObj = tincanlaunch_get_agentprofile($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key);
+	$GetRequestReturnObj = tincanlaunch_get_agentprofile($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key);
 	
 	$EtagHeader;
-	if (!($GetRequesteturnObj["contents"]))
+	if (!($GetRequestReturnObj["contents"]))
 	{
 		$EtagHeader = "If-None-Match : *";
 	}
 	else
 	{	
-		$EtagHeader = "If-Match : ".tincanlaunch_extract_etag($GetRequesteturnObj["metadata"]["wrapper_data"]);
+		$EtagHeader = "If-Match : ".tincanlaunch_extract_etag($GetRequestReturnObj["metadata"]["wrapper_data"]);
 	}
 	
 	return tincanlaunch_save_agentprofile($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key, $EtagHeader);
