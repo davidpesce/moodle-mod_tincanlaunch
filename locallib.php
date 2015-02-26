@@ -547,7 +547,7 @@ function tincanlaunch_extract_etag($wrapperdata){
 	$etag ='';
 	foreach ($wrapperdata as $rtnHeader) {
 		if (strpos($rtnHeader, 'ETag') === 0){
-			$etag =substr($rtnHeader, 6);
+            $etag = trim(substr($rtnHeader, 6), '""');
 			return $etag;
 		}
 	}
