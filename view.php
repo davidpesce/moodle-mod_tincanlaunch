@@ -47,7 +47,7 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
 // Trigger module viewed event.
-$event = \mod_scorm\event\course_module_viewed::create(array(
+$event = \mod_tincanlaunch\event\course_module_viewed::create(array(
     'objectid' => $tincanlaunch->id,
     'context' => $context,
 ));
