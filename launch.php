@@ -43,9 +43,17 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
-add_to_log($course->id, 'tincanlaunch', 'launch', "launch.php?id={$cm->id}", $tincanlaunch->name, $cm->id);
+// Trigger Activity launched event.
+$event = \mod_tincanlaunch\event\activity_launched::create(array(
+    'objectid' => $tincanlaunch->id,
+    'context' => $context,
+    'other' => array('instanceid' => $cm->id)
+));
+$event->add_record_snapshot('course_modules', $cm);
+$event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+$event->trigger();
 
 //get the registration id
 $registrationid = $_GET["launchform_registration"];
