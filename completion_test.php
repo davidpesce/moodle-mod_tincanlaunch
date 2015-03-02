@@ -43,7 +43,7 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
 global $USER;
 //check for completion
@@ -76,7 +76,7 @@ function tincanlaunch_get_completion_state_test($course,$cm,$userid,$type) {
     	$areAnyStatementsReturned = tincanlaunch_check_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
 		
 		echo ('<p>LRS response:</p><pre>');
-		print_r($areAnyStatementsReturned y);
+		print_r($areAnyStatementsReturned);
 		echo ('</pre>');
 		
 		
@@ -140,4 +140,3 @@ function tincanlaunch_check_statements($url, $basicLogin, $basicPass, $version, 
     }
 }
  
-?>
