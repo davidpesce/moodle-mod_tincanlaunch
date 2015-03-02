@@ -140,3 +140,6 @@ activties to be tracked back inside Moodle instead of an external LRS.
 
 ##Useful Links
 [The Moodle tracker item relating to Tin Can](https://tracker.moodle.org/browse/MDL-35433)
+
+##Changelog
+2015030200 - Added support for Event logging (Requires Moodle 2.7+)
