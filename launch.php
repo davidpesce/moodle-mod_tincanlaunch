@@ -49,7 +49,6 @@ $context = context_module::instance($cm->id);
 $event = \mod_tincanlaunch\event\activity_launched::create(array(
     'objectid' => $tincanlaunch->id,
     'context' => $context,
-    'other' => array('instanceid' => $cm->id)
 ));
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
