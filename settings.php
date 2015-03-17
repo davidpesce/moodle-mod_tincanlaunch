@@ -41,9 +41,6 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',
         get_string('tincanlaunchlrsduration', 'tincanlaunch'), '',''));
 
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',
-        get_string('tincanlaunchlrsduration', 'tincanlaunch'), '',''));
-
     $options = array(0=>'LRS integrated basic authentication', 1=>'Insecure basic authentication');
     $settings->add(new admin_setting_configselect('tincanlaunch/tincanlaunchlrauthentication',
                                     get_string('tincanlaunchlrauthentication', 'tincanlaunch'),
