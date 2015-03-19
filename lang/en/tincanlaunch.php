@@ -35,8 +35,7 @@ $string['modulename_help'] = 'A plug in for Moodle that allows the launch of Tin
 
 //Start Default LRS Admin Settings
 $string['tincanlaunchlrsfieldset'] = 'Default values for TinCan Launch Link activity settings';
-$string['tincanlaunchlrsfieldset_help'] = 'These values are used when creating a new activity.';
-//TODO: Update this wording when option to override global settings is enabled within mod_form.php
+$string['tincanlaunchlrsfieldset_help'] = 'These are site-wide, default values used when creating a new activity. Each activity has the ability to override and provide alternative values.';
 
 $string['tincanlaunchlrsendpoint'] = 'Endpoint';
 $string['tincanlaunchlrsendpoint_help'] = 'The LRS endpoint (e.g. http://lrs.example.com/endpoint/). Must include trailing forward slash.';
@@ -55,7 +54,7 @@ $string['tincanlaunchlrsversion_help'] = 'The version of TinCan (xAPI) to use (e
 $string['tincanlaunchlrsversion_default'] = '1.0.2';
 
 $string['tincanlaunchlrsduration'] = 'Duration';
-$string['tincanlaunchlrsduration_help'] = 'Duration should be in minutes.';
+$string['tincanlaunchlrsduration_help'] = 'The amount of time it takes a user to complete the longest activity. Duration should be in minutes.';
 $string['tincanlaunchlrsduration_default'] = '9000';
 
 $string['tincanlaunchlrauthentication'] = 'Authentication settings';
@@ -69,10 +68,14 @@ $string['tincanlaunchname'] = 'Launch link name';
 $string['tincanlaunchname_help'] = 'The name of the launch link as it will appear to the user.';
 
 $string['tincanlaunchurl'] = 'Launch URL';
-$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch (including scheme).';
+$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch (e.g. http://example.com/content/index.html).';
 
-$string['tincanactivityid'] = 'Activity id';
+$string['tincanactivityid'] = 'Activity ID';
 $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
+
+$string['advancedheading'] = 'Advanced';
+$string['overridedefaults'] = 'Unlock Defaults';
+$string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
 //End Activity Settings
 
 $string['tincanlaunch'] = 'Tin Can Launch Link';
