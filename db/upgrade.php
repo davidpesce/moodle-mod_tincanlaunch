@@ -77,7 +77,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
         // Once we reach this point, we can store the new version and consider the module
         // upgraded to the version 2013083101 so the next time this block is skipped
-        upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
+        upgrade_mod_savepoint(true, 2013111600, 'tincanlaunch');
     }
 
 
