@@ -43,7 +43,7 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
 global $USER;
 //check for completion
@@ -74,12 +74,6 @@ function tincanlaunch_get_completion_state_test($course,$cm,$userid,$type) {
     if (!empty($tincanlaunch->tincanverbid)) {
     	//Try to get a statement matching actor, verb and object specified in module settings
     	$areAnyStatementsReturned = tincanlaunch_check_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
-		
-		echo ('<p>LRS response:</p><pre>');
-		print_r($areAnyStatementsReturned y);
-		echo ('</pre>');
-		
-		
 
 		//if the statement exists, return true else return false
 		if ($areAnyStatementsReturned){
@@ -140,4 +134,3 @@ function tincanlaunch_check_statements($url, $basicLogin, $basicPass, $version, 
     }
 }
  
-?>

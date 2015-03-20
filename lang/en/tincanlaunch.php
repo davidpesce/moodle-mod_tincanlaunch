@@ -86,3 +86,7 @@ $string['tincanlaunch_notavailable'] = 'The Learning Record Store is not availab
 $string['tincanlaunch_regidempty'] = 'Registration id not found. Please close this window.';
 
 $string['idmissing'] = 'You must specify a course_module ID or an instance ID';
+
+// Events
+$string['eventactivitylaunched'] = 'Activity launched';
+$string['eventactivitycompleted'] = 'Activity completed';
