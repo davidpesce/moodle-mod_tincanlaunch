@@ -72,9 +72,28 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
 
     $tincanlaunch->timecreated = time();
 
-    # You may have to add extra stuff in here #
+    //Data for tincanlaunch_lrs table
+    $tincanlaunch_lrs = new stdClass();
+    $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
+    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrauthentication;
+    $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
+    $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
+    $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
 
-    return $DB->insert_record('tincanlaunch', $tincanlaunch);
+    //need the id of the newly created instance to return (and use if override defaults checkbox is checked)
+    $tincanlaunch->id = $DB->insert_record('tincanlaunch', $tincanlaunch);
+
+    //determine if override defaults checkbox is checked
+    if($tincanlaunch->overridedefaults=='1'){
+        $tincanlaunch_lrs->tincanlaunchid = $tincanlaunch->id;
+
+        //insert data into tincanlaunch_lrs table
+        if(!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
+            return false;
+        }
+    }
+
+    return $tincanlaunch->id;
 }
 
 /**
@@ -94,9 +113,43 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
 
-    # You may have to add extra stuff in here #
+    //Data for tincanlaunch_lrs table
+    $tincanlaunch_lrs = new stdClass();
+    $tincanlaunch_lrs->tincanlaunchid = $tincanlaunch->instance;
+    $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
+    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrauthentication;
+    $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
+    $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
+    $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
 
-    return $DB->update_record('tincanlaunch', $tincanlaunch);
+    //determine if override defaults checkbox is checked
+    if($tincanlaunch->overridedefaults=='1'){
+        //check to see if there is a record of this instance in the table
+        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness=IGNORE_MISSING);
+        //if not, will need to insert_record
+        if(!$tincanlaunch_lrs_id){
+            if(!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
+                return false;
+            }
+        }else{//if it does exist, update it
+            $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
+            if(!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
+                return false;
+            }
+        }
+    }else{//if the user previously overrode defaults, there will be a record in tincanlaunch_lrs
+        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness=IGNORE_MISSING);
+        if($tincanlaunch_lrs_id){
+            //delete it if so
+            $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunch_lrs_id));
+        }
+    }
+
+    if(!$DB->update_record('tincanlaunch', $tincanlaunch)){
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -114,6 +167,13 @@ function tincanlaunch_delete_instance($id) {
 
     if (! $tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $id))) {
         return false;
+    }
+
+    //determine if there is a record of this (ever) in the tincanlaunch_lrs table
+    $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$id), $strictness=IGNORE_MISSING);
+    if($tincanlaunch_lrs_id){
+        //if there is, delete it
+        $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunch_lrs_id));
     }
 
     # Delete any dependent records here #
@@ -394,10 +454,11 @@ function tincanlaunch_extend_navigation(navigation_node $navref, stdclass $cours
 function tincanlaunch_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $tincanlaunchnode=null) {
 }
 
-
+//TODO: this function is never used. determine if it can be removed.
 function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     global $CFG,$DB;
-    $tincanlaunchsettings = tincanlaunch_settings();
+    //temporarily hard coding a value here - for 'semi-graceful' failure
+    $tincanlaunchsettings = tincanlaunch_settings('1');
     $result=$type; // Default return value
 
 	 // Get tincanlaunch
@@ -547,13 +608,38 @@ function tincanlaunch_getactor(){
 }
 
 
-//  tincan launch global settigns
-function tincanlaunch_settings(){
+//  tincan launch settings
+function tincanlaunch_settings($tincanactivityid){
     global $DB;
-    $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
+
     $expresult = array();
-    foreach($result as $value){
-      $expresult[$value->name] = $value->value;
+
+    //if global settings are not used, retrieve activity settings
+    if(!use_global_lrs_settings($tincanactivityid)){
+        $activitysettings = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$tincanactivityid), $fields='*', $strictness=IGNORE_MISSING);
+        $expresult['tincanlaunchlrsendpoint'] = $activitysettings->lrsendpoint;
+        $expresult['tincanlaunchlrauthentication'] = $activitysettings->lrsauthentication;
+        $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
+        $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
+        $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
+        //TODO: remove version when it has been set as global
+        $expresult['tincanlaunchlrsversion'] = '1.0.0';
+    }else{//use global lrs settings
+        $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
+        foreach($result as $value){
+            $expresult[$value->name] = $value->value;
+        }
     }
+
     return $expresult;
+}
+
+function use_global_lrs_settings($tincanactivityid){
+    global $DB;
+    //determine if there is a row in tincanlaunch_lrs matching the current activity id
+    $activitysettings = $DB->record_exists('tincanlaunch_lrs', array('tincanlaunchid'=>$tincanactivityid));
+    if($activitysettings){
+        return false;
+    }
+    return true;
 }

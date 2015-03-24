@@ -80,23 +80,33 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 
         //Start advanced settings
         $mform->addElement('header', 'advancedheading', get_string('advancedheading', 'tincanlaunch'));
+        $mform->setExpanded('advancedheading');
 
-        $mform->addElement('checkbox', 'overridedefaults', get_string('overridedefaults', 'tincanlaunch'));
+        //Override default LRS settings
+        $mform->addElement('advcheckbox', 'overridedefaults', get_string('overridedefaults', 'tincanlaunch'));
         $mform->addHelpButton('overridedefaults', 'overridedefaults', 'tincanlaunch');
 
         //Add LRS endpoint
         $mform->addElement('text', 'tincanlaunchlrsendpoint', get_string('tincanlaunchlrsendpoint', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrsendpoint', PARAM_TEXT);
-        $mform->addRule('tincanlaunchlrsendpoint', null, 'required', null, 'client');
+/*        $mform->addRule('tincanlaunchlrsendpoint', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrsendpoint', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrsendpoint', 'tincanlaunchlrsendpoint', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrsendpoint', $cfg_tincanlaunch->tincanlaunchlrsendpoint);
         $mform->disabledIf('tincanlaunchlrsendpoint', 'overridedefaults');
 
+        //Add LRS Authentication
+        $authoptions = array(0=>get_string('tincanlaunchlrauthentication_option_0', 'tincanlaunch'), 1=>get_string('tincanlaunchlrauthentication_option_1', 'tincanlaunch'));
+        $mform->addElement('select', 'tincanlaunchlrauthentication', get_string('tincanlaunchlrauthentication','tincanlaunch'), $authoptions);
+/*        $mform->addRule('tincanlaunchlrauthentication', null, 'required', null, 'client');*/
+        $mform->disabledIf('tincanlaunchlrauthentication', 'overridedefaults');
+        $mform->addHelpButton('tincanlaunchlrauthentication', 'tincanlaunchlrauthentication', 'tincanlaunch');
+        $mform->getElement('tincanlaunchlrauthentication')->setSelected($cfg_tincanlaunch->tincanlaunchlrauthentication);
+
         //Add basic authorisation login. TODO: OAuth
         $mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrslogin', PARAM_TEXT);
-        $mform->addRule('tincanlaunchlrslogin', null, 'required', null, 'client');
+/*        $mform->addRule('tincanlaunchlrslogin', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrslogin', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrslogin', 'tincanlaunchlrslogin', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrslogin', $cfg_tincanlaunch->tincanlaunchlrslogin);
@@ -105,30 +115,20 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Add basic authorisation pass. TODO: OAuth
         $mform->addElement('text', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrspass', PARAM_TEXT);
-        $mform->addRule('tincanlaunchlrspass', null, 'required', null, 'client');
+/*        $mform->addRule('tincanlaunchlrspass', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrspass', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrspass', 'tincanlaunchlrspass', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrspass', $cfg_tincanlaunch->tincanlaunchlrspass);
         $mform->disabledIf('tincanlaunchlrspass', 'overridedefaults');
 
-        //xAPI Version
-        $mform->addElement('text', 'tincanlaunchlrsversion', get_string('tincanlaunchlrsversion', 'tincanlaunch'), array('size'=>'64'));
-        $mform->setType('tincanlaunchlrsversion', PARAM_TEXT);
-        $mform->addRule('tincanlaunchlrsversion', null, 'required', null, 'client');
-        $mform->addRule('tincanlaunchlrsversion', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
-        $mform->addHelpButton('tincanlaunchlrsversion', 'tincanlaunchlrsversion', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchlrsversion', $cfg_tincanlaunch->tincanlaunchlrsversion);
-        $mform->disabledIf('tincanlaunchlrsversion', 'overridedefaults');
-
         //Duration
         $mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrsduration', PARAM_TEXT);
-        $mform->addRule('tincanlaunchlrsduration', null, 'required', null, 'client');
+/*        $mform->addRule('tincanlaunchlrsduration', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
         $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
         $mform->disabledIf('tincanlaunchlrsduration', 'overridedefaults');
-
         //End advanced settings
 
         //-------------------------------------------------------------------------------
@@ -185,6 +185,21 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 	function data_preprocessing(&$default_values) {
         parent::data_preprocessing($default_values);
 
+        global $DB;
+
+        //determine if default lrs settings were overriden
+        if(!empty($default_values['overridedefaults'])){
+            if($default_values['overridedefaults']=='1'){
+                //retrieve activity lrs settings from DB
+                $tincanlaunch_lrs = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$default_values['instance']), $fields='*', $strictness=IGNORE_MISSING);
+                $default_values['tincanlaunchlrsendpoint'] = $tincanlaunch_lrs->lrsendpoint;
+                $default_values['tincanlaunchlrauthentication'] = $tincanlaunch_lrs->lrsauthentication;
+                $default_values['tincanlaunchlrslogin'] = $tincanlaunch_lrs->lrslogin;
+                $default_values['tincanlaunchlrspass'] = $tincanlaunch_lrs->lrspass;
+                $default_values['tincanlaunchlrsduration'] = $tincanlaunch_lrs->lrsduration;
+            }
+        }
+
         // Set up the completion checkboxes which aren't part of standard data.
         // We also make the default value (if you turn on the checkbox) for those
         // numbers to be 1, this will not apply unless checkbox is ticked.
@@ -193,5 +208,13 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         if (empty($default_values['tincanverbid'])) {
             $default_values['completionverbenabled']=1;
         }
+    }
+    //Validate the form elements after submitting (server-side)
+    function validation($data, $files){
+        $errors = parent::validation($data, $files);
+
+        //TODO: Validate IRI
+
+        return $errors;
     }
 }

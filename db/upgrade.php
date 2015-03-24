@@ -80,6 +80,43 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2013111600, 'tincanlaunch');
     }
 
+    if ($oldversion < 2015032500) {
+
+        // Define field overridedefaults to be added to tincanlaunch.
+        $table = new xmldb_table('tincanlaunch');
+        $field = new xmldb_field('overridedefaults', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null, 'tincanverbid');
+
+        // Conditionally launch add field overridedefaults.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table tincanlaunch_lrs to be created.
+        $table = new xmldb_table('tincanlaunch_lrs');
+
+        // Adding fields to table tincanlaunch_lrs.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('tincanlaunchid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lrsendpoint', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lrsauthentication', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lrslogin', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lrspass', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lrsduration', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tincanlaunch_lrs.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table tincanlaunch_lrs.
+        $table->add_index('tincanlaunchid', XMLDB_INDEX_NOTUNIQUE, array('tincanlaunchid'));
+
+        // Conditionally launch create table for tincanlaunch_lrs.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Tincanlaunch savepoint reached.
+        upgrade_mod_savepoint(true, 2015032500, 'tincanlaunch');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

@@ -44,9 +44,17 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
-add_to_log($course->id, 'tincanlaunch', 'view', "view.php?id={$cm->id}", $tincanlaunch->name, $cm->id);
+// Trigger module viewed event.
+$event = \mod_tincanlaunch\event\course_module_viewed::create(array(
+    'objectid' => $tincanlaunch->id,
+    'context' => $context,
+));
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+$event->add_record_snapshot('course_modules', $cm);
+$event->trigger();
 
 /// Print the page header
 
