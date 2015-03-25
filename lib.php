@@ -622,20 +622,19 @@ function tincanlaunch_settings($tincanactivityid){
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
         $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
-        //TODO: remove version when it has been set as global
-        $expresult['tincanlaunchlrsversion'] = '1.0.0';
     }else{//use global lrs settings
         $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
         foreach($result as $value){
             $expresult[$value->name] = $value->value;
         }
     }
+    $expresult['tincanlaunchlrsversion'] = '1.0.0';
+
     if ($CFG->debug == 32767) {
         echo "xAPI Launch Settings<br/><pre>";
         var_dump($expresult);
         echo "</pre>";
     }
-
 
     return $expresult;
 }
