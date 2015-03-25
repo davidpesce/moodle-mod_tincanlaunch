@@ -84,7 +84,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
         // Define field overridedefaults to be added to tincanlaunch.
         $table = new xmldb_table('tincanlaunch');
-        $field = new xmldb_field('overridedefaults', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null, 'tincanverbid');
+        $field = new xmldb_field('overridedefaults', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'tincanverbid');
 
         // Conditionally launch add field overridedefaults.
         if (!$dbman->field_exists($table, $field)) {
