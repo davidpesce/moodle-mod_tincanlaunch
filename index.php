@@ -37,9 +37,12 @@ $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_course_login($course);
 
-add_to_log($course->id, 'tincanlaunch', 'view all', 'index.php?id='.$course->id, '');
+// Trigger instances list viewed event.
+$event = \mod_tincanlaunch\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
+$event->add_record_snapshot('course', $course);
+$event->trigger();
 
-$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+$coursecontext = context_course::instance($course->id);
 
 $PAGE->set_url('/mod/tincanlaunch/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));

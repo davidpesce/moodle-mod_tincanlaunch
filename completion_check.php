@@ -43,15 +43,22 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
-
-add_to_log($course->id, 'tincanlaunch', 'launch', "complete.php?id={$cm->id}", $tincanlaunch->name, $cm->id);
+$context = context_module::instance($cm->id);
 
 global $USER;
 
 $completion = new completion_info($course);
 if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
 	$completion->update_state($cm,COMPLETION_COMPLETE);
+
+    // Trigger Activity completed event.
+    $event = \mod_tincanlaunch\event\activity_completed::create(array(
+        'objectid' => $tincanlaunch->id,
+        'context' => $context,
+    ));
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+    $event->trigger();
+
 }
  
-?>
