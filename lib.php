@@ -610,7 +610,7 @@ function tincanlaunch_getactor(){
 
 //  tincan launch settings
 function tincanlaunch_settings($tincanactivityid){
-    global $DB;
+    global $DB, $CFG;
 
     $expresult = array();
 
@@ -630,6 +630,12 @@ function tincanlaunch_settings($tincanactivityid){
             $expresult[$value->name] = $value->value;
         }
     }
+    if ($CFG->debug == 32767) {
+        echo "xAPI Launch Settings<br/><pre>";
+        var_dump($expresult);
+        echo "</pre>";
+    }
+
 
     return $expresult;
 }
