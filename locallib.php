@@ -553,3 +553,22 @@ function tincanlaunch_extract_etag($wrapperdata){
 	}
 }
 
+function tincanlaunch_getactivityid($lancuurl) {
+    // ""Only one activity definition within a package may contain launch or resource elements"
+    // Above quote, from : https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md
+    // todo: store $xml on a new field inside the activity's database table, to be used for grading and user's progress discerning
+    $xml = simplexml_load_file(dirname($lancuurl)."/tincan.xml");
+
+    if ($xml) {
+        // Check if that activity has a "launch" element
+        foreach($xml->activities->activity as $activity) {
+            if (isset($activity->launch)) {
+                return (string)$activity['id'][0];
+            }
+        }
+    }
+
+    return; // use first activity id if none found ? (string)$xml->activities->activity[0]['id'][0];
+
+}
+

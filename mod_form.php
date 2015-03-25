@@ -29,6 +29,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once(dirname(__FILE__).'/locallib.php');
 
 /**
  * Module instance settings form
@@ -71,11 +72,13 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
 		
-		$mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
-		$mform->setType('tincanactivityid', PARAM_TEXT);
-		$mform->addRule('tincanactivityid', null, 'required', null, 'client');
-        $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
+		//$mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
+		//$mform->setType('tincanactivityid', PARAM_TEXT);
+		//$mform->addRule('tincanactivityid', null, 'required', null, 'client');
+        //$mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        //$mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
+        $mform->addElement('hidden', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
+        $mform->setType('tincanactivityid', PARAM_TEXT);
 
 		$mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size'=>'64'));
 		$mform->setType('tincanlaunchlrsduration', PARAM_TEXT);
@@ -178,6 +181,20 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         if (empty($default_values['tincanverbid'])) {
             $default_values['completionverbenabled']=1;
         }
+    }
+
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        // Get activity id from tincan.xml under root folder of activity's launch url.
+        $tincanactivityid = tincanlaunch_getactivityid($data['tincanlaunchurl']);
+        if (empty($tincanactivityid)) {
+            $errors['tincanlaunchurl'] = get_string('notincanactivityid', 'tincanlaunch');
+        } else {
+            // Update tincanactivityid in case it is valid.
+            $this->_form->_submitValues['tincanactivityid'] = $tincanactivityid;
+        }
+        return $errors;
     }
 	
 }
