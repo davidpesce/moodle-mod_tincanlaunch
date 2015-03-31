@@ -118,6 +118,13 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015032500, 'tincanlaunch');
     }
 
+    if($oldversion < 2015033100){
+
+        unset_config('tincanlaunchlrsversion', 'tincanlaunch');
+
+        upgrade_mod_savepoint(true, 2015033100, 'tincanlaunch');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

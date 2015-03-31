@@ -49,10 +49,6 @@ $string['tincanlaunchlrspass'] = 'Basic Password';
 $string['tincanlaunchlrspass_help'] = 'Your LRS password key.';
 $string['tincanlaunchlrspass_default'] = '';
 
-$string['tincanlaunchlrsversion'] = 'Version';
-$string['tincanlaunchlrsversion_help'] = 'The version of TinCan (xAPI) to use (e.g. 1.0.2).';
-$string['tincanlaunchlrsversion_default'] = '1.0.2';
-
 $string['tincanlaunchlrsduration'] = 'Duration';
 $string['tincanlaunchlrsduration_help'] = 'The amount of time it takes a user to complete the longest activity. Duration should be in minutes.';
 $string['tincanlaunchlrsduration_default'] = '9000';
