@@ -31,37 +31,52 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Tin Can Launch Link';
 $string['modulenameplural'] = 'Tin Can Launch Links';
-$string['modulename_help'] = 'A plug in for Moodle that allows the launch of Tin Can content which is then tracked to a separate LRS.';
+$string['modulename_help'] = 'A plug in for Moodle that allows the launch of Tin Can (xAPI) content which is then tracked to a separate LRS.';
 
+//Start Default LRS Admin Settings
+$string['tincanlaunchlrsfieldset'] = 'Default values for TinCan Launch Link activity settings';
+$string['tincanlaunchlrsfieldset_help'] = 'These are site-wide, default values used when creating a new activity. Each activity has the ability to override and provide alternative values.';
+
+$string['tincanlaunchlrsendpoint'] = 'Endpoint';
+$string['tincanlaunchlrsendpoint_help'] = 'The LRS endpoint (e.g. http://lrs.example.com/endpoint/). Must include trailing forward slash.';
+$string['tincanlaunchlrsendpoint_default'] = '';
+
+$string['tincanlaunchlrslogin'] = 'Basic Login';
+$string['tincanlaunchlrslogin_help'] = 'Your LRS login key.';
+$string['tincanlaunchlrslogin_default'] = '';
+
+$string['tincanlaunchlrspass'] = 'Basic Password';
+$string['tincanlaunchlrspass_help'] = 'Your LRS password key.';
+$string['tincanlaunchlrspass_default'] = '';
+
+$string['tincanlaunchlrsversion'] = 'Version';
+$string['tincanlaunchlrsversion_help'] = 'The version of TinCan (xAPI) to use (e.g. 1.0.2).';
+$string['tincanlaunchlrsversion_default'] = '1.0.2';
+
+$string['tincanlaunchlrsduration'] = 'Duration';
+$string['tincanlaunchlrsduration_help'] = 'The amount of time it takes a user to complete the longest activity. Duration should be in minutes.';
+$string['tincanlaunchlrsduration_default'] = '9000';
+
+$string['tincanlaunchlrauthentication'] = 'Authentication settings';
+$string['tincanlaunchlrauthentication_help'] = 'Use "Insecure basic authentication" unless another setting is explicitly supported by your LRS.';
+$string['tincanlaunchlrauthentication_option_0'] = 'LRS integrated basic authentication';
+$string['tincanlaunchlrauthentication_option_1'] = 'Insecure basic authentication';
+//End Default LRS Admin Settings
+
+//Start Activity Settings
 $string['tincanlaunchname'] = 'Launch link name';
 $string['tincanlaunchname_help'] = 'The name of the launch link as it will appear to the user.';
 
 $string['tincanlaunchurl'] = 'Launch URL';
-$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch (including scheme).';
+$string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want to launch (e.g. http://example.com/content/index.html).';
 
-$string['tincanactivityid'] = 'Activity id';
+$string['tincanactivityid'] = 'Activity ID';
 $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
 
-//Start LRS settings
-$string['tincanlaunchlrsfieldset'] = 'LRS settings';
-
-$string['tincanlaunchlrsendpoint'] = 'Endpoint';
-$string['tincanlaunchlrsendpoint_help'] = 'The LRS endpoint e.g. http://example.com/endpoint/';
-
-$string['tincanlaunchlrslogin'] = 'Basic Login';
-$string['tincanlaunchlrslogin_help'] = 'Your LRS login key.';
-
-$string['tincanlaunchlrspass'] = 'Basic Password';
-$string['tincanlaunchlrspass_help'] = 'Your LRS password key.';
-
-$string['tincanlaunchlrsversion'] = 'Version';
-$string['tincanlaunchlrsversion_help'] = 'The version of Tin Can to use e.g. 1.0.0.';
-
-// LRS durationn
-$string['tincanlaunchlrsduration'] = 'Duration (min)';
-$string['tincanlaunchlrsduration_help'] = 'Duration should be in minute';
-$string['tincanlaunchlrauthentication'] = 'Module settings';
-//End LRS settings
+$string['advancedheading'] = 'Advanced';
+$string['overridedefaults'] = 'Unlock Defaults';
+$string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
+//End Activity Settings
 
 $string['tincanlaunch'] = 'Tin Can Launch Link';
 $string['pluginadministration'] = 'Tin Can Launch Link administration';

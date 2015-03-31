@@ -47,7 +47,7 @@ $context = context_module::instance($cm->id);
 
 global $USER;
 //check for completion
-if (tincanlaunch_get_completion_state_test($course,$cm,$USER->id, TRUE)){
+if (tincanlaunch_get_completion_state_test($course,$cm,$USER->id, TRUE, $tincanlaunch->id)){
 	//Update the completion status
 	$completion = new completion_info($course);
 	if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
@@ -61,9 +61,9 @@ if (tincanlaunch_get_completion_state_test($course,$cm,$USER->id, TRUE)){
     echo get_string('tincanlaunch_progress', 'tincanlaunch');
 }
 
-function tincanlaunch_get_completion_state_test($course,$cm,$userid,$type) {
+function tincanlaunch_get_completion_state_test($course,$cm,$userid,$type, $tincanactivityid) {
     global $CFG,$DB;
-    $tincanlaunchsettings = tincanlaunch_settings();
+    $tincanlaunchsettings = tincanlaunch_settings($tincanactivityid);
     $result=$type; // Default return value
 
 	 // Get tincanlaunch
