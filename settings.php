@@ -46,11 +46,6 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_default', 'tincanlaunch')));
 
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsversion',
-        get_string('tincanlaunchlrsversion', 'tincanlaunch'),
-        get_string('tincanlaunchlrsversion_help', 'tincanlaunch'),
-        get_string('tincanlaunchlrsversion_default', 'tincanlaunch')));
-
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',
         get_string('tincanlaunchlrsduration', 'tincanlaunch'),
         get_string('tincanlaunchlrsduration_help', 'tincanlaunch'),
