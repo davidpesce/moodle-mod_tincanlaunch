@@ -31,10 +31,10 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrsendpoint_help', 'tincanlaunch'),
         get_string('tincanlaunchlrsendpoint_default', 'tincanlaunch')));
 
-    $options = array(0=>get_string('tincanlaunchlrauthentication_option_0', 'tincanlaunch'), 1=>get_string('tincanlaunchlrauthentication_option_1', 'tincanlaunch'));
-    $settings->add(new admin_setting_configselect('tincanlaunch/tincanlaunchlrauthentication',
-        get_string('tincanlaunchlrauthentication', 'tincanlaunch'),
-        get_string('tincanlaunchlrauthentication_help', 'tincanlaunch'), 0, $options));
+    $options = array(0=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 1=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'));
+    $settings->add(new admin_setting_configselect('tincanlaunch/tincanlaunchlrsauthentication',
+        get_string('tincanlaunchlrsauthentication', 'tincanlaunch'),
+        get_string('tincanlaunchlrsauthentication_help', 'tincanlaunch'), 0, $options));
 
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
         get_string('tincanlaunchlrslogin', 'tincanlaunch'),

@@ -121,6 +121,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
     if($oldversion < 2015033100){
 
         unset_config('tincanlaunchlrsversion', 'tincanlaunch');
+        unset_config('tincanlaunchlrauthentication', 'tincanlaunch');
 
         upgrade_mod_savepoint(true, 2015033100, 'tincanlaunch');
     }

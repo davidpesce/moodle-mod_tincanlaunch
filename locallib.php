@@ -205,7 +205,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 	//Call the function to get the credentials from the LRS
 	$basicLogin = trim($tincanlaunchsettings['tincanlaunchlrslogin']);
 	$basicPass = trim($tincanlaunchsettings['tincanlaunchlrspass']);
-	if ($tincanlaunchsettings['tincanlaunchlrauthentication'] != "0") { //LRS integrated basic authentication is 0
+	if ($tincanlaunchsettings['tincanlaunchlrsauthentication'] != "0") { //LRS integrated basic authentication is 0
 		$basicauth = base64_encode($basicLogin.":".$basicPass);
 	}else{
 		$creds = tincanlaunch_get_creds($tincanlaunchsettings['tincanlaunchlrslogin'],$tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);

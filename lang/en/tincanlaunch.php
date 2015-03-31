@@ -53,10 +53,10 @@ $string['tincanlaunchlrsduration'] = 'Duration';
 $string['tincanlaunchlrsduration_help'] = 'The amount of time it takes a user to complete the longest activity. Duration should be in minutes.';
 $string['tincanlaunchlrsduration_default'] = '9000';
 
-$string['tincanlaunchlrauthentication'] = 'Authentication settings';
-$string['tincanlaunchlrauthentication_help'] = 'Use "Insecure basic authentication" unless another setting is explicitly supported by your LRS.';
-$string['tincanlaunchlrauthentication_option_0'] = 'LRS integrated basic authentication';
-$string['tincanlaunchlrauthentication_option_1'] = 'Insecure basic authentication';
+$string['tincanlaunchlrsauthentication'] = 'Authentication settings';
+$string['tincanlaunchlrsauthentication_help'] = 'Use "Insecure basic authentication" unless another setting is explicitly supported by your LRS.';
+$string['tincanlaunchlrsauthentication_option_0'] = 'LRS integrated basic authentication';
+$string['tincanlaunchlrsauthentication_option_1'] = 'Insecure basic authentication';
 //End Default LRS Admin Settings
 
 //Start Activity Settings
