@@ -94,9 +94,6 @@ function tincan_launched_statement($registration_id){
 	$tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
 	
 	$version = $tincanlaunchsettings['tincanlaunchlrsversion'];
-	if (empty($version)){
-		$version = '1.0.0';
-	}
 	$url = $tincanlaunchsettings['tincanlaunchlrsendpoint'];
 	$basicLogin = $tincanlaunchsettings['tincanlaunchlrslogin'];
 	$basicPass = $tincanlaunchsettings['tincanlaunchlrspass'];
