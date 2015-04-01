@@ -46,7 +46,7 @@ $string['tincanlaunchlrslogin_help'] = 'Your LRS login key.';
 $string['tincanlaunchlrslogin_default'] = '';
 
 $string['tincanlaunchlrspass'] = 'Basic Password';
-$string['tincanlaunchlrspass_help'] = 'Your LRS password key.';
+$string['tincanlaunchlrspass_help'] = 'Your LRS password (secret).';
 $string['tincanlaunchlrspass_default'] = '';
 
 $string['tincanlaunchlrsversion'] = 'Version';
@@ -73,7 +73,8 @@ $string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want
 $string['tincanactivityid'] = 'Activity ID';
 $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
 
-$string['advancedheading'] = 'Advanced';
+$string['lrsheading'] = 'LRS Settings';
+$string['lrssettingdescription'] = 'By default, this activity uses the global LRS settings found in Site administration > Plugins > Activity modules > Tin Can Launch Link';
 $string['overridedefaults'] = 'Unlock Defaults';
 $string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
 //End Activity Settings
