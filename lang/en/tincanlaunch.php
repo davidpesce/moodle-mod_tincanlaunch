@@ -75,7 +75,7 @@ $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity
 
 $string['lrsheading'] = 'LRS Settings';
 $string['lrsdefaults'] = 'LRS Default Settings';
-$string['lrssettingdescription'] = 'By default, this activity uses the global LRS settings found in Site administration > Plugins > Activity modules > Tin Can Launch Link. To change the defaults, select Unlock Defaults.';
+$string['lrssettingdescription'] = 'By default, this activity uses the global LRS settings found in Site administration > Plugins > Activity modules > Tin Can Launch Link. To change the settings for this specific activity, select Unlock Defaults.';
 $string['overridedefaults'] = 'Unlock Defaults';
 $string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
 //End Activity Settings
