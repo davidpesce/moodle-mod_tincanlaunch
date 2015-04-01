@@ -82,7 +82,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addElement('header', 'lrsheading', get_string('lrsheading', 'tincanlaunch'));
         $mform->setExpanded('lrsheading');
 
-        $mform->addElement('static', 'description', '', get_string('lrssettingdescription', 'tincanlaunch'));
+        $mform->addElement('static', 'description', get_string('lrsdefaults', 'tincanlaunch'), get_string('lrssettingdescription', 'tincanlaunch'));
 
         //Override default LRS settings
         $mform->addElement('advcheckbox', 'overridedefaults', get_string('overridedefaults', 'tincanlaunch'));
