@@ -33,7 +33,6 @@ class admin_setting_configtext_mod_tincanlaunch extends admin_setting_configtext
      */
     public function write_setting($data)
     {
-
         if ($this->paramtype === PARAM_INT and $data === '') {
             // do not complain if '' used instead of 0
             $data = 0;
