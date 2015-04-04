@@ -20,13 +20,14 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
     require_once($CFG->dirroot . '/mod/tincanlaunch/locallib.php');
+    require_once($CFG->dirroot . '/mod/tincanlaunch/settingslib.php');
 
     //default display settings
     $settings->add(new admin_setting_heading('tincanlaunch/tincanlaunchlrsfieldset',
         get_string('tincanlaunchlrsfieldset', 'tincanlaunch'),
         get_string('tincanlaunchlrsfieldset_help', 'tincanlaunch')));
 
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsendpoint',
+    $settings->add(new admin_setting_configtext_mod_tincanlaunch('tincanlaunch/tincanlaunchlrsendpoint',
         get_string('tincanlaunchlrsendpoint', 'tincanlaunch'),
         get_string('tincanlaunchlrsendpoint_help', 'tincanlaunch'),
         get_string('tincanlaunchlrsendpoint_default', 'tincanlaunch'), PARAM_URL));
