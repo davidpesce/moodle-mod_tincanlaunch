@@ -79,8 +79,10 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //End required Fields for Activity
 
         //Start advanced settings
-        $mform->addElement('header', 'advancedheading', get_string('advancedheading', 'tincanlaunch'));
-        $mform->setExpanded('advancedheading');
+        $mform->addElement('header', 'lrsheading', get_string('lrsheading', 'tincanlaunch'));
+        $mform->setExpanded('lrsheading');
+
+        $mform->addElement('static', 'description', get_string('lrsdefaults', 'tincanlaunch'), get_string('lrssettingdescription', 'tincanlaunch'));
 
         //Override default LRS settings
         $mform->addElement('advcheckbox', 'overridedefaults', get_string('overridedefaults', 'tincanlaunch'));
