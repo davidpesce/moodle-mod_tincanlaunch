@@ -52,6 +52,4 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrsduration_help', 'tincanlaunch'),
         get_string('tincanlaunchlrsduration_default', 'tincanlaunch')));
 
-
-
 }
