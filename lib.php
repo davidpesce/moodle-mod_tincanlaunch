@@ -75,7 +75,7 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
     //Data for tincanlaunch_lrs table
     $tincanlaunch_lrs = new stdClass();
     $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
-    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrauthentication;
+    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
     $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
     $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
     $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
@@ -117,7 +117,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     $tincanlaunch_lrs = new stdClass();
     $tincanlaunch_lrs->tincanlaunchid = $tincanlaunch->instance;
     $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
-    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrauthentication;
+    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
     $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
     $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
     $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
@@ -618,18 +618,17 @@ function tincanlaunch_settings($tincanactivityid){
     if(!use_global_lrs_settings($tincanactivityid)){
         $activitysettings = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$tincanactivityid), $fields='*', $strictness=IGNORE_MISSING);
         $expresult['tincanlaunchlrsendpoint'] = $activitysettings->lrsendpoint;
-        $expresult['tincanlaunchlrauthentication'] = $activitysettings->lrsauthentication;
+        $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
         $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
-        //TODO: remove version when it has been set as global
-        $expresult['tincanlaunchlrsversion'] = '1.0.0';
     }else{//use global lrs settings
         $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
         foreach($result as $value){
             $expresult[$value->name] = $value->value;
         }
     }
+    $expresult['tincanlaunchlrsversion'] = '1.0.0';
 
     return $expresult;
 }
