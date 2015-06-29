@@ -104,4 +104,4 @@ $string['idmissing'] = 'You must specify a course_module ID or an instance ID';
 $string['eventactivitylaunched'] = 'Activity launched';
 $string['eventactivitycompleted'] = 'Activity completed';
 
-$string['tincanlaunch:addinstance'] = 'Add a new tincan (xAPI) activity to a course';
+$string['tincanlaunch:addinstance'] = 'Add a new Tin Can (xAPI) activity to a course';
