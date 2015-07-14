@@ -362,11 +362,11 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
 	$EtagHeader = "";
 	if (strlen(tincanlaunch_extract_etag($GetRequestReturnObj["metadata"]["wrapper_data"]))<1)
 	{
-		$EtagHeader = "If-None-Match : *";
+		$EtagHeader = "If-None-Match: *";
 	}
 	else
 	{	
-		$EtagHeader = "If-Match : ".tincanlaunch_extract_etag($GetRequestReturnObj["metadata"]["wrapper_data"]);
+		$EtagHeader = "If-Match: ".tincanlaunch_extract_etag($GetRequestReturnObj["metadata"]["wrapper_data"]);
 	}
 	
 	return tincanlaunch_save_agentprofile($data, $tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], tincanlaunch_getactor(), $key, $EtagHeader);
