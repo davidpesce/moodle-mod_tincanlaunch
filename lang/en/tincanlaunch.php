@@ -50,7 +50,7 @@ $string['tincanlaunchlrspass_help'] = 'Your LRS password (secret).';
 $string['tincanlaunchlrspass_default'] = '';
 
 $string['tincanlaunchlrsduration'] = 'Duration';
-$string['tincanlaunchlrsduration_help'] = 'The amount of time it takes a user to complete the longest activity. Duration should be in minutes.';
+$string['tincanlaunchlrsduration_help'] = 'Used with \'LRS integrated basic authentication\'. Requests the LRS to keep credentials valid for this number of minutes.';
 $string['tincanlaunchlrsduration_default'] = '9000';
 
 $string['tincanlaunchlrsauthentication'] = 'Authentication settings';

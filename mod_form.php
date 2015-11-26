@@ -61,7 +61,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('name', 'tincanlaunchname', 'tincanlaunch');
 
         // Adding the standard "intro" and "introformat" fields
-        $this->add_intro_editor();
+        $this->standard_intro_elements();
 
         //-------------------------------------------------------------------------------
         //Start required Fields for Activity
@@ -130,7 +130,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
         $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
-        $mform->disabledIf('tincanlaunchlrsduration', 'overridedefaults');
         //End advanced settings
 
         //-------------------------------------------------------------------------------

@@ -368,64 +368,68 @@ function tincanlaunch_extend_navigation(navigation_node $navref, stdclass $cours
 function tincanlaunch_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $tincanlaunchnode=null) {
 }
 
-//TODO: this function is never used. determine if it can be removed.
+// Called by Moodle core
 function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     global $CFG,$DB;
     //temporarily hard coding a value here - for 'semi-graceful' failure
     $tincanlaunchsettings = tincanlaunch_settings('1');
     $result=$type; // Default return value
 
-	 // Get tincanlaunch
+     // Get tincanlaunch
     if (!$tincanlaunch= $DB->get_record('tincanlaunch', array('id' => $cm->instance))) {
         throw new Exception("Can't find activity {$cm->instance}"); //TODO: localise this
     }
-	
+    
     if (!empty($tincanlaunch->tincanverbid)) {
-    	//Try to get a statement matching actor, verb and object specified in module settings
-    	$statementquery = tincanlaunch_get_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
+        //Try to get a statement matching actor, verb and object specified in module settings
+        $statementquery = tincanlaunch_get_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
 
-		//if the statement exists, return true else return false
-		if (current($statementquery["contents"]["statements"])){
-			$result = TRUE;
-		}else{
-			$result = FALSE;
-		}
+        //if the statement exists, return true else return false
+        if (current($statementquery["contents"]["statements"])){
+            $result = TRUE;
+        }else{
+            $result = FALSE;
+        }
     }
 
     return $result;
 }
 
+
+//The functions below should really be in locallib, however they are required for the completion check so need to be here. 
+//It looks like the standard Quiz module does that same thing, so I don't feel so bad. 
+
 function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb) {
 
-	$streamopt = array(
-		'ssl' => array(
-			'verify-peer' => false, 
-			), 
-		'http' => array(
-			'method' => 'GET', 
-			'ignore_errors' => false, 
-			'header' => array(
-				'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
-				'Content-Type: application/json', 
-				'Accept: application/json, */*; q=0.01',
-				'X-Experience-API-Version: '.$version
-			)
-		), 
-	);
+    $streamopt = array(
+        'ssl' => array(
+            'verify-peer' => false, 
+            ), 
+        'http' => array(
+            'method' => 'GET', 
+            'ignore_errors' => false, 
+            'header' => array(
+                'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
+                'Content-Type: application/json', 
+                'Accept: application/json, */*; q=0.01',
+                'X-Experience-API-Version: '.$version
+            )
+        ), 
+    );
 
-	$streamparams = array(
-		'activity' => trim($activityid),
-		'agent' => json_encode($agent),
-		'verb' => trim($verb)
-	);
+    $streamparams = array(
+        'activity' => trim($activityid),
+        'agent' => json_encode($agent),
+        'verb' => trim($verb)
+    );
 
-	
-	$context = stream_context_create($streamopt);
-	
-	$stream = fopen(trim($url) . 'statements'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
-	
-	//Handle possible error codes
-	$return_code = @explode(' ', $http_response_header[0]);
+    
+    $context = stream_context_create($streamopt);
+    
+    $stream = fopen(trim($url) . 'statements'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
+    
+    //Handle possible error codes
+    $return_code = @explode(' ', $http_response_header[0]);
     $return_code = (int)$return_code[1];
 
     switch($return_code){
@@ -448,49 +452,7 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
     );
 }
 
-function tincanlaunch_check_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb) {
-
-	$streamopt = array(
-		'ssl' => array(
-			'verify-peer' => false, 
-			), 
-		'http' => array(
-			'method' => 'GET', 
-			'ignore_errors' => false, 
-			'header' => array(
-				'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
-				'Content-Type: application/json', 
-				'Accept: application/json, */*; q=0.01',
-				'X-Experience-API-Version: '.$version
-			)
-		), 
-	);
-
-	$streamparams = array(
-		'activity' => trim($activityid),
-		'agent' => json_encode($agent),
-		'verb' => trim($verb)
-	);
-
-	
-	$context = stream_context_create($streamopt);
-	
-	$stream = fopen(trim($url) . 'statements'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
-	
-	//Handle possible error codes
-	$return_code = @explode(' ', $http_response_header[0]);
-    $return_code = (int)$return_code[1];
-
-    switch($return_code){
-        case 200:
-            return FALSE;
-        default: //error
-            return TRUE;
-    }
-}
-
 function tincanlaunch_getactor(){
-	//TODO: make order of priority for user id a config setting
     global $USER, $CFG; 
     if ($USER->email){
         return array(
@@ -501,24 +463,24 @@ function tincanlaunch_getactor(){
     }
     /* elseif ($USER->idnumber){ 
         return array(
-			"name" => fullname($USER),
-			"account" => array(
-				"homePage" => 'https://example.com', //TODO: make this a config setting
-				"name" => $USER->idnumber
-			),
-			"objectType" => "Agent"
-		);
+            "name" => fullname($USER),
+            "account" => array(
+                "homePage" => 'https://example.com', //TODO: make this a config setting
+                "name" => $USER->idnumber
+            ),
+            "objectType" => "Agent"
+        );
     } */
     else{
-		return array(
-			"name" => fullname($USER),
-			"account" => array(
-				"homePage" => $CFG->wwwroot,
-				"name" => $USER->username
-			),
-			"objectType" => "Agent"
-		);
-	}
+        return array(
+            "name" => fullname($USER),
+            "account" => array(
+                "homePage" => $CFG->wwwroot,
+                "name" => $USER->username
+            ),
+            "objectType" => "Agent"
+        );
+    }
 }
 
 
