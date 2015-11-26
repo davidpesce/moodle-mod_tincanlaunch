@@ -302,3 +302,5 @@ function tincanlaunch_get_moodle_langauge(){
         return $lang;
     }
 }
+
+

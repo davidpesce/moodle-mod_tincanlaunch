@@ -93,6 +93,29 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
         }
     }
 
+     //process uploaded file
+    if (!empty($tincanlaunch->packagefile)) {
+        // Reload TinCan instance.
+        $record = $DB->get_record('tincanlaunch', array('id' => $tincanlaunch->id));
+
+        $fs = get_file_storage();
+        $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'package');
+        file_save_draft_area_files($tincanlaunch->packagefile, $context->id, 'mod_tincanlaunch', 'package',
+            0, array('subdirs' => 0, 'maxfiles' => 1));
+        // Get filename of zip that was uploaded.
+        $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, '', false);
+        $file = reset($files);
+        $filename = $file->get_filename();
+        if ($filename !== false) {
+            $record->tincanlaunchurl = $filename;
+        }
+
+        // Save reference.
+        $DB->update_record('scorm', $record);
+    }
+
+    tincanlaunch_package_parse($tincanlaunch);
+
     return $tincanlaunch->id;
 }
 
@@ -108,7 +131,10 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
  * @return boolean Success/Fail
  */
 function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null) {
-    global $DB;
+    global $DB, $CFG;
+
+    $cmid = $tincanlaunch->coursemodule;
+    $context = context_module::instance($cmid);
 
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
@@ -147,6 +173,64 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
 
     if(!$DB->update_record('tincanlaunch', $tincanlaunch)){
         return false;
+    }
+
+    //process uploaded file
+    if (!empty($tincanlaunch->packagefile)) {
+        // Reload TinCan instance.
+        $record = $DB->get_record('tincanlaunch', array('id' => $tincanlaunch->id));
+
+        $fs = get_file_storage();
+        $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'package');
+        file_save_draft_area_files($tincanlaunch->packagefile, $context->id, 'mod_tincanlaunch', 'package',
+            0, array('subdirs' => 0, 'maxfiles' => 1));
+        // Get filename of zip that was uploaded.
+        $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, '', false);
+        $zipFile = reset($files);
+        $zipFilename = $zipFile->get_filename();
+
+        $packagefile = false;
+
+        if ($packagefile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, '/', $zipFilename)) {
+            if ($packagefile->is_external_file()) { // Get zip file so we can check it is correct.
+                $packagefile->import_external_file_contents();
+            }
+            $newhash = $packagefile->get_contenthash();
+        } else {
+            $newhash = null;
+        }
+
+        $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'content');
+
+        $packer = get_file_packer('application/zip');
+        $packagefile->extract_to_storage($packer, $context->id, 'mod_tincanlaunch', 'content', 0, '/');
+
+        $manifestFile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml');
+
+        $xmltext = $manifestFile->get_content();
+
+        $defaultorgid = 0;
+        $firstinorg = 0;
+
+        $pattern = '/&(?!\w{2,6};)/';
+        $replacement = '&amp;';
+        $xmltext = preg_replace($pattern, $replacement, $xmltext);
+
+        $objxml = new xml2Array();
+        $manifest = $objxml->parse($xmltext);
+
+        //Update activity id from XML file. 
+        $record->tincanactivityid = $manifest[0]["children"][0]["children"][0]["attrs"]["ID"];
+
+        foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
+            if ($property["name"] === "LAUNCH"){
+                $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/".$manifestFile->get_filearea()."/".$property["tagData"];
+            }
+        }
+
+        // Save reference.
+        $DB->update_record('tincanlaunch', $record);
+
     }
 
     return true;
@@ -245,7 +329,6 @@ function tincanlaunch_get_recent_mod_activity(&$activities, &$index, $timestart,
 
 /**
  * Prints single activity item prepared by {@see tincanlaunch_get_recent_mod_activity()}
-
  * @return void
  */
 function tincanlaunch_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
@@ -313,31 +396,6 @@ function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $f
     return null;
 }
 
-/**
- * Serves the files from the tincanlaunch file areas
- *
-  * @package mod_tincanlaunch
- * @category files
- *
- * @param stdClass $course the course object
- * @param stdClass $cm the course module object
- * @param stdClass $context the tincanlaunch's context
- * @param string $filearea the name of the file area
- * @param array $args extra arguments (itemid, path)
- * @param bool $forcedownload whether or not force download
- * @param array $options additional options affecting the file serving
- */
-function tincanlaunch_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
-    global $DB, $CFG;
-
-    if ($context->contextlevel != CONTEXT_MODULE) {
-        send_file_not_found();
-    }
-
-    require_login($course, true, $cm);
-
-    send_file_not_found();
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Navigation API                                                             //
@@ -393,6 +451,61 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     }
 
     return $result;
+}
+
+/**
+ * Serves scorm content, introduction images and packages. Implements needed access control ;-)
+ *
+ * @package  mod_tincanlaunch
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if file not found, does not return if found - just send the file
+ */
+function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    global $CFG, $DB;
+
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+
+    require_login($course, true, $cm);
+    $canmanageactivity = has_capability('moodle/course:manageactivities', $context);
+
+    if ($filearea === 'content') {
+        //$relativepath = implode('/', $args);
+       //$fullpath = "/$context->id/tincanlaunch/content/0/$relativepath";
+        $filename = array_pop($args);
+        $filepath = implode('/', $args);
+        $lifetime = null;
+    }
+    else if ($filearea === 'package') {
+        $relativepath = implode('/', $args);
+        $fullpath = "/$context->id/tincanlaunch/package/0/$relativepath";
+        $lifetime = 0; // No caching here.
+
+    } 
+    else {
+        return false;
+    }
+
+    $fs = get_file_storage();
+
+    if (!$file = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/'.$filepath.'/', $filename) or $file->is_directory()) {
+        if ($filearea === 'content') { // Return file not found straight away to improve performance.
+            send_header_404();
+            die;
+        }
+        return false;
+    }
+
+    // Finally send the file.
+    send_stored_file($file, $lifetime, 0, false, $options);
 }
 
 
@@ -510,4 +623,116 @@ function use_global_lrs_settings($tincanactivityid){
         return false;
     }
     return true;
+}
+
+/**
+ * Check that a Zip file contains a valid TinCan package
+ *
+ * @param $file stored_file a Zip file.
+ * @return array empty if no issue is found. Array of error message otherwise
+ */
+function tincanlaunch_validate_package($file) {
+    $packer = get_file_packer('application/zip');
+    $errors = array();
+    $filelist = $file->list_files($packer);
+    if (!is_array($filelist)) {
+        $errors['packagefile'] = get_string('badarchive', 'tincanlaunch');
+    } else {
+        $badmanifestpresent = false;
+        foreach ($filelist as $info) {
+            if ($info->pathname == 'tincan.xml') {
+                return array();
+            } else if (strpos($info->pathname, 'tincan.xml') !== false) {
+                // This package has tincan xml file inside a folder of the package.
+                $badmanifestpresent = true;
+            }
+            if (preg_match('/\.cst$/', $info->pathname)) {
+                return array();
+            }
+        }
+        if ($badmanifestpresent) {
+            $errors['packagefile'] = get_string('badimsmanifestlocation', 'tincanlaunch');
+        } else {
+            $errors['packagefile'] = get_string('nomanifest', 'tincanlaunch');
+        }
+    }
+    return $errors;
+}
+
+
+/* Usage
+ Grab some XML data, either from a file, URL, etc. however you want. Assume storage in $strYourXML;
+
+ $objXML = new xml2Array();
+ $arroutput = $objXML->parse($strYourXML);
+ print_r($arroutput); //print it out, or do whatever!
+
+*/
+class xml2Array {
+
+    public $arroutput = array();
+    public $resparser;
+    public $strxmldata;
+
+    /**
+     * Convert a utf-8 string to html entities
+     *
+     * @param string $str The UTF-8 string
+     * @return string
+     */
+    public function utf8_to_entities($str) {
+        global $CFG;
+
+        $entities = '';
+        $values = array();
+        $lookingfor = 1;
+
+        return $str;
+    }
+
+    /**
+     * Parse an XML text string and create an array tree that rapresent the XML structure
+     *
+     * @param string $strinputxml The XML string
+     * @return array
+     */
+    public function parse($strinputxml) {
+        $this->resparser = xml_parser_create ('UTF-8');
+        xml_set_object($this->resparser, $this);
+        xml_set_element_handler($this->resparser, "tagopen", "tagclosed");
+
+        xml_set_character_data_handler($this->resparser, "tagdata");
+
+        $this->strxmldata = xml_parse($this->resparser, $strinputxml );
+        if (!$this->strxmldata) {
+            die(sprintf("XML error: %s at line %d",
+            xml_error_string(xml_get_error_code($this->resparser)),
+            xml_get_current_line_number($this->resparser)));
+        }
+
+        xml_parser_free($this->resparser);
+
+        return $this->arroutput;
+    }
+
+    public function tagopen($parser, $name, $attrs) {
+        $tag = array("name" => $name, "attrs" => $attrs);
+        array_push($this->arroutput, $tag);
+    }
+
+    public function tagdata($parser, $tagdata) {
+        if (trim($tagdata)) {
+            if (isset($this->arroutput[count($this->arroutput) - 1]['tagData'])) {
+                $this->arroutput[count($this->arroutput) - 1]['tagData'] .= $this->utf8_to_entities($tagdata);
+            } else {
+                $this->arroutput[count($this->arroutput) - 1]['tagData'] = $this->utf8_to_entities($tagdata);
+            }
+        }
+    }
+
+    public function tagclosed($parser, $name) {
+        $this->arroutput[count($this->arroutput) - 2]['children'][] = $this->arroutput[count($this->arroutput) - 1];
+        array_pop($this->arroutput);
+    }
+
 }

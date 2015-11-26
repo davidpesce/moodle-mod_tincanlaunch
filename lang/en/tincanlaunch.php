@@ -69,12 +69,21 @@ $string['tincanlaunchurl_help'] = 'The base URL of the Tin Can activity you want
 $string['tincanactivityid'] = 'Activity ID';
 $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
 
+$string['tincanpackage'] = 'Zip package';
+$string['tincanpackage_help'] = 'If you have a packaged Tin Can course, you can upload it here. If you upload a package, the Launch URL and Activity ID fields above are ignored.';
+
 $string['lrsheading'] = 'LRS Settings';
 $string['lrsdefaults'] = 'LRS Default Settings';
 $string['lrssettingdescription'] = 'By default, this activity uses the global LRS settings found in Site administration > Plugins > Activity modules > Tin Can Launch Link. To change the settings for this specific activity, select Unlock Defaults.';
 $string['overridedefaults'] = 'Unlock Defaults';
 $string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
 //End Activity Settings
+
+//Zip errors
+$string['badmanifest'] = 'Some manifest errors: see errors log';
+$string['badimsmanifestlocation'] = 'A tincan.xml file was found but it was not in the root of your zip file, please re-package your course';
+$string['badarchive'] = 'You must provide a valid zip file';
+$string['nomanifest'] = 'Incorrect file package - missing tincan.xml';
 
 $string['tincanlaunch'] = 'Tin Can Launch Link';
 $string['pluginadministration'] = 'Tin Can Launch Link administration';

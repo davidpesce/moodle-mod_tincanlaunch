@@ -78,6 +78,15 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
         //End required Fields for Activity
 
+        // New local package upload.
+        $filemanageroptions = array();
+        $filemanageroptions['accepted_types'] = array('.zip');
+        $filemanageroptions['maxbytes'] = 0;
+        $filemanageroptions['maxfiles'] = 1;
+        $filemanageroptions['subdirs'] = 0;
+
+        $mform->addElement('filemanager', 'packagefile', get_string('tincanpackage', 'tincanlaunch'), null, $filemanageroptions);
+
         //Start advanced settings
         $mform->addElement('header', 'lrsheading', get_string('lrsheading', 'tincanlaunch'));
         $mform->setExpanded('lrsheading');
@@ -201,6 +210,10 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
             }
         }
 
+        $draftitemid = file_get_submitted_draft_itemid('packagefile');
+        file_prepare_draft_area($draftitemid, $this->context->id, 'mod_tincanlaunch', 'package', 0, array('subdirs' => 0, 'maxfiles' => 1));
+        $defaultvalues['packagefile'] = $draftitemid;
+
         // Set up the completion checkboxes which aren't part of standard data.
         // We also make the default value (if you turn on the checkbox) for those
         // numbers to be 1, this will not apply unless checkbox is ticked.
@@ -211,11 +224,30 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         }
     }
     //Validate the form elements after submitting (server-side)
-    function validation($data, $files){
+    public function validation($data, $files) {
+        global $CFG, $USER;
         $errors = parent::validation($data, $files);
+        if (empty($data['packagefile'])) {
+            //do nothing
+        } else {
+            $draftitemid = file_get_submitted_draft_itemid('packagefile');
 
-        //TODO: Validate IRI
+            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_tincanlaunch', 'packagefilecheck', null,
+                array('subdirs' => 0, 'maxfiles' => 1));
 
+            // Get file from users draft area.
+            $usercontext = context_user::instance($USER->id);
+            $fs = get_file_storage();
+            $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
+
+            if (count($files) < 1) {
+                $errors['packagefile'] = get_string('required');
+                return $errors;
+            }
+            $file = reset($files);
+            // Validate this TinCan package.
+            $errors = array_merge($errors, tincanlaunch_validate_package($file));
+        }
         return $errors;
     }
 }
