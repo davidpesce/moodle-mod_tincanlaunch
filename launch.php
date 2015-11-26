@@ -57,56 +57,56 @@ $event->trigger();
 //get the registration id
 $registrationid = $_GET["launchform_registration"];
 if (empty($registrationid)) {
-	echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty','tincanlaunch')."</div>";
-	//Failed to connect to LRS
-	if ($CFG->debug == 32767) {
-		echo "<p>Error attempting to get registration id querystring parameter.</p>";
-	}
-	die();
+    echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty','tincanlaunch')."</div>";
+    //Failed to connect to LRS
+    if ($CFG->debug == 32767) {
+        echo "<p>Error attempting to get registration id querystring parameter.</p>";
+    }
+    die();
 }
 
 //Save a record of this registration to the LRS state API
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
-$registrationdata = $getregistrationdatafromlrsstate["contents"];
-$registrationdataetag = tincanlaunch_extract_etag($getregistrationdatafromlrsstate["metadata"]["wrapper_data"]);
+$registrationdata = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+$registrationdataetag = $getregistrationdatafromlrsstate->content->getEtag();
 
 $errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
 
-$lrsrespond = tincanlaunch_get_lrsresponse($getregistrationdatafromlrsstate["metadata"]);
-if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
-	//Failed to connect to LRS
-	echo $errorhtml;
-	if ($CFG->debug == 32767) {
-		echo "<p>Error attempting to get registration data from State API.</p>";
-		echo "<pre>";
-		var_dump($getregistrationdatafromlrsstate);
-		echo "</pre>";
-	}
-	die();
+$lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
+if ($lrsrespond != 200 && $lrsrespond != 404) {
+    //Failed to connect to LRS
+    echo $errorhtml;
+    if ($CFG->debug == 32767) {
+        echo "<p>Error attempting to get registration data from State API.</p>";
+        echo "<pre>";
+        var_dump($getregistrationdatafromlrsstate);
+        echo "</pre>";
+    }
+    die();
 }
 
 $datenow = date("c");
 
 $registrationdataforthisattempt = array(
     $registrationid => array(
-	    "created" => $datenow,
-	    "lastlaunched" => $datenow
-	   )
+        "created" => $datenow,
+        "lastlaunched" => $datenow
+    )
 );
 
 if (is_null($registrationdata)){
-	//if the error is 404 create a new registration data array
-	if ($registrationdata["metadata"] = 404){
-		$registrationdata = $registrationdataforthisattempt;
-	}else { 
-		//TODO: Some other error - possibly network connection. Consider re-trying.
-	}
+    //if the error is 404 create a new registration data array
+    if ($registrationdata->httpResponse['status'] = 404){
+        $registrationdata = $registrationdataforthisattempt;
+    }else { 
+        //TODO: Some other error - possibly network connection. Consider re-trying.
+    }
 } elseif (array_key_exists($registrationid,$registrationdata)) { 
 //elseif the regsitration exists update the lastlaunched date
-	$registrationdata[$registrationid]["lastlaunched"] = $datenow;
+    $registrationdata[$registrationid]["lastlaunched"] = $datenow;
 } else { //else push the new data on the end
-	$registrationdata[$registrationid] = $registrationdataforthisattempt[$registrationid];
+    $registrationdata[$registrationid] = $registrationdataforthisattempt[$registrationid];
 }
 
 //sort the registration data by last launched (most recent first)
@@ -117,53 +117,53 @@ uasort($registrationdata, function($a, $b) {
 //TODO:currently this is re-PUTting all of the data - it may be better just to POST the new data. This will prevent us sorting, but sorting could be done on output. 
 $saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations",$registrationdataetag);
 
-$lrsrespond = tincanlaunch_get_lrsresponse($saveresgistrationdata["metadata"]);
-if ($lrsrespond[1] != 204) {
-	//Failed to connect to LRS
-	echo $errorhtml;
-	if ($CFG->debug == 32767) {
-		echo "<p>Error attempting to set registration data to State API.</p>";
-		echo "<pre>";
-		var_dump($saveresgistrationdata);
-		echo "</pre>";
-	}
-	die();
+$lrsrespond = $saveresgistrationdata->httpResponse['status'];
+if ($lrsrespond != 204) {
+    //Failed to connect to LRS
+    echo $errorhtml;
+    if ($CFG->debug == 32767) {
+        echo "<p>Error attempting to set registration data to State API.</p>";
+        echo "<pre>";
+        var_dump($saveresgistrationdata);
+        echo "</pre>";
+    }
+    die();
 }
 
 
 
 $langpreference = array(
-	"languagePreference" =>  tincanlaunch_get_moodle_langauge()
+    "languagePreference" =>  tincanlaunch_get_moodle_langauge()
 );
 
 $saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($langpreference,"CMI5LearnerPreferences");
 
-$lrsrespond = tincanlaunch_get_lrsresponse($saveagentprofile["metadata"]);
-if ($lrsrespond[1] != 204) {
-	//Failed to connect to LRS
-	echo $errorhtml;
-	if ($CFG->debug == 32767) {
-		echo "<p>Error attempting to set learner preferences to Agent Profile API.</p>";
-		echo "<pre>";
-		var_dump($saveagentprofile);
-		echo "</pre>";
-	}
-	die();
+$lrsrespond = $saveagentprofile->httpResponse['status'];
+if ($lrsrespond != 204) {
+    //Failed to connect to LRS
+    echo $errorhtml;
+    if ($CFG->debug == 32767) {
+        echo "<p>Error attempting to set learner preferences to Agent Profile API.</p>";
+        echo "<pre>";
+        var_dump($saveagentprofile);
+        echo "</pre>";
+    }
+    die();
 }
 
 $savelaunchedstatement = tincan_launched_statement($registrationid);
 
-$lrsrespond = tincanlaunch_get_lrsresponse($savelaunchedstatement ["metadata"]);
-if ($lrsrespond[1] != 204) {
-	//Failed to connect to LRS
-	echo $errorhtml;
-	if ($CFG->debug == 32767) {
-		echo "<p>Error attempting to send 'launched' statement.</p>";
-		echo "<pre>";
-		var_dump($savelaunchedstatement);
-		echo "</pre>";
-	}
-	die();
+$lrsrespond = $savelaunchedstatement->httpResponse['status'];
+if ($lrsrespond != 204) {
+    //Failed to connect to LRS
+    echo $errorhtml;
+    if ($CFG->debug == 32767) {
+        echo "<p>Error attempting to send 'launched' statement.</p>";
+        echo "<pre>";
+        var_dump($savelaunchedstatement);
+        echo "</pre>";
+    }
+    die();
 }
 
 //launch the experience

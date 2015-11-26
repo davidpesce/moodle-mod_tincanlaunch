@@ -30,7 +30,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+require_once("$CFG->dirroot/mod/tincanlaunch/TinCanPHP/autoload.php");
 
 /** example constant */
 //define('tincanlaunch_ULTIMATE_ANSWER', 42);
@@ -385,7 +385,7 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
         $statementquery = tincanlaunch_get_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
 
         //if the statement exists, return true else return false
-        if (current($statementquery["contents"]["statements"])){
+        if (!empty($statementquery->content) && $statementquery->success){
             $result = TRUE;
         }else{
             $result = FALSE;
@@ -401,61 +401,52 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
 
 function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb) {
 
-    $streamopt = array(
-        'ssl' => array(
-            'verify-peer' => false, 
-            ), 
-        'http' => array(
-            'method' => 'GET', 
-            'ignore_errors' => false, 
-            'header' => array(
-                'Authorization: Basic ' . base64_encode( $basicLogin . ':' . $basicPass), 
-                'Content-Type: application/json', 
-                'Accept: application/json, */*; q=0.01',
-                'X-Experience-API-Version: '.$version
-            )
-        ), 
+
+    $lrs = new \TinCan\RemoteLRS($url, $version, $basicLogin, $basicPass);
+
+    $statementsQuery = array(
+        "agent" => $agent,
+        "verb" => new \TinCan\Verb(array("id"=> trim($verb))),
+        "activity" => new \TinCan\Activity(array("id"=> trim($activityid))),
+        "related_activities" => "false",
+        //"limit" => 1, //Use this to test the "more" statements feature
+        "format"=>"ids"
     );
 
-    $streamparams = array(
-        'activity' => trim($activityid),
-        'agent' => json_encode($agent),
-        'verb' => trim($verb)
-    );
+    //Get all the statements from the LRS
+    $statementsResponse = $lrs->queryStatements($statementsQuery);
 
-    
-    $context = stream_context_create($streamopt);
-    
-    $stream = fopen(trim($url) . 'statements'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
-    
-    //Handle possible error codes
-    $return_code = @explode(' ', $http_response_header[0]);
-    $return_code = (int)$return_code[1];
 
-    switch($return_code){
-        case 200:
-            $ret = stream_get_contents($stream);
-            $meta = stream_get_meta_data($stream);
-            if ($ret) {
-                $ret = json_decode($ret, TRUE);
-            }
-            break;
-        default: //error
-            $ret = NULL;
-            $meta = $return_code;
-            break;
+    if($statementsResponse->success == false){
+        return $statementsResponse;
     }
-    
-    return array(
-        'contents'=> $ret, 
-        'metadata'=> $meta
+
+    $allTheStatements = $statementsResponse->content->getStatements();
+    $moreStatementsURL = $statementsResponse->content->getMore();
+    while (!is_null($moreStatementsURL)) {
+        $moreStmtsResponse = $lrs->moreStatements($moreStatementsURL);
+        if($moreStmtsResponse->success == false){
+            return $moreStmtsResponse;
+        }
+        $moreStatements = $moreStmtsResponse->content->getStatements();
+        $moreStatementsURL = $moreStmtsResponse->content->getMore();
+        //Note: due to the structure of the arrays, array_merge does not work as expected.
+        foreach ($moreStatements as $moreStatement) {
+            array_push($allTheStatements, $moreStatement);
+        }
+    }
+
+    return new \TinCan\LRSResponse (
+        $statementsResponse->success,
+        $allTheStatements,
+        $statementsResponse->httpResponse
     );
 }
 
 function tincanlaunch_getactor(){
     global $USER, $CFG; 
     if ($USER->email){
-        return array(
+        $agent = array(
             "name" => fullname($USER),
             "mbox" => "mailto:".$USER->email,
             "objectType" => "Agent"
@@ -472,7 +463,7 @@ function tincanlaunch_getactor(){
         );
     } */
     else{
-        return array(
+        $agent = array(
             "name" => fullname($USER),
             "account" => array(
                 "homePage" => $CFG->wwwroot,
@@ -481,6 +472,8 @@ function tincanlaunch_getactor(){
             "objectType" => "Agent"
         );
     }
+
+    return new \TinCan\Agent($agent);
 }
 
 

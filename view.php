@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 include 'locallib.php';
@@ -107,16 +106,14 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 <?php
 
 //generate a registration id for any new attempt
-$registrationid = tincanlaunch_gen_uuid();
+$tinCanPHPUtil = new \TinCan\Util();
+$registrationid = $tinCanPHPUtil->getUUID();
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
-$registrationdatafromlrs = $getregistrationdatafromlrsstate["contents"];
-$lrsrespond = $getregistrationdatafromlrsstate["metadata"];
+$registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+$lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
-if (is_array($lrsrespond)) {
-    $lrsrespond = explode(" ",$lrsrespond['wrapper_data'][0]);
-}
 
-if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
+if ($lrsrespond!= 200 && $lrsrespond != 404) {
     //On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
     echo "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
 
@@ -126,7 +123,8 @@ if ($lrsrespond[1] != 200 && $lrsrespond != 404) {
         var_dump($getregistrationdatafromlrsstate);
         echo "</pre>";
     }
-}elseif ($registrationdatafromlrs) {
+}
+elseif ($registrationdatafromlrs) {
     //TODO: make multiple attempts a configuration setting
     //echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
     foreach($registrationdatafromlrs as $key => $item){
