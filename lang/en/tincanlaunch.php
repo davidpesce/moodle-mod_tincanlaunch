@@ -92,8 +92,8 @@ $string['overridedefaults_help'] = 'Allows activity to have different LRS settin
 
 $string['behaviorheading'] = 'Module behavior';
 
-$string['tincanlaunchmultipleregs'] = 'Allow multiple registrations.';
-$string['tincanlaunchmultipleregs_help'] = 'If selected, allow the learner to select and return to an existing registration or launch a new one. If not selected, learners may only launch and return to one registration.';
+$string['tincanmultipleregs'] = 'Allow multiple registrations.';
+$string['tincanmultipleregs_help'] = 'If selected, allow the learner to start more than one registration for the activity. Learners can always return to any registrations they have started, even if this setting is unchecked.';
 
 //End Activity Settings
 
@@ -121,7 +121,7 @@ $string['tincanlaunchviewlaunchlink'] = 'launch';
 
 $string['tincanlaunch_completed'] = 'Experience complete!';
 $string['tincanlaunch_progress'] = 'Attempt in progress.';
-$string['tincanlaunch_attempt'] = 'New Attempt';
+$string['tincanlaunch_attempt'] = 'Start New Registration';
 $string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator. 
 
 If you are the system administrator, go to Site admin / Development / Debugging and set Debug messages to DEVELOPER. Set it back to NONE or MINIMAL once the error details have been recorded.';

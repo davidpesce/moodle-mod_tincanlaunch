@@ -127,10 +127,10 @@ if ($lrsrespond!= 200 && $lrsrespond != 404) {
 }
 
 $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-
 if ($registrationdatafromlrs) {
-    //TODO: make multiple attempts a configuration setting
-    //echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
+    if ($tincanlaunch->tincanmultipleregs){
+        echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
+    }
     foreach($registrationdatafromlrs as $key => $item){
         array_push($registrationdatafromlrs[$key], "<a onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>".get_string('tincanlaunchviewlaunchlink','tincanlaunch')."</a>");
         $registrationdatafromlrs[$key]['created'] = date_format(date_create($registrationdatafromlrs[$key]['created']), 'D, d M Y H:i:s');

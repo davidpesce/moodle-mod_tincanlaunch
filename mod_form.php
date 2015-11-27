@@ -153,6 +153,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
         $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
+        $mform->disabledIf('tincanlaunchlrsduration', 'overridedefaults');
         //End advanced settings
 
         //-------------------------------------------------------------------------------
@@ -160,9 +161,9 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addElement('header', 'behaviorheading', get_string('behaviorheading', 'tincanlaunch'));
 
         //Allow multiple ongoing registrations
-        $mform->addElement('advcheckbox', 'tincanlaunchmultipleregs', get_string('tincanlaunchmultipleregs', 'tincanlaunch'));
-        $mform->addHelpButton('tincanlaunchmultipleregs', 'tincanlaunchmultipleregs', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchmultipleregs', 1);
+        $mform->addElement('advcheckbox', 'tincanmultipleregs', get_string('tincanmultipleregs', 'tincanlaunch'));
+        $mform->addHelpButton('tincanmultipleregs', 'tincanmultipleregs', 'tincanlaunch');
+        $mform->setDefault('tincanmultipleregs', 1);
 
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules
