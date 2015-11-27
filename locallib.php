@@ -68,7 +68,7 @@ function tincan_launched_statement($registration_id){
     $statement = new \TinCan\statement(
         array( 
             'id' => $statementid,
-            'actor' => tincanlaunch_getactor(), 
+            'actor' => tincanlaunch_getactor($tincanlaunch->id), 
             'verb' => array(
                 'id' => 'http://adlnet.gov/expapi/verbs/launched',
                 'display' => array(
@@ -134,7 +134,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
     $rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
             "endpoint" => $url,
             "auth" => "Basic ".$basicauth,
-            "actor" => json_encode(tincanlaunch_getactor()),
+            "actor" => json_encode(tincanlaunch_getactor($tincanlaunch->id)),
             "registration" => $registrationuuid
         ), 
         '', 
@@ -157,8 +157,8 @@ function tincanlaunch_get_launch_url($registrationuuid) {
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */ 
 function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
-
-    $actor = tincanlaunch_getactor();
+    global $tincanlaunch;
+    $actor = tincanlaunch_getactor($tincanlaunch->id);
     $data = array(
         'scope' => array ('all'),
         'expiry' => $current_time->format(DATE_ATOM),
@@ -268,7 +268,7 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
 
     return $lrs->saveState(
         new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))), 
-        tincanlaunch_getactor(), 
+        tincanlaunch_getactor($tincanlaunch->id), 
         $key, 
         tincanlaunch_myJson_encode($data), 
         array(
@@ -300,7 +300,7 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
         $tincanlaunchsettings['tincanlaunchlrspass']
     );
 
-    $getResponse = $lrs->retrieveAgentProfile(tincanlaunch_getactor(), $key);
+    $getResponse = $lrs->retrieveAgentProfile(tincanlaunch_getactor($tincanlaunch->id), $key);
 
     $Opts = array(
         'contentType' => 'application/json'
@@ -311,7 +311,7 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
     }
 
     return $lrs->saveAgentProfile(
-        tincanlaunch_getactor(), 
+        tincanlaunch_getactor($tincanlaunch->id), 
         $key, 
         tincanlaunch_myJson_encode($data), 
         $Opts
@@ -339,7 +339,7 @@ function tincanlaunch_get_global_parameters_and_get_state($key){
 
     return $lrs->retrieveState(
         new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))), 
-        tincanlaunch_getactor(), 
+        tincanlaunch_getactor($tincanlaunch->id), 
         $key
     );
 }

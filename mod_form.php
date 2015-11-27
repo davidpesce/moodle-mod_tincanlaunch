@@ -144,7 +144,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Don't use email
         $mform->addElement('advcheckbox', 'tincanlaunchuseactoremail', get_string('tincanlaunchuseactoremail', 'tincanlaunch'));
         $mform->addHelpButton('tincanlaunchuseactoremail', 'tincanlaunchuseactoremail', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchuseactoremail', $cfg_tincanlaunch->tincanlaunchnoactoremail);
+        $mform->setDefault('tincanlaunchuseactoremail', $cfg_tincanlaunch->tincanlaunchuseactoremail);
         $mform->disabledIf('tincanlaunchuseactoremail', 'overridedefaults');
 
         //Duration

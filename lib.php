@@ -454,7 +454,15 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
 
     if (!empty($tincanlaunch->tincanverbid)) {
         //Try to get a statement matching actor, verb and object specified in module settings
-        $statementquery = tincanlaunch_get_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
+        $statementquery = tincanlaunch_get_statements(
+            $tincanlaunchsettings['tincanlaunchlrsendpoint'], 
+            $tincanlaunchsettings['tincanlaunchlrslogin'], 
+            $tincanlaunchsettings['tincanlaunchlrspass'], 
+            $tincanlaunchsettings['tincanlaunchlrsversion'], 
+            $tincanlaunch->tincanactivityid, 
+            tincanlaunch_getactor($cm->instance), 
+            $tincanlaunch->tincanverbid
+            );
 
         //if the statement exists, return true else return false
         if (!empty($statementquery->content) && $statementquery->success){
@@ -646,31 +654,36 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
  * @category tincan
  * @return TinCan Agent $agent Agent 
  */
-function tincanlaunch_getactor(){
-
+function tincanlaunch_getactor($instance){
     global $USER, $CFG; 
-    // Change the order of ifs and elses if you want to change the priority. 
-    // By default this uses email if available, then Moodle's id. 
-    //TODO: make this a config setting
-    if ($USER->email){
+
+    $settings = tincanlaunch_settings($instance);
+
+    /*echo "<pre>";
+    var_dump($USER->email);
+    echo "</pre>";
+    echo "<pre>";
+    var_dump($settings['tincanlaunchuseactoremail']);
+    echo "</pre>";
+    die();*/
+
+    if ($USER->idnumber && $settings['tincanlaunchcustomacchp']){ 
+        return array(
+            "name" => fullname($USER),
+            "account" => array(
+                "homePage" => $settings['tincanlaunchcustomacchp'], 
+                "name" => $USER->idnumber
+            ),
+            "objectType" => "Agent"
+        );
+    }
+    elseif ($USER->email && $settings['tincanlaunchuseactoremail']){
         $agent = array(
             "name" => fullname($USER),
             "mbox" => "mailto:".$USER->email,
             "objectType" => "Agent"
         );
     }
-    // Uncomment and edit the homePage code below to build agents based on an id from another system 
-    //TODO: make this a config setting
-    /* elseif ($USER->idnumber){ 
-        return array(
-            "name" => fullname($USER),
-            "account" => array(
-                "homePage" => 'https://example.com', 
-                "name" => $USER->idnumber
-            ),
-            "objectType" => "Agent"
-        );
-    } */
     else{
         $agent = array(
             "name" => fullname($USER),
@@ -686,7 +699,7 @@ function tincanlaunch_getactor(){
 }
 
 /**
- * Returns the *LRS settings* relating to a Tin Can Launch module instance
+ * Returns the LRS settings relating to a Tin Can Launch module instance
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -705,8 +718,8 @@ function tincanlaunch_settings($instance){
         $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
         $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
-        $expresult['tincanlaunchcustomacchp'] = $activitysettings->tincanlaunchcustomacchp;
-        $expresult['tincanlaunchnoactoremail'] = $activitysettings->tincanlaunchnoactoremail;
+        $expresult['tincanlaunchcustomacchp'] = $activitysettings->customacchp;
+        $expresult['tincanlaunchuseactoremail'] = $activitysettings->useactoremail;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
     }else{//use global lrs settings
         $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
