@@ -80,6 +80,8 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
     $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
     $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
     $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
+    $tincanlaunch_lrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
+    $tincanlaunch_lrs->useactoremail = $tincanlaunch->tincanlaunchuseactoremail;
     $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
 
     //need the id of the newly created instance to return (and use if override defaults checkbox is checked)
@@ -127,7 +129,10 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
     $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
     $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
+    $tincanlaunch_lrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
+    $tincanlaunch_lrs->useactoremail = $tincanlaunch->tincanlaunchuseactoremail;
     $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
+
 
     //determine if override defaults checkbox is checked
     if($tincanlaunch->overridedefaults=='1'){
@@ -140,6 +145,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
             }
         }else{//if it does exist, update it
             $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
+            //var_dump($tincanlaunch_lrs); die();
             if(!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
                 return false;
             }
@@ -300,7 +306,10 @@ function tincanlaunch_get_extra_capabilities() {
  * @return array of [(string)filearea] => (string)description
  */
 function tincanlaunch_get_file_areas($course, $cm, $context) {
-    return array();
+    $areas = array();
+    $areas['content'] = get_string('areacontent', 'scorm');
+    $areas['package'] = get_string('areapackage', 'scorm');
+    return $areas;
 }
 
 /**
@@ -321,7 +330,84 @@ function tincanlaunch_get_file_areas($course, $cm, $context) {
  * @return file_info instance or null if not found
  */
 function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
-    return null;
+    global $CFG;
+
+    if (!has_capability('moodle/course:managefiles', $context)) {
+        return null;
+    }
+
+    $fs = get_file_storage();
+
+    if ($filearea === 'package') {
+        $filepath = is_null($filepath) ? '/' : $filepath;
+        $filename = is_null($filename) ? '.' : $filename;
+
+        $urlbase = $CFG->wwwroot.'/pluginfile.php';
+        if (!$storedfile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, $filepath, $filename)) {
+            if ($filepath === '/' and $filename === '.') {
+                $storedfile = new virtual_root_file($context->id, 'mod_tincanlaunch', 'package', 0);
+            } else {
+                // Not found.
+                return null;
+            }
+        }
+        return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true, false, false);
+    }
+
+    return false;
+}
+
+/**
+ * Serves Tin Can content, introduction images and packages. Implements needed access control ;-)
+ *
+ * @package  mod_tincanlaunch
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if file not found, does not return if found - just send the file
+ */
+function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    global $CFG, $DB;
+
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+
+    require_login($course, true, $cm);
+    $canmanageactivity = has_capability('moodle/course:manageactivities', $context);
+
+    if ($filearea === 'content') {
+        $filename = array_pop($args);
+        $filepath = implode('/', $args);
+        $lifetime = null;
+    }
+    else if ($filearea === 'package') {
+        $relativepath = implode('/', $args);
+        $fullpath = "/$context->id/tincanlaunch/package/0/$relativepath";
+        $lifetime = 0; // No caching here.
+
+    } 
+    else {
+        return false;
+    }
+
+    $fs = get_file_storage();
+
+    if (!$file = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/'.$filepath.'/', $filename) or $file->is_directory()) {
+        if ($filearea === 'content') { // Return file not found straight away to improve performance.
+            send_header_404();
+            die;
+        }
+        return false;
+    }
+
+    // Finally send the file.
+    send_stored_file($file, $lifetime, 0, false, $options);
 }
 
 
@@ -381,59 +467,6 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     return $result;
 }
 
-/**
- * Serves Tin Can content, introduction images and packages. Implements needed access control ;-)
- *
- * @package  mod_tincanlaunch
- * @category files
- * @param stdClass $course course object
- * @param stdClass $cm course module object
- * @param stdClass $context context object
- * @param string $filearea file area
- * @param array $args extra arguments
- * @param bool $forcedownload whether or not force download
- * @param array $options additional options affecting the file serving
- * @return bool false if file not found, does not return if found - just send the file
- */
-function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    global $CFG, $DB;
-
-    if ($context->contextlevel != CONTEXT_MODULE) {
-        return false;
-    }
-
-    require_login($course, true, $cm);
-    $canmanageactivity = has_capability('moodle/course:manageactivities', $context);
-
-    if ($filearea === 'content') {
-        $filename = array_pop($args);
-        $filepath = implode('/', $args);
-        $lifetime = null;
-    }
-    else if ($filearea === 'package') {
-        $relativepath = implode('/', $args);
-        $fullpath = "/$context->id/tincanlaunch/package/0/$relativepath";
-        $lifetime = 0; // No caching here.
-
-    } 
-    else {
-        return false;
-    }
-
-    $fs = get_file_storage();
-
-    if (!$file = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/'.$filepath.'/', $filename) or $file->is_directory()) {
-        if ($filearea === 'content') { // Return file not found straight away to improve performance.
-            send_header_404();
-            die;
-        }
-        return false;
-    }
-
-    // Finally send the file.
-    send_stored_file($file, $lifetime, 0, false, $options);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // TinCanLaunch specific functions                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -475,14 +508,7 @@ function tincanlaunch_process_new_package($tincanlaunch) {
 
     $packagefile = false;
 
-    if ($packagefile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, '/', $zipFilename)) {
-        if ($packagefile->is_external_file()) { // Get zip file so we can check it is correct.
-            $packagefile->import_external_file_contents();
-        }
-        $newhash = $packagefile->get_contenthash();
-    } else {
-        $newhash = null;
-    }
+    $packagefile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, '/', $zipFilename);
 
     $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'content');
 
@@ -679,6 +705,8 @@ function tincanlaunch_settings($instance){
         $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
         $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
+        $expresult['tincanlaunchcustomacchp'] = $activitysettings->tincanlaunchcustomacchp;
+        $expresult['tincanlaunchnoactoremail'] = $activitysettings->tincanlaunchnoactoremail;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
     }else{//use global lrs settings
         $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));

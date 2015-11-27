@@ -105,7 +105,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Add LRS endpoint
         $mform->addElement('text', 'tincanlaunchlrsendpoint', get_string('tincanlaunchlrsendpoint', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrsendpoint', PARAM_TEXT);
-/*        $mform->addRule('tincanlaunchlrsendpoint', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrsendpoint', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrsendpoint', 'tincanlaunchlrsendpoint', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrsendpoint', $cfg_tincanlaunch->tincanlaunchlrsendpoint);
@@ -114,7 +113,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Add LRS Authentication
         $authoptions = array(0=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 1=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'));
         $mform->addElement('select', 'tincanlaunchlrsauthentication', get_string('tincanlaunchlrsauthentication','tincanlaunch'), $authoptions);
-/*        $mform->addRule('tincanlaunchlrsauthentication', null, 'required', null, 'client');*/
         $mform->disabledIf('tincanlaunchlrsauthentication', 'overridedefaults');
         $mform->addHelpButton('tincanlaunchlrsauthentication', 'tincanlaunchlrsauthentication', 'tincanlaunch');
         $mform->getElement('tincanlaunchlrsauthentication')->setSelected($cfg_tincanlaunch->tincanlaunchlrsauthentication);
@@ -122,7 +120,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Add basic authorisation login.
         $mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrslogin', PARAM_TEXT);
-/*        $mform->addRule('tincanlaunchlrslogin', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrslogin', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrslogin', 'tincanlaunchlrslogin', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrslogin', $cfg_tincanlaunch->tincanlaunchlrslogin);
@@ -131,20 +128,41 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Add basic authorisation pass.
         $mform->addElement('text', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrspass', PARAM_TEXT);
-/*        $mform->addRule('tincanlaunchlrspass', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrspass', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrspass', 'tincanlaunchlrspass', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrspass', $cfg_tincanlaunch->tincanlaunchlrspass);
         $mform->disabledIf('tincanlaunchlrspass', 'overridedefaults');
 
+        //Actor account homePage
+        $mform->addElement('text', 'tincanlaunchcustomacchp', get_string('tincanlaunchcustomacchp', 'tincanlaunch'), array('size'=>'64'));
+        $mform->setType('tincanlaunchcustomacchp', PARAM_TEXT);
+        $mform->addRule('tincanlaunchcustomacchp', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanlaunchcustomacchp', 'tincanlaunchcustomacchp', 'tincanlaunch');
+        $mform->setDefault('tincanlaunchcustomacchp', $cfg_tincanlaunch->tincanlaunchcustomacchp);
+        $mform->disabledIf('tincanlaunchcustomacchp', 'overridedefaults');
+
+        //Don't use email
+        $mform->addElement('advcheckbox', 'tincanlaunchuseactoremail', get_string('tincanlaunchuseactoremail', 'tincanlaunch'));
+        $mform->addHelpButton('tincanlaunchuseactoremail', 'tincanlaunchuseactoremail', 'tincanlaunch');
+        $mform->setDefault('tincanlaunchuseactoremail', $cfg_tincanlaunch->tincanlaunchnoactoremail);
+        $mform->disabledIf('tincanlaunchuseactoremail', 'overridedefaults');
+
         //Duration
         $mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrsduration', PARAM_TEXT);
-/*        $mform->addRule('tincanlaunchlrsduration', null, 'required', null, 'client');*/
         $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
         $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
         //End advanced settings
+
+        //-------------------------------------------------------------------------------
+        //Behavior settings
+        $mform->addElement('header', 'behaviorheading', get_string('behaviorheading', 'tincanlaunch'));
+
+        //Allow multiple ongoing registrations
+        $mform->addElement('advcheckbox', 'tincanlaunchmultipleregs', get_string('tincanlaunchmultipleregs', 'tincanlaunch'));
+        $mform->addHelpButton('tincanlaunchmultipleregs', 'tincanlaunchmultipleregs', 'tincanlaunch');
+        $mform->setDefault('tincanlaunchmultipleregs', 1);
 
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules
@@ -211,6 +229,8 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
                 $default_values['tincanlaunchlrsauthentication'] = $tincanlaunch_lrs->lrsauthentication;
                 $default_values['tincanlaunchlrslogin'] = $tincanlaunch_lrs->lrslogin;
                 $default_values['tincanlaunchlrspass'] = $tincanlaunch_lrs->lrspass;
+                $default_values['tincanlaunchcustomacchp'] = $tincanlaunch_lrs->customacchp;
+                $default_values['tincanlaunchuseactoremail'] = $tincanlaunch_lrs->useactoremail;
                 $default_values['tincanlaunchlrsduration'] = $tincanlaunch_lrs->lrsduration;
             }
         }

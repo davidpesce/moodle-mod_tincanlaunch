@@ -43,40 +43,57 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
-    // And upgrade begins here. For each one, you'll need one
-    // block of code similar to the next one. Please, delete
-    // this comment lines once this file start handling proper
-    // upgrade code.
-
-    if ($oldversion < 2013083100) { //New version in version.php
-    	// Define field tincanactivityid to be added to newmodule
+    if ($oldversion < 2015112702) { //New version in version.php
+        // Define field tincanactivityid to be added to tincanlaunch
         $table = new xmldb_table('tincanlaunch');
-        $field = new xmldb_field('tincanactivityid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
-		
+        $field = new xmldb_field('multipleregs', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'tincanverbid');
+        
         // Add field tincanactivityid
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
+        $table = new xmldb_table('tincanlaunch_lrs');
+        $field = new xmldb_field('useactoremail', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+        
+        // Add field tincanactivityid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-        // Once we reach this point, we can store the new version and consider the module
-        // upgraded to the version 2013083101 so the next time this block is skipped
+        $table->add_field('customacchp', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        
+        // Add field tincanactivityid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
         upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
     }
-	
-	if ($oldversion < 2013111600) { //New version in version.php
-    	// Define field tincanactivityid to be added to newmodule
+
+    if ($oldversion < 2013083100) { //New version in version.php
+        // Define field tincanactivityid to be added to tincanlaunch
         $table = new xmldb_table('tincanlaunch');
-        $field = new xmldb_field('tincanverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
-		
+        $field = new xmldb_field('tincanactivityid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
+        
         // Add field tincanactivityid
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
+        upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
+    }
+    
+    if ($oldversion < 2013111600) { //New version in version.php
+        // Define field tincanverbid to be added to tincanlaunch
+        $table = new xmldb_table('tincanlaunch');
+        $field = new xmldb_field('tincanverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
+        
+        // Add field tincanactivityid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-        // Once we reach this point, we can store the new version and consider the module
-        // upgraded to the version 2013083101 so the next time this block is skipped
         upgrade_mod_savepoint(true, 2013111600, 'tincanlaunch');
     }
 

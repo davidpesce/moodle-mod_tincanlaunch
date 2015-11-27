@@ -57,6 +57,13 @@ $string['tincanlaunchlrsauthentication'] = 'Authentication settings';
 $string['tincanlaunchlrsauthentication_help'] = 'Use "Simple basic authentication" unless another setting is explicitly supported by your LRS.';
 $string['tincanlaunchlrsauthentication_option_0'] = 'LRS integrated basic authentication';
 $string['tincanlaunchlrsauthentication_option_1'] = 'Simple basic authentication';
+
+$string['tincanlaunchuseactoremail'] = 'Identify by email';
+$string['tincanlaunchuseactoremail_help'] = 'If selected, learners will be identified by their email address if they have one recorded in Moodle.';
+
+$string['tincanlaunchcustomacchp'] = 'Custom account homePage';
+$string['tincanlaunchcustomacchp_help'] = 'If entered, Moodle will use this homePage in conjunction with the ID number user profile field to identify the learner. If the ID number is not entered for a learner, they will instead be identified by email or Moodle ID number.';
+$string['tincanlaunchcustomacchp_default'] = '';
 //End Default LRS Admin Settings
 
 //Start Activity Settings
@@ -75,11 +82,17 @@ $string['tincanpackage_help'] = 'If you have a packaged Tin Can course, you can 
 $string['tincanpackagetitle'] = 'Launch settings';
 $string['tincanpackagetext'] = 'You can populate the Launch URL and Activity ID settings directly, or by uploading a zip package containing a tincan.xml file. The launch url defined in the tincan.xml may point to other files in the zip package, or to an external URL. The Activity ID must always be a full URL (or other IRI).';
 
-$string['lrsheading'] = 'LRS Settings';
+$string['lrsheading'] = 'LRS settings';
 $string['lrsdefaults'] = 'LRS Default Settings';
 $string['lrssettingdescription'] = 'By default, this activity uses the global LRS settings found in Site administration > Plugins > Activity modules > Tin Can Launch Link. To change the settings for this specific activity, select Unlock Defaults.';
 $string['overridedefaults'] = 'Unlock Defaults';
 $string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
+
+$string['behaviorheading'] = 'Module behavior';
+
+$string['tincanlaunchmultipleregs'] = 'Allow multiple registrations.';
+$string['tincanlaunchmultipleregs_help'] = 'If selected, allow the learner to select and return to an existing registration or launch a new one. If not selected, learners may only launch and return to one registration.';
+
 //End Activity Settings
 
 //Zip errors
