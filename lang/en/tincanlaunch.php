@@ -70,7 +70,10 @@ $string['tincanactivityid'] = 'Activity ID';
 $string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
 
 $string['tincanpackage'] = 'Zip package';
-$string['tincanpackage_help'] = 'If you have a packaged Tin Can course, you can upload it here. If you upload a package, the Launch URL and Activity ID fields above are ignored.';
+$string['tincanpackage_help'] = 'If you have a packaged Tin Can course, you can upload it here. If you upload a package, the Launch URL and Activity ID fields above will be automatically populated when you save using data from the tincan.xml file contained in the zip. You can edit these settings at any time, but should not change the Activity ID (either directly or by file upload) unless you understand the consequences.';
+
+$string['tincanpackagetitle'] = 'Launch settings';
+$string['tincanpackagetext'] = 'You can populate the Launch URL and Activity ID settings directly, or by uploading a zip package containing a tincan.xml file. The launch url defined in the tincan.xml may point to other files in the zip package, or to an external URL. The Activity ID must always be a full URL (or other IRI).';
 
 $string['lrsheading'] = 'LRS Settings';
 $string['lrsdefaults'] = 'LRS Default Settings';
@@ -104,7 +107,9 @@ $string['tincanlaunchviewlaunchlink'] = 'launch';
 $string['tincanlaunch_completed'] = 'Experience complete!';
 $string['tincanlaunch_progress'] = 'Attempt in progress.';
 $string['tincanlaunch_attempt'] = 'New Attempt';
-$string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator.';
+$string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator. 
+
+If you are the system administrator, go to Site admin / Development / Debugging and set Debug messages to DEVELOPER. Set it back to NONE or MINIMAL once the error details have been recorded.';
 $string['tincanlaunch_regidempty'] = 'Registration id not found. Please close this window.';
 
 $string['idmissing'] = 'You must specify a course_module ID or an instance ID';

@@ -40,8 +40,8 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
      */
     public function definition() {
 
-    	global $CFG;
-    	$cfg_tincanlaunch = get_config('tincanlaunch');
+        global $CFG;
+        $cfg_tincanlaunch = get_config('tincanlaunch');
 
         $mform = $this->_form;
 
@@ -63,22 +63,27 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         // Adding the standard "intro" and "introformat" fields
         $this->standard_intro_elements();
 
+        $mform->addElement('header', 'packageheading', get_string('tincanpackagetitle', 'tincanlaunch'));
+        $mform->addElement('static', 'packagesettingsdescription', get_string('tincanpackagetitle', 'tincanlaunch'), get_string('tincanpackagetext', 'tincanlaunch'));
         //-------------------------------------------------------------------------------
         //Start required Fields for Activity
-		$mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), array('size'=>'64'));
-		$mform->setType('tincanlaunchurl', PARAM_TEXT);
-		$mform->addRule('tincanlaunchurl', null, 'required', null, 'client');
+        $mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), array('size'=>'64'));
+        $mform->setType('tincanlaunchurl', PARAM_TEXT);
+        $mform->addRule('tincanlaunchurl', null, 'required', null, 'client');
         $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
-		
-		$mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
-		$mform->setType('tincanactivityid', PARAM_TEXT);
-		$mform->addRule('tincanactivityid', null, 'required', null, 'client');
+        $mform->setDefault('tincanlaunchurl', 'https://example.com/example-activity/index.html');
+        
+        $mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
+        $mform->setType('tincanactivityid', PARAM_TEXT);
+        $mform->addRule('tincanactivityid', null, 'required', null, 'client');
         $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
+        $mform->setDefault('tincanactivityid', 'https://example.com/example-activity');
         //End required Fields for Activity
 
         // New local package upload.
+
         $filemanageroptions = array();
         $filemanageroptions['accepted_types'] = array('.zip');
         $filemanageroptions['maxbytes'] = 0;
@@ -86,10 +91,10 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $filemanageroptions['subdirs'] = 0;
 
         $mform->addElement('filemanager', 'packagefile', get_string('tincanpackage', 'tincanlaunch'), null, $filemanageroptions);
+        $mform->addHelpButton('packagefile', 'tincanpackage', 'tincanlaunch');
 
         //Start advanced settings
         $mform->addElement('header', 'lrsheading', get_string('lrsheading', 'tincanlaunch'));
-        $mform->setExpanded('lrsheading');
 
         $mform->addElement('static', 'description', get_string('lrsdefaults', 'tincanlaunch'), get_string('lrssettingdescription', 'tincanlaunch'));
 
@@ -114,7 +119,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('tincanlaunchlrsauthentication', 'tincanlaunchlrsauthentication', 'tincanlaunch');
         $mform->getElement('tincanlaunchlrsauthentication')->setSelected($cfg_tincanlaunch->tincanlaunchlrsauthentication);
 
-        //Add basic authorisation login. TODO: OAuth
+        //Add basic authorisation login.
         $mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrslogin', PARAM_TEXT);
 /*        $mform->addRule('tincanlaunchlrslogin', null, 'required', null, 'client');*/
@@ -123,7 +128,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->setDefault('tincanlaunchlrslogin', $cfg_tincanlaunch->tincanlaunchlrslogin);
         $mform->disabledIf('tincanlaunchlrslogin', 'overridedefaults');
 
-        //Add basic authorisation pass. TODO: OAuth
+        //Add basic authorisation pass.
         $mform->addElement('text', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrspass', PARAM_TEXT);
 /*        $mform->addRule('tincanlaunchlrspass', null, 'required', null, 'client');*/
@@ -149,50 +154,50 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-	function add_completion_rules() {
-	    $mform =& $this->_form;
-	
-	    $group=array();
-	    $group[] =& $mform->createElement('checkbox', 'completionverbenabled', ' ', get_string('completionverb','tincanlaunch'));
-	    $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size'=>'64'));
-	    $mform->setType('tincanverbid', PARAM_TEXT);
-		
-	    $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
-		$mform->addGroupRule('completionverbgroup', array(
-			'tincanverbid' => array( 
-				array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
-				)
-			)
-		);
-		
-	    $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
-	    $mform->disabledIf('tincanverbid','completionverbenabled','notchecked');
-		$mform->setDefault('tincanverbid','http://adlnet.gov/expapi/verbs/completed'); 
-		
-	
-	    return array('completionverbgroup');
-	}
-	
-	function completion_rule_enabled($data) {
-	    return (!empty($data['completionverbenabled']) && !empty($data['tincanverbid']));
-	}
-	
-	function get_data() {
-	    $data = parent::get_data();
-	    if (!$data) {
-	        return $data;
-	    }
-	    if (!empty($data->completionunlocked)) {
-	        // Turn off completion settings if the checkboxes aren't ticked
-	        $autocompletion = !empty($data->completion) && $data->completion==COMPLETION_TRACKING_AUTOMATIC;
-	        if (empty($data->completionverbenabled) || !$autocompletion) {
-	           $data->tincanverbid = '';
-	        }
-	    }
-	    return $data;
-	}
-	
-	function data_preprocessing(&$default_values) {
+    function add_completion_rules() {
+        $mform =& $this->_form;
+    
+        $group=array();
+        $group[] =& $mform->createElement('checkbox', 'completionverbenabled', ' ', get_string('completionverb','tincanlaunch'));
+        $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size'=>'64'));
+        $mform->setType('tincanverbid', PARAM_TEXT);
+        
+        $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
+        $mform->addGroupRule('completionverbgroup', array(
+            'tincanverbid' => array( 
+                array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
+                )
+            )
+        );
+        
+        $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
+        $mform->disabledIf('tincanverbid','completionverbenabled','notchecked');
+        $mform->setDefault('tincanverbid','http://adlnet.gov/expapi/verbs/completed'); 
+        
+    
+        return array('completionverbgroup');
+    }
+    
+    function completion_rule_enabled($data) {
+        return (!empty($data['completionverbenabled']) && !empty($data['tincanverbid']));
+    }
+    
+    function get_data() {
+        $data = parent::get_data();
+        if (!$data) {
+            return $data;
+        }
+        if (!empty($data->completionunlocked)) {
+            // Turn off completion settings if the checkboxes aren't ticked
+            $autocompletion = !empty($data->completion) && $data->completion==COMPLETION_TRACKING_AUTOMATIC;
+            if (empty($data->completionverbenabled) || !$autocompletion) {
+               $data->tincanverbid = '';
+            }
+        }
+        return $data;
+    }
+    
+    function data_preprocessing(&$default_values) {
         parent::data_preprocessing($default_values);
 
         global $DB;
@@ -241,7 +246,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
             $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
 
             if (count($files) < 1) {
-                $errors['packagefile'] = get_string('required');
                 return $errors;
             }
             $file = reset($files);

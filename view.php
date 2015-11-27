@@ -109,7 +109,7 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 $tinCanPHPUtil = new \TinCan\Util();
 $registrationid = $tinCanPHPUtil->getUUID();
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
-$registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+;
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
 
@@ -123,8 +123,12 @@ if ($lrsrespond!= 200 && $lrsrespond != 404) {
         var_dump($getregistrationdatafromlrsstate);
         echo "</pre>";
     }
+    die();
 }
-elseif ($registrationdatafromlrs) {
+
+$registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+
+if ($registrationdatafromlrs) {
     //TODO: make multiple attempts a configuration setting
     //echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
     foreach($registrationdatafromlrs as $key => $item){

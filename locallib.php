@@ -29,6 +29,15 @@
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
 
+/**
+ * Send a statement that the activity was launched. 
+ * This is useful for debugging - if the 'launched' statement is present in the LRS, you know the activity was at least launched. 
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string/UUID $registration_id The Tin Can Registration UUID associated with the launch. 
+ * @return TinCan LRS Response
+ */
 function tincan_launched_statement($registration_id){
     global $tincanlaunch, $course, $CFG;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
@@ -91,14 +100,14 @@ function tincan_launched_statement($registration_id){
     return $response;
 }
 
-
-/*
- * tincanlaunch_get_launch_url
+/**
+ * Builds a Tin Can launch link for the current module and a given registration
  *
- * Returns a launch link based on various data from Moodle
- *
- */
- 
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string/UUID $registration_id The Tin Can Registration UUID associated with the launch. 
+ * @return string launch link including querystring. 
+ */ 
 function tincanlaunch_get_launch_url($registrationuuid) {
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
@@ -135,12 +144,18 @@ function tincanlaunch_get_launch_url($registrationuuid) {
     return $rtnString;
 }
 
-/*
- * tincanlaunch_get_creds
- *
+/**
  * Used with LRS integrated basic authentication to fetch credentials from the LRS. 
+ * This process is not part of the xAPI specification or the Tin Can launch spec. 
+ * It is not supported by all Learning Record Stores. 
  *
- */
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $basicLogin login/key for the LRS
+ * @param string $basicPass pass/secret for the LRS
+ * @param string $url LRS endpoint URL
+ * @return array the response of the LRS (Note: not a TinCan LRS Response object)
+ */ 
 function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
 
     $actor = tincanlaunch_getactor();
@@ -219,10 +234,28 @@ function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
     );
 }
 
-function tincanlaunch_myJson_encode($str){
-    return str_replace('\\/', '/',json_encode($str));
+/**
+ * By default, PHP escapes slashes when encoding into JSON. This cause problems for Tin Can, so this fucntion unescapes the slashes after encoding.
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param object or array $obj object or array encode to JSON
+ * @return string/JSON JSON encoded object or array
+ */ 
+function tincanlaunch_myJson_encode($obj){
+    return str_replace('\\/', '/',json_encode($obj));
 }
 
+/**
+ * Save data to the state. Note: registration is not used as this is a general bucket of data against the activity/learner. 
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $data data to store as document
+ * @param string $key id to store the document against
+ * @param string $etag etag associated with the document last time it was fetched (may be Null if document is new)
+ * @return TinCan LRS Response
+ */ 
 function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
@@ -245,6 +278,17 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
     );
 }
 
+/**
+ * Save data to the agent profile. 
+ * Note: registration is not used as this is a general bucket of data against the activity/learner. 
+ * Note: fetches a new etag before storing. Will ALWAYS overwrite existing contents of the document. 
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $data data to store as document
+ * @param string $key id to store the document against
+ * @return TinCan LRS Response
+ */ 
 function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
@@ -274,6 +318,14 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
     );
 }
 
+/**
+ * Get data from the state. Note: registration is not used as this is a general bucket of data against the activity/learner. 
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $key id to store the document against
+ * @return TinCan LRS Response containing the response code and data or error message
+ */ 
 function tincanlaunch_get_global_parameters_and_get_state($key){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);

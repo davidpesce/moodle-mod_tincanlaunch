@@ -30,10 +30,12 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+//TinCanPHP - required for interacting with the LRS in tincanlaunch_get_statements
 require_once("$CFG->dirroot/mod/tincanlaunch/TinCanPHP/autoload.php");
 
-/** example constant */
-//define('tincanlaunch_ULTIMATE_ANSWER', 42);
+//SCORM library from the SCORM module. Required for its xml2Array class by tincanlaunch_process_new_package
+require_once("$CFG->dirroot/mod/scorm/datamodels/scormlib.php");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Moodle core API                                                            //
@@ -93,28 +95,10 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
         }
     }
 
-     //process uploaded file
+    //process uploaded file
     if (!empty($tincanlaunch->packagefile)) {
-        // Reload TinCan instance.
-        $record = $DB->get_record('tincanlaunch', array('id' => $tincanlaunch->id));
-
-        $fs = get_file_storage();
-        $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'package');
-        file_save_draft_area_files($tincanlaunch->packagefile, $context->id, 'mod_tincanlaunch', 'package',
-            0, array('subdirs' => 0, 'maxfiles' => 1));
-        // Get filename of zip that was uploaded.
-        $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, '', false);
-        $file = reset($files);
-        $filename = $file->get_filename();
-        if ($filename !== false) {
-            $record->tincanlaunchurl = $filename;
-        }
-
-        // Save reference.
-        $DB->update_record('scorm', $record);
+        tincanlaunch_process_new_package($tincanlaunch);
     }
-
-    tincanlaunch_package_parse($tincanlaunch);
 
     return $tincanlaunch->id;
 }
@@ -132,9 +116,6 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
  */
 function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null) {
     global $DB, $CFG;
-
-    $cmid = $tincanlaunch->coursemodule;
-    $context = context_module::instance($cmid);
 
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
@@ -177,60 +158,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
 
     //process uploaded file
     if (!empty($tincanlaunch->packagefile)) {
-        // Reload TinCan instance.
-        $record = $DB->get_record('tincanlaunch', array('id' => $tincanlaunch->id));
-
-        $fs = get_file_storage();
-        $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'package');
-        file_save_draft_area_files($tincanlaunch->packagefile, $context->id, 'mod_tincanlaunch', 'package',
-            0, array('subdirs' => 0, 'maxfiles' => 1));
-        // Get filename of zip that was uploaded.
-        $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, '', false);
-        $zipFile = reset($files);
-        $zipFilename = $zipFile->get_filename();
-
-        $packagefile = false;
-
-        if ($packagefile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, '/', $zipFilename)) {
-            if ($packagefile->is_external_file()) { // Get zip file so we can check it is correct.
-                $packagefile->import_external_file_contents();
-            }
-            $newhash = $packagefile->get_contenthash();
-        } else {
-            $newhash = null;
-        }
-
-        $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'content');
-
-        $packer = get_file_packer('application/zip');
-        $packagefile->extract_to_storage($packer, $context->id, 'mod_tincanlaunch', 'content', 0, '/');
-
-        $manifestFile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml');
-
-        $xmltext = $manifestFile->get_content();
-
-        $defaultorgid = 0;
-        $firstinorg = 0;
-
-        $pattern = '/&(?!\w{2,6};)/';
-        $replacement = '&amp;';
-        $xmltext = preg_replace($pattern, $replacement, $xmltext);
-
-        $objxml = new xml2Array();
-        $manifest = $objxml->parse($xmltext);
-
-        //Update activity id from XML file. 
-        $record->tincanactivityid = $manifest[0]["children"][0]["children"][0]["attrs"]["ID"];
-
-        foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
-            if ($property["name"] === "LAUNCH"){
-                $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/".$manifestFile->get_filearea()."/".$property["tagData"];
-            }
-        }
-
-        // Save reference.
-        $DB->update_record('tincanlaunch', $record);
-
+        tincanlaunch_process_new_package($tincanlaunch);
     }
 
     return true;
@@ -429,15 +357,15 @@ function tincanlaunch_extend_settings_navigation(settings_navigation $settingsna
 // Called by Moodle core
 function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     global $CFG,$DB;
-    //temporarily hard coding a value here - for 'semi-graceful' failure
-    $tincanlaunchsettings = tincanlaunch_settings('1');
     $result=$type; // Default return value
 
      // Get tincanlaunch
     if (!$tincanlaunch= $DB->get_record('tincanlaunch', array('id' => $cm->instance))) {
         throw new Exception("Can't find activity {$cm->instance}"); //TODO: localise this
     }
-    
+
+    $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
+
     if (!empty($tincanlaunch->tincanverbid)) {
         //Try to get a statement matching actor, verb and object specified in module settings
         $statementquery = tincanlaunch_get_statements($tincanlaunchsettings['tincanlaunchlrsendpoint'], $tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $tincanlaunchsettings['tincanlaunchlrsversion'], $tincanlaunch->tincanactivityid, tincanlaunch_getactor(), $tincanlaunch->tincanverbid);
@@ -454,7 +382,7 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
 }
 
 /**
- * Serves scorm content, introduction images and packages. Implements needed access control ;-)
+ * Serves Tin Can content, introduction images and packages. Implements needed access control ;-)
  *
  * @package  mod_tincanlaunch
  * @category files
@@ -478,8 +406,6 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     $canmanageactivity = has_capability('moodle/course:manageactivities', $context);
 
     if ($filearea === 'content') {
-        //$relativepath = implode('/', $args);
-       //$fullpath = "/$context->id/tincanlaunch/content/0/$relativepath";
         $filename = array_pop($args);
         $filepath = implode('/', $args);
         $lifetime = null;
@@ -508,10 +434,141 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     send_stored_file($file, $lifetime, 0, false, $options);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// TinCanLaunch specific functions                                            //
+////////////////////////////////////////////////////////////////////////////////
 
-//The functions below should really be in locallib, however they are required for the completion check so need to be here. 
+//The functions below should really be in locallib, however they are required for one or more of the functions above so need to be here. 
 //It looks like the standard Quiz module does that same thing, so I don't feel so bad. 
 
+/**
+ * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents and extracts the launch url and activity id from the tincan.xml file. 
+ * Note: This takes the *first* activity from the tincan.xml file to be the activity intended to be launched. It will not go hunting for launch URLs any activities listed below. 
+ * Based closely on code from the SCORM and (to a lesser extent) Resource modules. 
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param object $tincanlaunch An object from the form in mod_form.php
+ * @return array empty if no issue is found. Array of error message otherwise
+ */
+
+function tincanlaunch_process_new_package($tincanlaunch) {
+    global $DB, $CFG;
+
+    $cmid = $tincanlaunch->coursemodule;
+    $context = context_module::instance($cmid);
+
+    // Reload TinCan instance.
+    $record = $DB->get_record('tincanlaunch', array('id' => $tincanlaunch->id));
+
+    $fs = get_file_storage();
+    $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'package');
+    file_save_draft_area_files($tincanlaunch->packagefile, $context->id, 'mod_tincanlaunch', 'package',
+        0, array('subdirs' => 0, 'maxfiles' => 1));
+    // Get filename of zip that was uploaded.
+    $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, '', false);
+    if (count($files) < 1) {
+        return false;
+    }
+
+    $zipFile = reset($files);
+    $zipFilename = $zipFile->get_filename();
+
+    $packagefile = false;
+
+    if ($packagefile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, '/', $zipFilename)) {
+        if ($packagefile->is_external_file()) { // Get zip file so we can check it is correct.
+            $packagefile->import_external_file_contents();
+        }
+        $newhash = $packagefile->get_contenthash();
+    } else {
+        $newhash = null;
+    }
+
+    $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'content');
+
+    $packer = get_file_packer('application/zip');
+    $packagefile->extract_to_storage($packer, $context->id, 'mod_tincanlaunch', 'content', 0, '/');
+
+    //If the tincan.xml file isn't there, don't do try to use it. This is unlikely as it should have been checked when the file was validated. 
+    if ($manifestFile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml')){
+        $xmltext = $manifestFile->get_content();
+
+        $defaultorgid = 0;
+        $firstinorg = 0;
+
+        $pattern = '/&(?!\w{2,6};)/';
+        $replacement = '&amp;';
+        $xmltext = preg_replace($pattern, $replacement, $xmltext);
+
+        $objxml = new xml2Array();
+        $manifest = $objxml->parse($xmltext);
+
+        //Update activity id from the first activity in tincan.xml, if it is found. Skip without error if not. (The Moodle admin will need to enter the id manually.)
+        if (isset($manifest[0]["children"][0]["children"][0]["attrs"]["ID"])) {
+            $record->tincanactivityid = $manifest[0]["children"][0]["children"][0]["attrs"]["ID"];
+        }
+
+        //Update launch from the first activity in tincan.xml, if it is found. Skip if not. (The Moodle admin will need to enter the url manually.)
+        foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
+            if ($property["name"] === "LAUNCH"){
+                $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/".$manifestFile->get_filearea()."/".$property["tagData"];
+            }
+        }
+    }
+    // Save reference.
+    return $DB->update_record('tincanlaunch', $record);
+}
+
+/**
+ * Check that a Zip file contains a tincan.xml file in the right place. Used in mod_form.php.
+ * Heavily based on scorm_validate_package in /mod/scorm/lib.php 
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param stored_file $file a Zip file.
+ * @return array empty if no issue is found. Array of error message otherwise
+ */
+function tincanlaunch_validate_package($file) {
+    $packer = get_file_packer('application/zip');
+    $errors = array();
+    $filelist = $file->list_files($packer);
+    if (!is_array($filelist)) {
+        $errors['packagefile'] = get_string('badarchive', 'tincanlaunch');
+    } else {
+        $badmanifestpresent = false;
+        foreach ($filelist as $info) {
+            if ($info->pathname == 'tincan.xml') {
+                return array();
+            } else if (strpos($info->pathname, 'tincan.xml') !== false) {
+                // This package has tincan xml file inside a folder of the package.
+                $badmanifestpresent = true;
+            }
+            if (preg_match('/\.cst$/', $info->pathname)) {
+                return array();
+            }
+        }
+        if ($badmanifestpresent) {
+            $errors['packagefile'] = get_string('badimsmanifestlocation', 'tincanlaunch');
+        } else {
+            $errors['packagefile'] = get_string('nomanifest', 'tincanlaunch');
+        }
+    }
+    return $errors;
+}
+
+/**
+ * Fetches Statements from the LRS. This is used for completion tracking - we check for a statement matching certain criteria for each learner. 
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $url LRS endpoint URL
+ * @param string $basicLogin login/key for the LRS
+ * @param string $basicPass pass/secret for the LRS
+ * @param string $version version of xAPI to use
+ * @param string $activityid Activity Id to filter by
+ * @param TinCan Agent $agent Agent to filter by
+ * @param string $verb Verb Id to filter by
+ * @return TinCan LRS Response 
+ */
 function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb) {
 
 
@@ -556,8 +613,19 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
     );
 }
 
+/**
+ * Build a TinCan Agent based on the current user
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @return TinCan Agent $agent Agent 
+ */
 function tincanlaunch_getactor(){
+
     global $USER, $CFG; 
+    // Change the order of ifs and elses if you want to change the priority. 
+    // By default this uses email if available, then Moodle's id. 
+    //TODO: make this a config setting
     if ($USER->email){
         $agent = array(
             "name" => fullname($USER),
@@ -565,11 +633,13 @@ function tincanlaunch_getactor(){
             "objectType" => "Agent"
         );
     }
+    // Uncomment and edit the homePage code below to build agents based on an id from another system 
+    //TODO: make this a config setting
     /* elseif ($USER->idnumber){ 
         return array(
             "name" => fullname($USER),
             "account" => array(
-                "homePage" => 'https://example.com', //TODO: make this a config setting
+                "homePage" => 'https://example.com', 
                 "name" => $USER->idnumber
             ),
             "objectType" => "Agent"
@@ -589,16 +659,22 @@ function tincanlaunch_getactor(){
     return new \TinCan\Agent($agent);
 }
 
-
-//  tincan launch settings
-function tincanlaunch_settings($tincanactivityid){
+/**
+ * Returns the *LRS settings* relating to a Tin Can Launch module instance
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $instance The Moodle id for the Tin Can module instance. 
+ * @return array LRS settings to use 
+ */
+function tincanlaunch_settings($instance){
     global $DB;
 
     $expresult = array();
 
     //if global settings are not used, retrieve activity settings
-    if(!use_global_lrs_settings($tincanactivityid)){
-        $activitysettings = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$tincanactivityid), $fields='*', $strictness=IGNORE_MISSING);
+    if(!use_global_lrs_settings($instance)){
+        $activitysettings = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$instance), $fields='*', $strictness=IGNORE_MISSING);
         $expresult['tincanlaunchlrsendpoint'] = $activitysettings->lrsendpoint;
         $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
@@ -611,128 +687,23 @@ function tincanlaunch_settings($tincanactivityid){
         }
     }
     $expresult['tincanlaunchlrsversion'] = '1.0.0';
-
     return $expresult;
 }
 
-function use_global_lrs_settings($tincanactivityid){
+/**
+ * Should the global LRS settings be used instead of the instance specific ones? 
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $instance The Moodle id for the Tin Can module instance. 
+ * @return bool
+ */
+function use_global_lrs_settings($instance){
     global $DB;
     //determine if there is a row in tincanlaunch_lrs matching the current activity id
-    $activitysettings = $DB->record_exists('tincanlaunch_lrs', array('tincanlaunchid'=>$tincanactivityid));
+    $activitysettings = $DB->record_exists('tincanlaunch_lrs', array('tincanlaunchid'=>$instance));
     if($activitysettings){
         return false;
     }
     return true;
-}
-
-/**
- * Check that a Zip file contains a valid TinCan package
- *
- * @param $file stored_file a Zip file.
- * @return array empty if no issue is found. Array of error message otherwise
- */
-function tincanlaunch_validate_package($file) {
-    $packer = get_file_packer('application/zip');
-    $errors = array();
-    $filelist = $file->list_files($packer);
-    if (!is_array($filelist)) {
-        $errors['packagefile'] = get_string('badarchive', 'tincanlaunch');
-    } else {
-        $badmanifestpresent = false;
-        foreach ($filelist as $info) {
-            if ($info->pathname == 'tincan.xml') {
-                return array();
-            } else if (strpos($info->pathname, 'tincan.xml') !== false) {
-                // This package has tincan xml file inside a folder of the package.
-                $badmanifestpresent = true;
-            }
-            if (preg_match('/\.cst$/', $info->pathname)) {
-                return array();
-            }
-        }
-        if ($badmanifestpresent) {
-            $errors['packagefile'] = get_string('badimsmanifestlocation', 'tincanlaunch');
-        } else {
-            $errors['packagefile'] = get_string('nomanifest', 'tincanlaunch');
-        }
-    }
-    return $errors;
-}
-
-
-/* Usage
- Grab some XML data, either from a file, URL, etc. however you want. Assume storage in $strYourXML;
-
- $objXML = new xml2Array();
- $arroutput = $objXML->parse($strYourXML);
- print_r($arroutput); //print it out, or do whatever!
-
-*/
-class xml2Array {
-
-    public $arroutput = array();
-    public $resparser;
-    public $strxmldata;
-
-    /**
-     * Convert a utf-8 string to html entities
-     *
-     * @param string $str The UTF-8 string
-     * @return string
-     */
-    public function utf8_to_entities($str) {
-        global $CFG;
-
-        $entities = '';
-        $values = array();
-        $lookingfor = 1;
-
-        return $str;
-    }
-
-    /**
-     * Parse an XML text string and create an array tree that rapresent the XML structure
-     *
-     * @param string $strinputxml The XML string
-     * @return array
-     */
-    public function parse($strinputxml) {
-        $this->resparser = xml_parser_create ('UTF-8');
-        xml_set_object($this->resparser, $this);
-        xml_set_element_handler($this->resparser, "tagopen", "tagclosed");
-
-        xml_set_character_data_handler($this->resparser, "tagdata");
-
-        $this->strxmldata = xml_parse($this->resparser, $strinputxml );
-        if (!$this->strxmldata) {
-            die(sprintf("XML error: %s at line %d",
-            xml_error_string(xml_get_error_code($this->resparser)),
-            xml_get_current_line_number($this->resparser)));
-        }
-
-        xml_parser_free($this->resparser);
-
-        return $this->arroutput;
-    }
-
-    public function tagopen($parser, $name, $attrs) {
-        $tag = array("name" => $name, "attrs" => $attrs);
-        array_push($this->arroutput, $tag);
-    }
-
-    public function tagdata($parser, $tagdata) {
-        if (trim($tagdata)) {
-            if (isset($this->arroutput[count($this->arroutput) - 1]['tagData'])) {
-                $this->arroutput[count($this->arroutput) - 1]['tagData'] .= $this->utf8_to_entities($tagdata);
-            } else {
-                $this->arroutput[count($this->arroutput) - 1]['tagData'] = $this->utf8_to_entities($tagdata);
-            }
-        }
-    }
-
-    public function tagclosed($parser, $name) {
-        $this->arroutput[count($this->arroutput) - 2]['children'][] = $this->arroutput[count($this->arroutput) - 1];
-        array_pop($this->arroutput);
-    }
-
 }

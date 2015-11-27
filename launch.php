@@ -68,11 +68,7 @@ if (empty($registrationid)) {
 //Save a record of this registration to the LRS state API
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
-$registrationdata = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-$registrationdataetag = $getregistrationdatafromlrsstate->content->getEtag();
-
 $errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
-
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 if ($lrsrespond != 200 && $lrsrespond != 404) {
     //Failed to connect to LRS
@@ -85,6 +81,9 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
     }
     die();
 }
+
+$registrationdata = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+$registrationdataetag = $getregistrationdatafromlrsstate->content->getEtag();
 
 $datenow = date("c");
 
