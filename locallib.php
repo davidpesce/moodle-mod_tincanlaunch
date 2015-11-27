@@ -84,11 +84,28 @@ function tincan_launched_statement($registration_id){
             "context" => array(
                 "registration" => $registration_id,
                 "contextActivities" => array(
-                    "parent"  => array(array(
-                        "id" => $CFG->wwwroot.'/course/view.php?id='. $course->id,
-                        "objectType" => "Activity",
-                        "definition" => $parentDefinition
-                    ))
+                    "parent"  => array(
+                        array(
+                            "id" => $CFG->wwwroot.'/course/view.php?id='. $course->id,
+                            "objectType" => "Activity",
+                            "definition" => $parentDefinition
+                        )
+                    ),
+                    "grouping"  => array(
+                        array(
+                            "id" => $CFG->wwwroot,
+                            "objectType" => "Activity"
+                        )
+                    ), 
+                    "category"  => array(
+                        array(
+                            "id" => "https://moodle.org",
+                            "objectType" => "Activity",
+                            "definition" => array (
+                                "type" => "http://id.tincanapi.com/activitytype/source"
+                            )
+                        )
+                    )
                 ),
                 "language" => tincanlaunch_get_moodle_langauge()
             ),
@@ -343,6 +360,15 @@ function tincanlaunch_get_global_parameters_and_get_state($key){
         $key
     );
 }
+
+
+/**
+ * Get the current lanaguage of the current user and return it as an RFC 5646 language tag
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @return string RFC 5646 language tag
+ */ 
 
 function tincanlaunch_get_moodle_langauge(){
     $lang = current_language();
