@@ -30,15 +30,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
 
 /**
- * Send a statement that the activity was launched. 
- * This is useful for debugging - if the 'launched' statement is present in the LRS, you know the activity was at least launched. 
+ * Send a statement that the activity was launched.
+ * This is useful for debugging - if the 'launched' statement is present in the LRS, you know the activity was at least launched.
  *
  * @package  mod_tincanlaunch
  * @category tincan
- * @param string/UUID $registration_id The Tin Can Registration UUID associated with the launch. 
+ * @param string/UUID $registration_id The Tin Can Registration UUID associated with the launch.
  * @return TinCan LRS Response
  */
-function tincan_launched_statement($registration_id){
+function tincan_launched_statement($registration_id)
+{
     global $tincanlaunch, $course, $CFG;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     
@@ -66,9 +67,9 @@ function tincan_launched_statement($registration_id){
     }
 
     $statement = new \TinCan\statement(
-        array( 
+        array(
             'id' => $statementid,
-            'actor' => tincanlaunch_getactor($tincanlaunch->id), 
+            'actor' => tincanlaunch_getactor($tincanlaunch->id),
             'verb' => array(
                 'id' => 'http://adlnet.gov/expapi/verbs/launched',
                 'display' => array(
@@ -96,7 +97,7 @@ function tincan_launched_statement($registration_id){
                             "id" => $CFG->wwwroot,
                             "objectType" => "Activity"
                         )
-                    ), 
+                    ),
                     "category"  => array(
                         array(
                             "id" => "https://moodle.org",
@@ -122,10 +123,11 @@ function tincan_launched_statement($registration_id){
  *
  * @package  mod_tincanlaunch
  * @category tincan
- * @param string/UUID $registration_id The Tin Can Registration UUID associated with the launch. 
- * @return string launch link including querystring. 
- */ 
-function tincanlaunch_get_launch_url($registrationuuid) {
+ * @param string/UUID $registration_id The Tin Can Registration UUID associated with the launch.
+ * @return string launch link including querystring.
+ */
+function tincanlaunch_get_launch_url($registrationuuid)
+{
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     $current_time = new DateTime('NOW');
@@ -141,20 +143,20 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 
     if ($tincanlaunchsettings['tincanlaunchlrsauthentication'] != "0") { //LRS integrated basic authentication is 0
         $basicauth = base64_encode($basicLogin.":".$basicPass);
-    }
-    else {
-        $creds = tincanlaunch_get_creds($tincanlaunchsettings['tincanlaunchlrslogin'],$tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);
+    } else {
+        $creds = tincanlaunch_get_creds($tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);
         $basicauth = base64_encode($creds["contents"]["key"].":".$creds["contents"]["secret"]);
     }
 
     //build the URL to be returned
-    $rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(array(
+    $rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(
+        array(
             "endpoint" => $url,
             "auth" => "Basic ".$basicauth,
             "actor" => json_encode(tincanlaunch_getactor($tincanlaunch->id)),
             "registration" => $registrationuuid
-        ), 
-        '', 
+        ),
+        '',
         '&'
     );
     
@@ -162,9 +164,9 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 }
 
 /**
- * Used with LRS integrated basic authentication to fetch credentials from the LRS. 
- * This process is not part of the xAPI specification or the Tin Can launch spec. 
- * It is not supported by all Learning Record Stores. 
+ * Used with LRS integrated basic authentication to fetch credentials from the LRS.
+ * This process is not part of the xAPI specification or the Tin Can launch spec.
+ * It is not supported by all Learning Record Stores.
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -172,14 +174,15 @@ function tincanlaunch_get_launch_url($registrationuuid) {
  * @param string $basicPass pass/secret for the LRS
  * @param string $url LRS endpoint URL
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
- */ 
-function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
+ */
+function tincanlaunch_get_creds($basicLogin, $basicPass, $url)
+{
     global $tincanlaunch;
     $actor = tincanlaunch_getactor($tincanlaunch->id);
     $data = array(
         'scope' => array ('all'),
         'expiry' => $current_time->format(DATE_ATOM),
-        'historical' => FALSE,
+        'historical' => false,
         'actors' => array(
             "objectType"=> 'Person',
             "name"=> array($actor->getName())
@@ -193,38 +196,35 @@ function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
     
     if (null !== $actor->getMbox()) {
         $data['actors']['mbox'] = array($actor->getMbox());
-    } 
-    elseif (null !== $actor->getMbox_sha1sum()) {
+    } elseif (null !== $actor->getMbox_sha1sum()) {
         $data['actors']['mbox_sha1sum'] = array($actor->getMbox_sha1sum());
-    } 
-    elseif (null !== $actor->getOpenid()) {
+    } elseif (null !== $actor->getOpenid()) {
         $data['actors']['openid'] = array($actor->getOpenid());
-    } 
-    elseif (null !== $actor->getAccount()) {
+    } elseif (null !== $actor->getAccount()) {
         $data['actors']['account'] = array($actor->getAccount());
     }
 
     $streamopt = array(
         'ssl' => array(
-            'verify-peer' => false, 
-            ), 
+            'verify-peer' => false,
+            ),
         'http' => array(
-            'method' => 'POST', 
-            'ignore_errors' => false, 
+            'method' => 'POST',
+            'ignore_errors' => false,
             'header' => array(
-                'Authorization: Basic ' . base64_encode( trim($basicLogin) . ':' .trim($basicPass)), 
-                'Content-Type: application/json', 
+                'Authorization: Basic ' . base64_encode(trim($basicLogin) . ':' .trim($basicPass)),
+                'Content-Type: application/json',
                 'Accept: application/json, */*; q=0.01',
-            ), 
+            ),
             'content' => tincanlaunch_myJson_encode($data),
-        ), 
+        ),
     );
 
     $streamparams = array();
 
     $context = stream_context_create($streamopt);
 
-    $stream = fopen(trim($url) . 'Basic/request'.'?'.http_build_query($streamparams,'','&'), 'rb', false, $context);
+    $stream = fopen(trim($url) . 'Basic/request'.'?'.http_build_query($streamparams, '', '&'), 'rb', false, $context);
 
     $return_code = @explode(' ', $http_response_header[0]);
     $return_code = (int)$return_code[1];
@@ -235,18 +235,18 @@ function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
             $meta = stream_get_meta_data($stream);
 
             if ($ret) {
-                $ret = json_decode($ret, TRUE);
+                $ret = json_decode($ret, true);
             }
             break;
-            default: //error
-            $ret = NULL;
+        default: //error
+            $ret = null;
             $meta = $return_code;
             break;
     }
 
 
     return array(
-        'contents'=> $ret, 
+        'contents'=> $ret,
         'metadata'=> $meta
     );
 }
@@ -258,13 +258,14 @@ function tincanlaunch_get_creds($basicLogin, $basicPass, $url) {
  * @category tincan
  * @param object or array $obj object or array encode to JSON
  * @return string/JSON JSON encoded object or array
- */ 
-function tincanlaunch_myJson_encode($obj){
-    return str_replace('\\/', '/',json_encode($obj));
+ */
+function tincanlaunch_myJson_encode($obj)
+{
+    return str_replace('\\/', '/', json_encode($obj));
 }
 
 /**
- * Save data to the state. Note: registration is not used as this is a general bucket of data against the activity/learner. 
+ * Save data to the state. Note: registration is not used as this is a general bucket of data against the activity/learner.
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -272,22 +273,23 @@ function tincanlaunch_myJson_encode($obj){
  * @param string $key id to store the document against
  * @param string $etag etag associated with the document last time it was fetched (may be Null if document is new)
  * @return TinCan LRS Response
- */ 
-function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
+ */
+function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag)
+{
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     $lrs = new \TinCan\RemoteLRS(
-        $tincanlaunchsettings['tincanlaunchlrsendpoint'], 
-        $tincanlaunchsettings['tincanlaunchlrsversion'], 
-        $tincanlaunchsettings['tincanlaunchlrslogin'], 
+        $tincanlaunchsettings['tincanlaunchlrsendpoint'],
+        $tincanlaunchsettings['tincanlaunchlrsversion'],
+        $tincanlaunchsettings['tincanlaunchlrslogin'],
         $tincanlaunchsettings['tincanlaunchlrspass']
     );
 
     return $lrs->saveState(
-        new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))), 
-        tincanlaunch_getactor($tincanlaunch->id), 
-        $key, 
-        tincanlaunch_myJson_encode($data), 
+        new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))),
+        tincanlaunch_getactor($tincanlaunch->id),
+        $key,
+        tincanlaunch_myJson_encode($data),
         array(
             'etag' => $etag,
             'contentType' => 'application/json'
@@ -296,24 +298,25 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
 }
 
 /**
- * Save data to the agent profile. 
- * Note: registration is not used as this is a general bucket of data against the activity/learner. 
- * Note: fetches a new etag before storing. Will ALWAYS overwrite existing contents of the document. 
+ * Save data to the agent profile.
+ * Note: registration is not used as this is a general bucket of data against the activity/learner.
+ * Note: fetches a new etag before storing. Will ALWAYS overwrite existing contents of the document.
  *
  * @package  mod_tincanlaunch
  * @category tincan
  * @param string $data data to store as document
  * @param string $key id to store the document against
  * @return TinCan LRS Response
- */ 
-function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
+ */
+function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key)
+{
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
 
     $lrs = new \TinCan\RemoteLRS(
-        $tincanlaunchsettings['tincanlaunchlrsendpoint'], 
-        $tincanlaunchsettings['tincanlaunchlrsversion'], 
-        $tincanlaunchsettings['tincanlaunchlrslogin'], 
+        $tincanlaunchsettings['tincanlaunchlrsendpoint'],
+        $tincanlaunchsettings['tincanlaunchlrsversion'],
+        $tincanlaunchsettings['tincanlaunchlrslogin'],
         $tincanlaunchsettings['tincanlaunchlrspass']
     );
 
@@ -322,41 +325,41 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key){
     $Opts = array(
         'contentType' => 'application/json'
     );
-    if ($getResponse->success)
-    {
+    if ($getResponse->success) {
         $Opts['etag'] = $getResponse->content->getEtag();
     }
 
     return $lrs->saveAgentProfile(
-        tincanlaunch_getactor($tincanlaunch->id), 
-        $key, 
-        tincanlaunch_myJson_encode($data), 
+        tincanlaunch_getactor($tincanlaunch->id),
+        $key,
+        tincanlaunch_myJson_encode($data),
         $Opts
     );
 }
 
 /**
- * Get data from the state. Note: registration is not used as this is a general bucket of data against the activity/learner. 
+ * Get data from the state. Note: registration is not used as this is a general bucket of data against the activity/learner.
  *
  * @package  mod_tincanlaunch
  * @category tincan
  * @param string $key id to store the document against
  * @return TinCan LRS Response containing the response code and data or error message
- */ 
-function tincanlaunch_get_global_parameters_and_get_state($key){
+ */
+function tincanlaunch_get_global_parameters_and_get_state($key)
+{
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
 
     $lrs = new \TinCan\RemoteLRS(
-        $tincanlaunchsettings['tincanlaunchlrsendpoint'], 
-        $tincanlaunchsettings['tincanlaunchlrsversion'], 
-        $tincanlaunchsettings['tincanlaunchlrslogin'], 
+        $tincanlaunchsettings['tincanlaunchlrsendpoint'],
+        $tincanlaunchsettings['tincanlaunchlrsversion'],
+        $tincanlaunchsettings['tincanlaunchlrslogin'],
         $tincanlaunchsettings['tincanlaunchlrspass']
     );
 
     return $lrs->retrieveState(
-        new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))), 
-        tincanlaunch_getactor($tincanlaunch->id), 
+        new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))),
+        tincanlaunch_getactor($tincanlaunch->id),
         $key
     );
 }
@@ -368,17 +371,15 @@ function tincanlaunch_get_global_parameters_and_get_state($key){
  * @package  mod_tincanlaunch
  * @category tincan
  * @return string RFC 5646 language tag
- */ 
+ */
 
-function tincanlaunch_get_moodle_langauge(){
+function tincanlaunch_get_moodle_langauge()
+{
     $lang = current_language();
-    $langArr = explode('_',$lang);
-    if (count($langArr) == 2){
+    $langArr = explode('_', $lang);
+    if (count($langArr) == 2) {
         return $langArr[0].'-'.strtoupper($langArr[1]);
-    }
-    else {
+    } else {
         return $lang;
     }
 }
-
-

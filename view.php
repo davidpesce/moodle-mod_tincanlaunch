@@ -28,7 +28,7 @@ require_once(dirname(__FILE__).'/lib.php');
 include 'locallib.php';
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // tincanlaunch instance ID - it should be named as the first character of the module
+$n  = optional_param('n', 0, PARAM_INT);  // tincanlaunch instance ID
 
 if ($id) {
     $cm         = get_coursemodule_from_id('tincanlaunch', $id, 0, false, MUST_EXIST);
@@ -39,7 +39,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $tincanlaunch->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('tincanlaunch', $tincanlaunch->id, $course->id, false, MUST_EXIST);
 } else {
-    error( get_string('idmissing', 'report_tincan') );
+    error(get_string('idmissing', 'report_tincan'));
 }
 
 require_login($course, true, $cm);
@@ -68,7 +68,11 @@ $PAGE->requires->jquery();
 echo $OUTPUT->header();
 
 if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever
-    echo $OUTPUT->box(format_module_intro('tincanlaunch', $tincanlaunch, $cm->id), 'generalbox mod_introbox', 'tincanlaunchintro');
+    echo $OUTPUT->box(
+        format_module_intro('tincanlaunch', $tincanlaunch, $cm->id),
+        'generalbox mod_introbox',
+        'tincanlaunchintro'
+    );
 }
 
 //TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file
@@ -89,7 +93,11 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
             $('#region-main').append('\
                 <div id="tincanlaunch_status"> \
                     <p id="tincanlaunch_attemptprogress">'+message+'</p> \
-                    <p id="tincanlaunch_exit"><a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course">Return to course</a> </p> \
+                    <p id="tincanlaunch_exit"> \
+                        <a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course"> \
+                            Return to course \
+                        </a> \
+                    </p> \
                 </div>\
             ');
         }
@@ -108,14 +116,15 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 //generate a registration id for any new attempt
 $tinCanPHPUtil = new \TinCan\Util();
 $registrationid = $tinCanPHPUtil->getUUID();
-$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
-;
+$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
+    "http://tincanapi.co.uk/stateapikeys/registrations"
+);
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
 
 if ($lrsrespond!= 200 && $lrsrespond != 404) {
-    //On clicking new attempt, save the registration details to the LRS State and launch a new attempt 
-    echo "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
+    //On clicking new attempt, save the registration details to the LRS State and launch a new attempt
+    echo "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable', 'tincanlaunch')."</div>";
 
     if ($CFG->debug == 32767) {
         echo "<p>Error attempting to get registration data from State API.</p>";
@@ -128,21 +137,43 @@ if ($lrsrespond!= 200 && $lrsrespond != 404) {
 
 $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
 if ($registrationdatafromlrs) {
-    if ($tincanlaunch->tincanmultipleregs){
-        echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
+    if ($tincanlaunch->tincanmultipleregs) {
+        echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+            .$registrationid
+            ."')\" style=\"cursor: pointer;\">"
+            .get_string('tincanlaunch_attempt', 'tincanlaunch')
+            ."</a></p>";
     }
-    foreach($registrationdatafromlrs as $key => $item){
-        array_push($registrationdatafromlrs[$key], "<a onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>".get_string('tincanlaunchviewlaunchlink','tincanlaunch')."</a>");
-        $registrationdatafromlrs[$key]['created'] = date_format(date_create($registrationdatafromlrs[$key]['created']), 'D, d M Y H:i:s');
-        $registrationdatafromlrs[$key]['lastlaunched'] = date_format(date_create($registrationdatafromlrs[$key]['lastlaunched']), 'D, d M Y H:i:s');
+    foreach ($registrationdatafromlrs as $key => $item) {
+        array_push(
+            $registrationdatafromlrs[$key],
+            "<a onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
+            .get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a>"
+        );
+        $registrationdatafromlrs[$key]['created'] = date_format(
+            date_create($registrationdatafromlrs[$key]['created']),
+            'D, d M Y H:i:s'
+        );
+        $registrationdatafromlrs[$key]['lastlaunched'] = date_format(
+            date_create($registrationdatafromlrs[$key]['lastlaunched']),
+            'D, d M Y H:i:s'
+        );
     }
     $table = new html_table();
     $table->id ='tincanlaunch_attempttable';
-    $table->head = array(get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'), get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'), get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch'));
+    $table->head = array(
+        get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
+        get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
+        get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
+    );
     $table->data = $registrationdatafromlrs;
     echo html_writer::table($table);
-}else{
-    echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('".$registrationid."')\" style=\"cursor: pointer;\">".get_string('tincanlaunch_attempt','tincanlaunch')."</a></p>";
+} else {
+    echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+        .$registrationid
+        ."')\" style=\"cursor: pointer;\">"
+        .get_string('tincanlaunch_attempt', 'tincanlaunch')
+        ."</a></p>";
 }
 
 //Add a form to be posted based on the attempt selected

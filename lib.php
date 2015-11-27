@@ -48,12 +48,17 @@ require_once("$CFG->dirroot/mod/scorm/datamodels/scormlib.php");
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
-function tincanlaunch_supports($feature) {
+function tincanlaunch_supports($feature)
+{
     switch($feature) {
-        case FEATURE_MOD_INTRO:         return true;
-		case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
-        case FEATURE_COMPLETION_HAS_RULES: return true;
-        default:                        return null;
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
+        default:
+            return null;
     }
 }
 
@@ -69,7 +74,8 @@ function tincanlaunch_supports($feature) {
  * @param mod_tincanlaunch_mod_form $mform
  * @return int The id of the newly inserted tincanlaunch record
  */
-function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null) {
+function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null)
+{
     global $DB;
 
     $tincanlaunch->timecreated = time();
@@ -88,11 +94,11 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
     $tincanlaunch->id = $DB->insert_record('tincanlaunch', $tincanlaunch);
 
     //determine if override defaults checkbox is checked
-    if($tincanlaunch->overridedefaults=='1'){
+    if ($tincanlaunch->overridedefaults=='1') {
         $tincanlaunch_lrs->tincanlaunchid = $tincanlaunch->id;
 
         //insert data into tincanlaunch_lrs table
-        if(!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
+        if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
             return false;
         }
     }
@@ -116,7 +122,8 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
  * @param mod_tincanlaunch_mod_form $mform
  * @return boolean Success/Fail
  */
-function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null) {
+function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null)
+{
     global $DB, $CFG;
 
     $tincanlaunch->timemodified = time();
@@ -135,30 +142,35 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
 
 
     //determine if override defaults checkbox is checked
-    if($tincanlaunch->overridedefaults=='1'){
+    if ($tincanlaunch->overridedefaults=='1') {
         //check to see if there is a record of this instance in the table
-        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness=IGNORE_MISSING);
+        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness = IGNORE_MISSING);
         //if not, will need to insert_record
-        if(!$tincanlaunch_lrs_id){
-            if(!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
+        if (!$tincanlaunch_lrs_id) {
+            if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
                 return false;
             }
-        }else{//if it does exist, update it
+        } else {//if it does exist, update it
             $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
             //var_dump($tincanlaunch_lrs); die();
-            if(!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)){
+            if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
                 return false;
             }
         }
-    }else{//if the user previously overrode defaults, there will be a record in tincanlaunch_lrs
-        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness=IGNORE_MISSING);
-        if($tincanlaunch_lrs_id){
+    } else {//if the user previously overrode defaults, there will be a record in tincanlaunch_lrs
+        $tincanlaunch_lrs_id = $DB->get_field(
+            'tincanlaunch_lrs',
+            'id',
+            array('tincanlaunchid'=>$tincanlaunch->instance),
+            $strictness = IGNORE_MISSING
+        );
+        if ($tincanlaunch_lrs_id) {
             //delete it if so
             $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunch_lrs_id));
         }
     }
 
-    if(!$DB->update_record('tincanlaunch', $tincanlaunch)){
+    if (!$DB->update_record('tincanlaunch', $tincanlaunch)) {
         return false;
     }
 
@@ -180,7 +192,8 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  */
-function tincanlaunch_delete_instance($id) {
+function tincanlaunch_delete_instance($id)
+{
     global $DB;
 
     if (! $tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $id))) {
@@ -188,8 +201,8 @@ function tincanlaunch_delete_instance($id) {
     }
 
     //determine if there is a record of this (ever) in the tincanlaunch_lrs table
-    $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$id), $strictness=IGNORE_MISSING);
-    if($tincanlaunch_lrs_id){
+    $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$id), $strictness = IGNORE_MISSING);
+    if ($tincanlaunch_lrs_id) {
         //if there is, delete it
         $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunch_lrs_id));
     }
@@ -210,8 +223,8 @@ function tincanlaunch_delete_instance($id) {
  *
  * @return stdClass|null
  */
-function tincanlaunch_user_outline($course, $user, $mod, $tincanlaunch) {
-
+function tincanlaunch_user_outline($course, $user, $mod, $tincanlaunch)
+{
     $return = new stdClass();
     $return->time = 0;
     $return->info = '';
@@ -228,7 +241,8 @@ function tincanlaunch_user_outline($course, $user, $mod, $tincanlaunch) {
  * @param stdClass $tincanlaunch the module instance record
  * @return void, is supposed to echp directly
  */
-function tincanlaunch_user_complete($course, $user, $mod, $tincanlaunch) {
+function tincanlaunch_user_complete($course, $user, $mod, $tincanlaunch)
+{
 }
 
 /**
@@ -238,7 +252,8 @@ function tincanlaunch_user_complete($course, $user, $mod, $tincanlaunch) {
  *
  * @return boolean
  */
-function tincanlaunch_print_recent_activity($course, $viewfullnames, $timestart) {
+function tincanlaunch_print_recent_activity($course, $viewfullnames, $timestart)
+{
     return false;  //  True if anything was printed, otherwise false
 }
 
@@ -258,14 +273,16 @@ function tincanlaunch_print_recent_activity($course, $viewfullnames, $timestart)
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  * @return void adds items into $activities and increases $index
  */
-function tincanlaunch_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
+function tincanlaunch_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0)
+{
 }
 
 /**
  * Prints single activity item prepared by {@see tincanlaunch_get_recent_mod_activity()}
  * @return void
  */
-function tincanlaunch_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
+function tincanlaunch_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames)
+{
 }
 
 /**
@@ -276,7 +293,8 @@ function tincanlaunch_print_recent_mod_activity($activity, $courseid, $detail, $
  * @return boolean
  * @todo Finish documenting this function
  **/
-function tincanlaunch_cron () {
+function tincanlaunch_cron()
+{
     return true;
 }
 
@@ -286,7 +304,8 @@ function tincanlaunch_cron () {
  * @example return array('moodle/site:accessallgroups');
  * @return array
  */
-function tincanlaunch_get_extra_capabilities() {
+function tincanlaunch_get_extra_capabilities()
+{
     return array();
 }
 
@@ -305,7 +324,8 @@ function tincanlaunch_get_extra_capabilities() {
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function tincanlaunch_get_file_areas($course, $cm, $context) {
+function tincanlaunch_get_file_areas($course, $cm, $context)
+{
     $areas = array();
     $areas['content'] = get_string('areacontent', 'scorm');
     $areas['package'] = get_string('areapackage', 'scorm');
@@ -329,7 +349,8 @@ function tincanlaunch_get_file_areas($course, $cm, $context) {
  * @param string $filename
  * @return file_info instance or null if not found
  */
-function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename)
+{
     global $CFG;
 
     if (!has_capability('moodle/course:managefiles', $context)) {
@@ -371,7 +392,8 @@ function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $f
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) 
+{
     global $CFG, $DB;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -385,14 +407,12 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $filename = array_pop($args);
         $filepath = implode('/', $args);
         $lifetime = null;
-    }
-    else if ($filearea === 'package') {
+    } elseif ($filearea === 'package') {
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/tincanlaunch/package/0/$relativepath";
         $lifetime = 0; // No caching here.
 
-    } 
-    else {
+    } else {
         return false;
     }
 
@@ -425,7 +445,8 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
  * @param stdClass $module
  * @param cm_info $cm
  */
-function tincanlaunch_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
+function tincanlaunch_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm)
+{
 }
 
 /**
@@ -437,11 +458,13 @@ function tincanlaunch_extend_navigation(navigation_node $navref, stdclass $cours
  * @param settings_navigation $settingsnav {@link settings_navigation}
  * @param navigation_node $tincanlaunchnode {@link navigation_node}
  */
-function tincanlaunch_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $tincanlaunchnode=null) {
+function tincanlaunch_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $tincanlaunchnode = null)
+{
 }
 
 // Called by Moodle core
-function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
+function tincanlaunch_get_completion_state($course, $cm, $userid, $type)
+{
     global $CFG,$DB;
     $result=$type; // Default return value
 
@@ -455,20 +478,20 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
     if (!empty($tincanlaunch->tincanverbid)) {
         //Try to get a statement matching actor, verb and object specified in module settings
         $statementquery = tincanlaunch_get_statements(
-            $tincanlaunchsettings['tincanlaunchlrsendpoint'], 
-            $tincanlaunchsettings['tincanlaunchlrslogin'], 
-            $tincanlaunchsettings['tincanlaunchlrspass'], 
-            $tincanlaunchsettings['tincanlaunchlrsversion'], 
-            $tincanlaunch->tincanactivityid, 
-            tincanlaunch_getactor($cm->instance), 
+            $tincanlaunchsettings['tincanlaunchlrsendpoint'],
+            $tincanlaunchsettings['tincanlaunchlrslogin'],
+            $tincanlaunchsettings['tincanlaunchlrspass'],
+            $tincanlaunchsettings['tincanlaunchlrsversion'],
+            $tincanlaunch->tincanactivityid,
+            tincanlaunch_getactor($cm->instance),
             $tincanlaunch->tincanverbid
-            );
+        );
 
         //if the statement exists, return true else return false
-        if (!empty($statementquery->content) && $statementquery->success){
-            $result = TRUE;
-        }else{
-            $result = FALSE;
+        if (!empty($statementquery->content) && $statementquery->success) {
+            $result = true;
+        } else {
+            $result = false;
         }
     }
 
@@ -483,16 +506,17 @@ function tincanlaunch_get_completion_state($course,$cm,$userid,$type) {
 //It looks like the standard Quiz module does that same thing, so I don't feel so bad. 
 
 /**
- * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents and extracts the launch url and activity id from the tincan.xml file. 
- * Note: This takes the *first* activity from the tincan.xml file to be the activity intended to be launched. It will not go hunting for launch URLs any activities listed below. 
- * Based closely on code from the SCORM and (to a lesser extent) Resource modules. 
+ * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents and extracts the launch url and activity id from the tincan.xml file.
+ * Note: This takes the *first* activity from the tincan.xml file to be the activity intended to be launched. It will not go hunting for launch URLs any activities listed below.
+ * Based closely on code from the SCORM and (to a lesser extent) Resource modules.
  * @package  mod_tincanlaunch
  * @category tincan
  * @param object $tincanlaunch An object from the form in mod_form.php
  * @return array empty if no issue is found. Array of error message otherwise
  */
 
-function tincanlaunch_process_new_package($tincanlaunch) {
+function tincanlaunch_process_new_package($tincanlaunch)
+{
     global $DB, $CFG;
 
     $cmid = $tincanlaunch->coursemodule;
@@ -503,8 +527,15 @@ function tincanlaunch_process_new_package($tincanlaunch) {
 
     $fs = get_file_storage();
     $fs->delete_area_files($context->id, 'mod_tincanlaunch', 'package');
-    file_save_draft_area_files($tincanlaunch->packagefile, $context->id, 'mod_tincanlaunch', 'package',
-        0, array('subdirs' => 0, 'maxfiles' => 1));
+    file_save_draft_area_files(
+        $tincanlaunch->packagefile,
+        $context->id,
+        'mod_tincanlaunch',
+        'package',
+        0,
+        array('subdirs' => 0, 'maxfiles' => 1)
+    );
+
     // Get filename of zip that was uploaded.
     $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, '', false);
     if (count($files) < 1) {
@@ -523,8 +554,8 @@ function tincanlaunch_process_new_package($tincanlaunch) {
     $packer = get_file_packer('application/zip');
     $packagefile->extract_to_storage($packer, $context->id, 'mod_tincanlaunch', 'content', 0, '/');
 
-    //If the tincan.xml file isn't there, don't do try to use it. This is unlikely as it should have been checked when the file was validated. 
-    if ($manifestFile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml')){
+    //If the tincan.xml file isn't there, don't do try to use it. This is unlikely as it should have been checked when the file was validated.
+    if ($manifestFile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml')) {
         $xmltext = $manifestFile->get_content();
 
         $defaultorgid = 0;
@@ -544,7 +575,7 @@ function tincanlaunch_process_new_package($tincanlaunch) {
 
         //Update launch from the first activity in tincan.xml, if it is found. Skip if not. (The Moodle admin will need to enter the url manually.)
         foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
-            if ($property["name"] === "LAUNCH"){
+            if ($property["name"] === "LAUNCH") {
                 $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/".$manifestFile->get_filearea()."/".$property["tagData"];
             }
         }
@@ -555,13 +586,14 @@ function tincanlaunch_process_new_package($tincanlaunch) {
 
 /**
  * Check that a Zip file contains a tincan.xml file in the right place. Used in mod_form.php.
- * Heavily based on scorm_validate_package in /mod/scorm/lib.php 
+ * Heavily based on scorm_validate_package in /mod/scorm/lib.php
  * @package  mod_tincanlaunch
  * @category tincan
  * @param stored_file $file a Zip file.
  * @return array empty if no issue is found. Array of error message otherwise
  */
-function tincanlaunch_validate_package($file) {
+function tincanlaunch_validate_package($file)
+{
     $packer = get_file_packer('application/zip');
     $errors = array();
     $filelist = $file->list_files($packer);
@@ -572,7 +604,7 @@ function tincanlaunch_validate_package($file) {
         foreach ($filelist as $info) {
             if ($info->pathname == 'tincan.xml') {
                 return array();
-            } else if (strpos($info->pathname, 'tincan.xml') !== false) {
+            } elseif (strpos($info->pathname, 'tincan.xml') !== false) {
                 // This package has tincan xml file inside a folder of the package.
                 $badmanifestpresent = true;
             }
@@ -590,7 +622,7 @@ function tincanlaunch_validate_package($file) {
 }
 
 /**
- * Fetches Statements from the LRS. This is used for completion tracking - we check for a statement matching certain criteria for each learner. 
+ * Fetches Statements from the LRS. This is used for completion tracking - we check for a statement matching certain criteria for each learner.
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -601,9 +633,10 @@ function tincanlaunch_validate_package($file) {
  * @param string $activityid Activity Id to filter by
  * @param TinCan Agent $agent Agent to filter by
  * @param string $verb Verb Id to filter by
- * @return TinCan LRS Response 
+ * @return TinCan LRS Response
  */
-function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb) {
+function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $activityid, $agent, $verb)
+{
 
 
     $lrs = new \TinCan\RemoteLRS($url, $version, $basicLogin, $basicPass);
@@ -621,7 +654,7 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
     $statementsResponse = $lrs->queryStatements($statementsQuery);
 
 
-    if($statementsResponse->success == false){
+    if ($statementsResponse->success == false) {
         return $statementsResponse;
     }
 
@@ -629,7 +662,7 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
     $moreStatementsURL = $statementsResponse->content->getMore();
     while (!is_null($moreStatementsURL)) {
         $moreStmtsResponse = $lrs->moreStatements($moreStatementsURL);
-        if($moreStmtsResponse->success == false){
+        if ($moreStmtsResponse->success == false) {
             return $moreStmtsResponse;
         }
         $moreStatements = $moreStmtsResponse->content->getStatements();
@@ -640,7 +673,7 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
         }
     }
 
-    return new \TinCan\LRSResponse (
+    return new \TinCan\LRSResponse(
         $statementsResponse->success,
         $allTheStatements,
         $statementsResponse->httpResponse
@@ -652,10 +685,11 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
  *
  * @package  mod_tincanlaunch
  * @category tincan
- * @return TinCan Agent $agent Agent 
+ * @return TinCan Agent $agent Agent
  */
-function tincanlaunch_getactor($instance){
-    global $USER, $CFG; 
+function tincanlaunch_getactor($instance)
+{
+    global $USER, $CFG;
 
     $settings = tincanlaunch_settings($instance);
 
@@ -667,24 +701,22 @@ function tincanlaunch_getactor($instance){
     echo "</pre>";
     die();*/
 
-    if ($USER->idnumber && $settings['tincanlaunchcustomacchp']){ 
+    if ($USER->idnumber && $settings['tincanlaunchcustomacchp']) {
         return array(
             "name" => fullname($USER),
             "account" => array(
-                "homePage" => $settings['tincanlaunchcustomacchp'], 
+                "homePage" => $settings['tincanlaunchcustomacchp'],
                 "name" => $USER->idnumber
             ),
             "objectType" => "Agent"
         );
-    }
-    elseif ($USER->email && $settings['tincanlaunchuseactoremail']){
+    } elseif ($USER->email && $settings['tincanlaunchuseactoremail']) {
         $agent = array(
             "name" => fullname($USER),
             "mbox" => "mailto:".$USER->email,
             "objectType" => "Agent"
         );
-    }
-    else{
+    } else {
         $agent = array(
             "name" => fullname($USER),
             "account" => array(
@@ -703,17 +735,18 @@ function tincanlaunch_getactor($instance){
  *
  * @package  mod_tincanlaunch
  * @category tincan
- * @param string $instance The Moodle id for the Tin Can module instance. 
- * @return array LRS settings to use 
+ * @param string $instance The Moodle id for the Tin Can module instance.
+ * @return array LRS settings to use
  */
-function tincanlaunch_settings($instance){
+function tincanlaunch_settings($instance)
+{
     global $DB;
 
     $expresult = array();
 
     //if global settings are not used, retrieve activity settings
-    if(!use_global_lrs_settings($instance)){
-        $activitysettings = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$instance), $fields='*', $strictness=IGNORE_MISSING);
+    if (!use_global_lrs_settings($instance)) {
+        $activitysettings = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$instance), $fields = '*', $strictness = IGNORE_MISSING);
         $expresult['tincanlaunchlrsendpoint'] = $activitysettings->lrsendpoint;
         $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
@@ -721,9 +754,9 @@ function tincanlaunch_settings($instance){
         $expresult['tincanlaunchcustomacchp'] = $activitysettings->customacchp;
         $expresult['tincanlaunchuseactoremail'] = $activitysettings->useactoremail;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
-    }else{//use global lrs settings
+    } else {//use global lrs settings
         $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
-        foreach($result as $value){
+        foreach ($result as $value) {
             $expresult[$value->name] = $value->value;
         }
     }
@@ -732,18 +765,19 @@ function tincanlaunch_settings($instance){
 }
 
 /**
- * Should the global LRS settings be used instead of the instance specific ones? 
+ * Should the global LRS settings be used instead of the instance specific ones?
  *
  * @package  mod_tincanlaunch
  * @category tincan
- * @param string $instance The Moodle id for the Tin Can module instance. 
+ * @param string $instance The Moodle id for the Tin Can module instance.
  * @return bool
  */
-function use_global_lrs_settings($instance){
+function use_global_lrs_settings($instance)
+{
     global $DB;
     //determine if there is a row in tincanlaunch_lrs matching the current activity id
     $activitysettings = $DB->record_exists('tincanlaunch_lrs', array('tincanlaunchid'=>$instance));
-    if($activitysettings){
+    if ($activitysettings) {
         return false;
     }
     return true;
