@@ -153,7 +153,11 @@ function tincanlaunch_get_launch_url($registrationuuid)
         array(
             "endpoint" => $url,
             "auth" => "Basic ".$basicauth,
-            "actor" => json_encode(tincanlaunch_getactor($tincanlaunch->id)),
+            "actor" => tincanlaunch_myJson_encode(
+                tincanlaunch_getactor($tincanlaunch->id)->asVersion(
+                    $tincanlaunchsettings['tincanlaunchlrsversion']
+                )
+            ),
             "registration" => $registrationuuid
         ),
         '',
