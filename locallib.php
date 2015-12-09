@@ -161,7 +161,8 @@ function tincanlaunch_get_launch_url($registrationuuid)
             "registration" => $registrationuuid
         ),
         '',
-        '&'
+        '&',
+        PHP_QUERY_RFC3986
     );
     
     return $rtnString;
