@@ -68,7 +68,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
+        upgrade_mod_savepoint(true, 2015112702, 'tincanlaunch');
     }
 
     if ($oldversion < 2013083100) { //New version in version.php
