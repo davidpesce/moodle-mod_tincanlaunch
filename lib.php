@@ -110,7 +110,8 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
             $creds = tincanlaunch_get_creds_watershed(
                 $tincanlaunch_lrs->watershedlogin, 
                 $tincanlaunch_lrs->waterdshedpass, 
-                $tincanlaunch_lrs->lrsendpoint
+                $tincanlaunch_lrs->lrsendpoint,
+                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id
             );
 
             $tincanlaunch_lrs->lrslogin = $creds["key"];
@@ -170,20 +171,21 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     //if watershed integration
     if ($tincanlaunch_lrs->lrsauthentication == '2') {
         $tincanlaunch_lrs->watershedlogin = $tincanlaunch->tincanlaunchlrslogin;
-        $tincanlaunch_lrs->waterdshedpass = $tincanlaunch->tincanlaunchlrspass;
+        $tincanlaunch_lrs->watershedpass = $tincanlaunch->tincanlaunchlrspass;
 
         // If Watershed creds have changed
         $tincanlaunch_lrs_old =  $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid' => $tincanlaunch->id));
         if (
             $tincanlaunch_lrs_old->watershedlogin !== $tincanlaunch_lrs->watershedlogin
-            || $tincanlaunch_lrs_old->waterdshedpass !== $tincanlaunch_lrs->waterdshedpass
+            || $tincanlaunch_lrs_old->watershedpass !== $tincanlaunch_lrs->watershedpass
             || $tincanlaunch_lrs_old->lrsauthentication !== '2'
         ) {
             // Create a new Watershed activity provider
             $creds = tincanlaunch_get_creds_watershed(
                 $tincanlaunch_lrs->watershedlogin, 
-                $tincanlaunch_lrs->waterdshedpass, 
-                $tincanlaunch_lrs->lrsendpoint
+                $tincanlaunch_lrs->watershedpass, 
+                $tincanlaunch_lrs->lrsendpoint,
+                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id
             );
 
             $tincanlaunch_lrs->lrslogin = $creds["key"];
@@ -796,8 +798,9 @@ function tincanlaunch_getactor($instance)
  * @param string $endpoint LRS endpoint URL
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
-function tincanlaunch_get_creds_watershed($login, $pass, $endpoint)
+function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $APName)
 {
+    global $CFG;
     // Create a new Watershed activity provider
     $auth = array(
         "method" => "BASIC",
@@ -811,7 +814,6 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint)
 
     $wsclient = new \WatershedClient\Watershed($wsServer, $auth);
 
-    $APName = $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id;
     $response = $wsclient->createActivityProvider($APName, $orgId);
     if ($response["success"]) {
         return $response;
@@ -819,7 +821,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint)
     else {
         $reason = get_string('apCreationFailed', 'tincanlaunch')
         ." Status: ". $response["status"].". Response: ".$response["content"]."<br/>";
-        throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]); 
+        throw new moodle_exception($reason, 'tincanlaunch', ''); 
     }
 }
 
@@ -844,8 +846,8 @@ function tincanlaunch_settings($instance)
         $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
         $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
         $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
-        $expresult['tincanlaunchwatershedlogin'] = $activitysettings->tincanlaunchwatershedlogin;
-        $expresult['tincanlaunchwatershedpass'] = $activitysettings->tincanlaunchwatershedpass;
+        $expresult['tincanlaunchwatershedlogin'] = $activitysettings->watershedlogin;
+        $expresult['tincanlaunchwatershedpass'] = $activitysettings->watershedpass;
         $expresult['tincanlaunchcustomacchp'] = $activitysettings->customacchp;
         $expresult['tincanlaunchuseactoremail'] = $activitysettings->useactoremail;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;

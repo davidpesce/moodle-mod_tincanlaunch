@@ -55,7 +55,7 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrslogin_help', 'tincanlaunch'),
         get_string('tincanlaunchlrslogin_default', 'tincanlaunch')));
 
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrspass',
+    $settings->add(new admin_setting_configpasswordunmask('tincanlaunch/tincanlaunchlrspass',
         get_string('tincanlaunchlrspass', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_default', 'tincanlaunch')));

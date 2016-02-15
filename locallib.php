@@ -128,7 +128,7 @@ function tincan_launched_statement($registration_id)
  */
 function tincanlaunch_get_launch_url($registrationuuid)
 {
-    global $tincanlaunch;
+    global $tincanlaunch, $CFG;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     $current_time = new DateTime('NOW');
     $tincan_duration = $tincanlaunchsettings['tincanlaunchlrsduration'];
@@ -144,13 +144,17 @@ function tincanlaunch_get_launch_url($registrationuuid)
 
         //Learning Locker
         case "0":
-            $creds = tincanlaunch_get_creds_learningLocker($tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);
+            $creds = tincanlaunch_get_creds_learningLocker($tincanlaunchsettings['tincanlaunchlrslogin'], 
+                $tincanlaunchsettings['tincanlaunchlrspass'], $url);
             $basicauth = base64_encode($creds["contents"]["key"].":".$creds["contents"]["secret"]);
             break;
 
         //Watershed
         case "2":
-            $creds = tincanlaunch_get_creds_watershed($tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);
+            $creds = tincanlaunch_get_creds_watershed($tincanlaunchsettings['tincanlaunchwatershedlogin'], 
+                $tincanlaunchsettings['tincanlaunchwatershedpass'], 
+                $url,
+                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id.'&registration='.$registrationuuid);
             $basicauth = base64_encode($creds["key"].":".$creds["secret"]);
             break;
 

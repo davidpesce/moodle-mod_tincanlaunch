@@ -81,8 +81,12 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
     }
     die();
 }
-
-$registrationdata = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+if ($lrsrespond == 200) {
+    $registrationdata = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+}
+else {
+    $registrationdata = null;
+}
 $registrationdataetag = $getregistrationdatafromlrsstate->content->getEtag();
 
 $datenow = date("c");
@@ -112,6 +116,7 @@ if (is_null($registrationdata)){
 uasort($registrationdata, function($a, $b) {
     return strtotime($b['lastlaunched']) - strtotime($a['lastlaunched']);
 });
+
 
 //TODO:currently this is re-PUTting all of the data - it may be better just to POST the new data. This will prevent us sorting, but sorting could be done on output. 
 $saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state($registrationdata,"http://tincanapi.co.uk/stateapikeys/registrations",$registrationdataetag);
