@@ -1,3 +1,6 @@
 [submodule "TinCanPHP"]
 	path = TinCanPHP
 	url = https://github.com/RusticiSoftware/TinCanPHP.git
+[submodule "WatershedPHP"]
+	path = WatershedPHP
+	url = https://github.com/WatershedLRS/WatershedPHP

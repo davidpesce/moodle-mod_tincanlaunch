@@ -32,10 +32,13 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrsendpoint_help', 'tincanlaunch'),
         get_string('tincanlaunchlrsendpoint_default', 'tincanlaunch'), PARAM_URL));
 
-    $options = array(0=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 1=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'));
+    $options = array(1=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 2=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 0=>get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch'));
+    //Note the numbers above are deliberately mis-ordered for reasons of backwards compatibility with older settings. 
     $settings->add(new admin_setting_configselect('tincanlaunch/tincanlaunchlrsauthentication',
         get_string('tincanlaunchlrsauthentication', 'tincanlaunch'),
-        get_string('tincanlaunchlrsauthentication_help', 'tincanlaunch'), 1, $options));
+        get_string('tincanlaunchlrsauthentication_help', 'tincanlaunch').'<br/>'
+        .get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch')
+        , 1, $options));
 
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
         get_string('tincanlaunchlrslogin', 'tincanlaunch'),
@@ -47,6 +50,21 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_default', 'tincanlaunch')));
 
+    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
+        get_string('tincanlaunchlrslogin', 'tincanlaunch'),
+        get_string('tincanlaunchlrslogin_help', 'tincanlaunch'),
+        get_string('tincanlaunchlrslogin_default', 'tincanlaunch')));
+
+    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrspass',
+        get_string('tincanlaunchlrspass', 'tincanlaunch'),
+        get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
+        get_string('tincanlaunchlrspass_default', 'tincanlaunch')));
+
+    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',
+        get_string('tincanlaunchlrsduration', 'tincanlaunch'),
+        get_string('tincanlaunchlrsduration_help', 'tincanlaunch'),
+        get_string('tincanlaunchlrsduration_default', 'tincanlaunch')));
+
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchcustomacchp',
         get_string('tincanlaunchcustomacchp', 'tincanlaunch'),
         get_string('tincanlaunchcustomacchp_help', 'tincanlaunch'),
@@ -56,10 +74,5 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchuseactoremail', 'tincanlaunch'),
         get_string('tincanlaunchuseactoremail_help', 'tincanlaunch'), 
         1));
-
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',
-        get_string('tincanlaunchlrsduration', 'tincanlaunch'),
-        get_string('tincanlaunchlrsduration_help', 'tincanlaunch'),
-        get_string('tincanlaunchlrsduration_default', 'tincanlaunch')));
 
 }

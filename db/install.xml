@@ -34,6 +34,8 @@
         <FIELD NAME="lrsauthentication" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="LRS authentication type"/>
         <FIELD NAME="lrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS login (username)"/>
         <FIELD NAME="lrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS password"/>
+        <FIELD NAME="watershedlogin" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Watershed login (username)"/>
+        <FIELD NAME="watershedpass" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Watershed password"/>
         <FIELD NAME="customacchp" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="useactoremail" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="1"/>
         <FIELD NAME="lrsduration" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Duration activity will remain active for."/>
