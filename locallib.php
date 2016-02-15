@@ -66,7 +66,7 @@ function tincan_launched_statement($registration_id)
         );
     }
 
-    $statement = new \TinCan\statement(
+    $statement = new \TinCan\Statement(
         array(
             'id' => $statementid,
             'actor' => tincanlaunch_getactor($tincanlaunch->id),
