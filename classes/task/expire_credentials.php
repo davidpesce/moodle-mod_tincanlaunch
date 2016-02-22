@@ -54,11 +54,11 @@ function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid)
 
     $response = $wsclient->deleteActivityProvider($credentialid, $orgId);
     if ($response["success"]) {
-        echo("Deleted credential id {$credentialid} on organization id {$orgID}");
+        echo("Deleted credential id {$credentialid} on organization id {$orgId}");
         return true;
     } 
     else {
-        echo("Failed to delete credential id {$credentialid} on organization id {$orgID}");
+        echo("Failed to delete credential id {$credentialid} on organization id {$orgId}");
         echo ('<pre>');
         var_dump($response);
         echo ('</pre>');
