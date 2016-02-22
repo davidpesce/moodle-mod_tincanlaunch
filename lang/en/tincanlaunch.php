@@ -138,3 +138,5 @@ $string['eventactivitylaunched'] = 'Activity launched';
 $string['eventactivitycompleted'] = 'Activity completed';
 
 $string['tincanlaunch:addinstance'] = 'Add a new Tin Can (xAPI) activity to a course';
+
+$string['expirecredentials'] = 'Expire credentials';
