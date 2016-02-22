@@ -3,4 +3,4 @@
 	url = https://github.com/RusticiSoftware/TinCanPHP.git
 [submodule "WatershedPHP"]
 	path = WatershedPHP
-	url = https://github.com/WatershedLRS/WatershedPHP
+	url = https://github.com/WatershedLRS/WatershedPHP.git
