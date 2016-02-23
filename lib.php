@@ -79,7 +79,7 @@ function tincanlaunch_supports($feature)
  */
 function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null)
 {
-    global $DB;
+    global $DB, $CFG;
 
     $tincanlaunch->timecreated = time();
 
@@ -97,19 +97,20 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
     //if watershed integration
     if ($tincanlaunch_lrs->lrsauthentication == '2') {
         $tincanlaunch_lrs->watershedlogin = $tincanlaunch->tincanlaunchlrslogin;
-        $tincanlaunch_lrs->waterdshedpass = $tincanlaunch->tincanlaunchlrspass;
+        $tincanlaunch_lrs->watershedpass = $tincanlaunch->tincanlaunchlrspass;
 
         // If Watershed creds have changed
         $tincanlaunch_lrs_old =  $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid' => $tincanlaunch->id));
         if (
-            $tincanlaunch_lrs_old->watershedlogin !== $tincanlaunch_lrs->watershedlogin
-            || $tincanlaunch_lrs_old->waterdshedpass !== $tincanlaunch_lrs->waterdshedpass
+            $tincanlaunch_lrs_old == false
+            || $tincanlaunch_lrs_old->watershedlogin !== $tincanlaunch_lrs->watershedlogin
+            || $tincanlaunch_lrs_old->watershedpass !== $tincanlaunch_lrs->watershedpass
             || $tincanlaunch_lrs_old->lrsauthentication !== '2'
         ) {
             // Create a new Watershed activity provider
             $creds = tincanlaunch_get_creds_watershed(
                 $tincanlaunch_lrs->watershedlogin, 
-                $tincanlaunch_lrs->waterdshedpass, 
+                $tincanlaunch_lrs->watershedpass, 
                 $tincanlaunch_lrs->lrsendpoint,
                 $tincanlaunch->id,
                 $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id,
@@ -251,6 +252,13 @@ function tincanlaunch_delete_instance($id)
         return false;
     }
 
+    // Delete master LRS credentials for this instance
+    if ($credentialid = $DB->get_field('tincanlaunch_credentials', 'credentialid', array('tincanlaunchid' => $id))) {
+        if (tincanlaunch_delete_creds_watershed($id, $credentialid) == true) {
+            $DB->delete_records('tincanlaunch_credentials', ['credentialid' => $credentialid]);
+        }
+    }
+
     //determine if there is a record of this (ever) in the tincanlaunch_lrs table
     $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$id), $strictness = IGNORE_MISSING);
     if ($tincanlaunch_lrs_id) {
@@ -259,7 +267,6 @@ function tincanlaunch_delete_instance($id)
     }
 
     # Delete any dependent records here #
-
     $DB->delete_records('tincanlaunch', array('id' => $tincanlaunch->id));
 
     return true;
@@ -830,6 +837,49 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $tincanlaunc
         $reason = get_string('apCreationFailed', 'tincanlaunch')
         ." Status: ". $response["status"].". Response: ".$response["content"]."<br/>";
         throw new moodle_exception($reason, 'tincanlaunch', ''); 
+    }
+}
+
+/**
+ * Used with Watershed integration to fetch credentials from the LRS.
+ * This process is not part of the xAPI specification or the Tin Can launch spec.
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param int $tincanlaunchid instance id for LRS settings
+ * @param int $credentialid credential id to delete
+ * @return Bool success
+ */
+function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid)
+{
+    global $CFG;
+
+    $tincanlaunchsettings = tincanlaunch_settings($tincanlaunchid);
+
+    // Create a new Watershed activity provider
+    $auth = array(
+        "method" => "BASIC",
+        "username" => $tincanlaunchsettings['tincanlaunchwatershedlogin'],
+        "password" => $tincanlaunchsettings['tincanlaunchwatershedpass']
+    );
+
+    $explodedEndpoint = explode ('/', $tincanlaunchsettings['tincanlaunchlrsendpoint']);
+    $wsServer = $explodedEndpoint[0].'//'.$explodedEndpoint[2];
+    $orgId = $explodedEndpoint[5];
+
+    $wsclient = new \WatershedClient\Watershed($wsServer, $auth);
+
+    $response = $wsclient->deleteActivityProvider($credentialid, $orgId);
+    if ($response["success"]) {
+        echo("Deleted credential id {$credentialid} on organization id {$orgId}");
+        return true;
+    } 
+    else {
+        echo("Failed to delete credential id {$credentialid} on organization id {$orgId}");
+        echo ('<pre>');
+        var_dump($response);
+        echo ('</pre>');
+        return false;
     }
 }
 

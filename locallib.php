@@ -154,7 +154,8 @@ function tincanlaunch_get_launch_url($registrationuuid)
 
         //Watershed
         case "2":
-            $creds = tincanlaunch_get_creds_watershed($tincanlaunchsettings['tincanlaunchwatershedlogin'], 
+            $creds = tincanlaunch_get_creds_watershed (
+                $tincanlaunchsettings['tincanlaunchwatershedlogin'], 
                 $tincanlaunchsettings['tincanlaunchwatershedpass'], 
                 $url,
                 $tincanlaunch->id,
