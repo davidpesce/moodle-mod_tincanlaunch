@@ -215,7 +215,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
             }
         } else {//if it does exist, update it
             $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
-            //var_dump($tincanlaunch_lrs); die();
+
             if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
                 return false;
             }

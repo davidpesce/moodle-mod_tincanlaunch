@@ -34,31 +34,27 @@ if ($ADMIN->fulltree) {
 
     $options = array(1=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 2=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 0=>get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch'));
     //Note the numbers above are deliberately mis-ordered for reasons of backwards compatibility with older settings. 
-    $settings->add(new admin_setting_configselect('tincanlaunch/tincanlaunchlrsauthentication',
+    $setting = new admin_setting_configselect('tincanlaunch/tincanlaunchlrsauthentication',
         get_string('tincanlaunchlrsauthentication', 'tincanlaunch'),
         get_string('tincanlaunchlrsauthentication_help', 'tincanlaunch').'<br/>'
         .get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch')
-        , 1, $options));
+        , 1, $options);
+    $setting->set_updatedcallback('tincanlaunch_update_instances');
+    $settings->add($setting);
 
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
+    $setting = new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
         get_string('tincanlaunchlrslogin', 'tincanlaunch'),
         get_string('tincanlaunchlrslogin_help', 'tincanlaunch'),
-        get_string('tincanlaunchlrslogin_default', 'tincanlaunch')));
+        get_string('tincanlaunchlrslogin_default', 'tincanlaunch'));
+    $setting->set_updatedcallback('tincanlaunch_update_instances');
+    $settings->add($setting);
 
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrspass',
+    $setting = new admin_setting_configtext('tincanlaunch/tincanlaunchlrspass',
         get_string('tincanlaunchlrspass', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
-        get_string('tincanlaunchlrspass_default', 'tincanlaunch')));
-
-    $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
-        get_string('tincanlaunchlrslogin', 'tincanlaunch'),
-        get_string('tincanlaunchlrslogin_help', 'tincanlaunch'),
-        get_string('tincanlaunchlrslogin_default', 'tincanlaunch')));
-
-    $settings->add(new admin_setting_configpasswordunmask('tincanlaunch/tincanlaunchlrspass',
-        get_string('tincanlaunchlrspass', 'tincanlaunch'),
-        get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
-        get_string('tincanlaunchlrspass_default', 'tincanlaunch')));
+        get_string('tincanlaunchlrspass_default', 'tincanlaunch'));
+    $setting->set_updatedcallback('tincanlaunch_update_instances');
+    $settings->add($setting);
 
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',
         get_string('tincanlaunchlrsduration', 'tincanlaunch'),
