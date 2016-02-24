@@ -39,21 +39,18 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrsauthentication_help', 'tincanlaunch').'<br/>'
         .get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch')
         , 1, $options);
-    $setting->set_updatedcallback('tincanlaunch_update_instances');
     $settings->add($setting);
 
     $setting = new admin_setting_configtext('tincanlaunch/tincanlaunchlrslogin',
         get_string('tincanlaunchlrslogin', 'tincanlaunch'),
         get_string('tincanlaunchlrslogin_help', 'tincanlaunch'),
         get_string('tincanlaunchlrslogin_default', 'tincanlaunch'));
-    $setting->set_updatedcallback('tincanlaunch_update_instances');
     $settings->add($setting);
 
     $setting = new admin_setting_configtext('tincanlaunch/tincanlaunchlrspass',
         get_string('tincanlaunchlrspass', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_help', 'tincanlaunch'),
         get_string('tincanlaunchlrspass_default', 'tincanlaunch'));
-    $setting->set_updatedcallback('tincanlaunch_update_instances');
     $settings->add($setting);
 
     $settings->add(new admin_setting_configtext('tincanlaunch/tincanlaunchlrsduration',

@@ -40,6 +40,9 @@ require_once("$CFG->dirroot/mod/tincanlaunch/WatershedPHP/watershed.php");
 //SCORM library from the SCORM module. Required for its xml2Array class by tincanlaunch_process_new_package
 require_once("$CFG->dirroot/mod/scorm/datamodels/scormlib.php");
 
+global $TINCANLAUNCH_SETTINGS;
+$TINCANLAUNCH_SETTINGS = null;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Moodle core API                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -893,7 +896,11 @@ function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid)
  */
 function tincanlaunch_settings($instance)
 {
-    global $DB;
+    global $DB, $CFG, $TINCANLAUNCH_SETTINGS;
+
+    if (!is_null($TINCANLAUNCH_SETTINGS)) {
+        return $TINCANLAUNCH_SETTINGS;
+    }
 
     $expresult = array();
     $activitysettings = $DB->get_record(
@@ -902,9 +909,6 @@ function tincanlaunch_settings($instance)
         $fields = '*', 
         $strictness = IGNORE_MISSING
     );
-
-    $expresult['tincanlaunchwatershedlogin'] = $activitysettings->watershedlogin;
-    $expresult['tincanlaunchwatershedpass'] = $activitysettings->watershedpass;
 
     //if global settings are not used, retrieve activity settings
     if (!use_global_lrs_settings($instance)) {
@@ -915,13 +919,81 @@ function tincanlaunch_settings($instance)
         $expresult['tincanlaunchcustomacchp'] = $activitysettings->customacchp;
         $expresult['tincanlaunchuseactoremail'] = $activitysettings->useactoremail;
         $expresult['tincanlaunchlrsduration'] = $activitysettings->lrsduration;
+        $expresult['tincanlaunchwatershedlogin'] = $activitysettings->watershedlogin;
+        $expresult['tincanlaunchwatershedpass'] = $activitysettings->watershedpass;
     } else {//use global lrs settings
         $result = $DB->get_records('config_plugins', array('plugin' =>'tincanlaunch'));
         foreach ($result as $value) {
             $expresult[$value->name] = $value->value;
         }
+
+        // If Watershed integration, don't use global xAPI creds
+        if ($expresult['tincanlaunchlrsauthentication'] == '2') {
+
+            //the global login and password are always Watershed creds, not xapi creds
+            $expresult['tincanlaunchwatershedlogin'] = $expresult['tincanlaunchlrslogin'];
+            $expresult['tincanlaunchwatershedpass'] = $expresult['tincanlaunchlrspass'];
+
+            //Check if we need to update instance record (endpoint, username, password or auth type have changed)
+            if (
+                $activitysettings == false
+                || $activitysettings->watershedlogin !== $expresult['tincanlaunchlrslogin']
+                || $activitysettings->watershedpass !== $expresult['tincanlaunchlrspass']
+                || $activitysettings->lrsendpoint !== $expresult['tincanlaunchlrsendpoint']
+                || $activitysettings->lrsauthentication !== '2'
+            ) { 
+
+                // Create a new Watershed activity provider
+                $creds = tincanlaunch_get_creds_watershed(
+                    $expresult['tincanlaunchlrslogin'], 
+                    $expresult['tincanlaunchlrspass'], 
+                    $expresult['tincanlaunchlrsendpoint'],
+                    $instance,
+                    $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $instance,
+                    null
+                );
+
+                // Update database with newly created xapi creds
+                $tincanlaunch_lrs = new stdClass();
+                $tincanlaunch_lrs->lrsendpoint = $expresult['tincanlaunchlrsendpoint'];
+                $tincanlaunch_lrs->lrslogin = $creds["key"];
+                $tincanlaunch_lrs->lrspass = $creds["secret"];
+                $tincanlaunch_lrs->watershedlogin = $expresult['tincanlaunchlrslogin'];
+                $tincanlaunch_lrs->watershedpass = $expresult['tincanlaunchlrspass'];
+                $tincanlaunch_lrs->lrsauthentication = '2';
+                $tincanlaunch_lrs->customacchp = $expresult['tincanlaunchcustomacchp'];
+                $tincanlaunch_lrs->useactoremail = $expresult['tincanlaunchuseactoremail'];
+                $tincanlaunch_lrs->lrsduration = $expresult['tincanlaunchlrsduration'];
+                $tincanlaunch_lrs->tincanlaunchid = $instance;
+
+                //populate xapi creds in result
+                $expresult['tincanlaunchlrslogin'] = $creds["key"];
+                $expresult['tincanlaunchlrspass'] = $creds["secret"];
+
+                //if record does not exist, will need to insert_record
+                if ($activitysettings == false) {
+                    if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+                        return false;
+                    }
+                } else {//if it does exist, update it
+                    $tincanlaunch_lrs->id = $activitysettings->id;
+                    if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+                        return false;
+                    }
+                }
+            }
+            // Relevant instance settings match global settings; no need to create new creds
+            else {
+                //use global settings, plus instance specific xapi creds
+                $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
+                $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
+            }
+
+        }
     }
     $expresult['tincanlaunchlrsversion'] = '1.0.0';
+
+    $TINCANLAUNCH_SETTINGS = $expresult;
     return $expresult;
 }
 
@@ -937,8 +1009,8 @@ function use_global_lrs_settings($instance)
 {
     global $DB;
     //determine if there is a row in tincanlaunch_lrs matching the current activity id
-    $activitysettings = $DB->record_exists('tincanlaunch_lrs', array('tincanlaunchid'=>$instance));
-    if ($activitysettings) {
+    $activitysettings = $DB->get_record('tincanlaunch', array('id'=>$instance));
+    if ($activitysettings->overridedefaults == 1) {
         return false;
     }
     return true;
