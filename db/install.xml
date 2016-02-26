@@ -34,6 +34,8 @@
         <FIELD NAME="lrsauthentication" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="LRS authentication type"/>
         <FIELD NAME="lrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS login (username)"/>
         <FIELD NAME="lrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS password"/>
+        <FIELD NAME="watershedlogin" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Watershed login (username)"/>
+        <FIELD NAME="watershedpass" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Watershed password"/>
         <FIELD NAME="customacchp" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="useactoremail" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="1"/>
         <FIELD NAME="lrsduration" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Duration activity will remain active for."/>
@@ -43,6 +45,21 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="tincanlaunchid" UNIQUE="false" FIELDS="tincanlaunchid" COMMENT="ID used to join tincanlaunch activity with the LRS settings."/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="tincanlaunch_credentials" COMMENT="Store credentials for expiry">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="tincanlaunchid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Index to join tincanlaunch activity id"/>
+        <FIELD NAME="credentialid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"  COMMENT="Id of the activity id created"/>
+        <FIELD NAME="expiry" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="expiry unix timestamp"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="tincanlaunchid" UNIQUE="false" FIELDS="tincanlaunchid" COMMENT="ID used to join tincanlaunch activity with the LRS settings."/>
+        <INDEX NAME="credentialid" UNIQUE="false" FIELDS="credentialid" COMMENT="ID of the credentials created."/>
       </INDEXES>
     </TABLE>
   </TABLES>

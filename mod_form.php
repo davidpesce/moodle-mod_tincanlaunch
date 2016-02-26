@@ -111,11 +111,13 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->disabledIf('tincanlaunchlrsendpoint', 'overridedefaults');
 
         //Add LRS Authentication
-        $authoptions = array(0=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 1=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'));
+        $authoptions = array(1=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 2=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 0=>get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch'));
         $mform->addElement('select', 'tincanlaunchlrsauthentication', get_string('tincanlaunchlrsauthentication','tincanlaunch'), $authoptions);
         $mform->disabledIf('tincanlaunchlrsauthentication', 'overridedefaults');
         $mform->addHelpButton('tincanlaunchlrsauthentication', 'tincanlaunchlrsauthentication', 'tincanlaunch');
         $mform->getElement('tincanlaunchlrsauthentication')->setSelected($cfg_tincanlaunch->tincanlaunchlrsauthentication);
+
+        $mform->addElement('static', 'description', get_string('tincanlaunchlrsauthentication_watershedhelp_label', 'tincanlaunch'), get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch'));
 
         //Add basic authorisation login.
         $mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
@@ -126,12 +128,25 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->disabledIf('tincanlaunchlrslogin', 'overridedefaults');
 
         //Add basic authorisation pass.
-        $mform->addElement('text', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
+        $mform->addElement('password', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
         $mform->setType('tincanlaunchlrspass', PARAM_TEXT);
         $mform->addRule('tincanlaunchlrspass', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrspass', 'tincanlaunchlrspass', 'tincanlaunch');
         $mform->setDefault('tincanlaunchlrspass', $cfg_tincanlaunch->tincanlaunchlrspass);
         $mform->disabledIf('tincanlaunchlrspass', 'overridedefaults');
+
+        $mform->addElement('hidden', 'tincanlaunchwatershedlogin', '');
+        $mform->setType('tincanlaunchwatershedlogin', PARAM_TEXT);
+        $mform->addElement('hidden', 'tincanlaunchwatershedpass', '');
+        $mform->setType('tincanlaunchwatershedpass', PARAM_TEXT);
+
+        //Duration
+        $mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size'=>'64'));
+        $mform->setType('tincanlaunchlrsduration', PARAM_TEXT);
+        $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
+        $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
+        $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
+        $mform->disabledIf('tincanlaunchlrsduration', 'overridedefaults');
 
         //Actor account homePage
         $mform->addElement('text', 'tincanlaunchcustomacchp', get_string('tincanlaunchcustomacchp', 'tincanlaunch'), array('size'=>'64'));
@@ -146,14 +161,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('tincanlaunchuseactoremail', 'tincanlaunchuseactoremail', 'tincanlaunch');
         $mform->setDefault('tincanlaunchuseactoremail', $cfg_tincanlaunch->tincanlaunchuseactoremail);
         $mform->disabledIf('tincanlaunchuseactoremail', 'overridedefaults');
-
-        //Duration
-        $mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size'=>'64'));
-        $mform->setType('tincanlaunchlrsduration', PARAM_TEXT);
-        $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
-        $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
-        $mform->disabledIf('tincanlaunchlrsduration', 'overridedefaults');
         //End advanced settings
 
         //-------------------------------------------------------------------------------
@@ -228,11 +235,19 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
                 $tincanlaunch_lrs = $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid'=>$default_values['instance']), $fields='*', $strictness=IGNORE_MISSING);
                 $default_values['tincanlaunchlrsendpoint'] = $tincanlaunch_lrs->lrsendpoint;
                 $default_values['tincanlaunchlrsauthentication'] = $tincanlaunch_lrs->lrsauthentication;
-                $default_values['tincanlaunchlrslogin'] = $tincanlaunch_lrs->lrslogin;
-                $default_values['tincanlaunchlrspass'] = $tincanlaunch_lrs->lrspass;
                 $default_values['tincanlaunchcustomacchp'] = $tincanlaunch_lrs->customacchp;
                 $default_values['tincanlaunchuseactoremail'] = $tincanlaunch_lrs->useactoremail;
                 $default_values['tincanlaunchlrsduration'] = $tincanlaunch_lrs->lrsduration;
+
+                //if watershed integration
+                if ($tincanlaunch_lrs->lrsauthentication == '2') {
+                    $default_values['tincanlaunchlrslogin'] = $tincanlaunch_lrs->watershedlogin;
+                    $default_values['tincanlaunchlrspass'] = $tincanlaunch_lrs->watershedpass;
+                } 
+                else { 
+                    $default_values['tincanlaunchlrslogin'] = $tincanlaunch_lrs->lrslogin;
+                    $default_values['tincanlaunchlrspass'] = $tincanlaunch_lrs->lrspass;
+                }
             }
         }
 

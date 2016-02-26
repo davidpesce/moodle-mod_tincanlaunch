@@ -128,11 +128,11 @@ function tincan_launched_statement($registration_id)
  */
 function tincanlaunch_get_launch_url($registrationuuid)
 {
-    global $tincanlaunch;
+    global $tincanlaunch, $CFG;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
-    $current_time = new DateTime('NOW');
+    $expiry = new DateTime('NOW');
     $tincan_duration = $tincanlaunchsettings['tincanlaunchlrsduration'];
-    $current_time->add(new DateInterval('PT'.$tincan_duration.'M'));
+    $expiry->add(new DateInterval('PT'.$tincan_duration.'M'));
 
     $url = trim($tincanlaunchsettings['tincanlaunchlrsendpoint']);
 
@@ -140,12 +140,34 @@ function tincanlaunch_get_launch_url($registrationuuid)
     $basicLogin = trim($tincanlaunchsettings['tincanlaunchlrslogin']);
     $basicPass = trim($tincanlaunchsettings['tincanlaunchlrspass']);
 
+    switch ($tincanlaunchsettings['tincanlaunchlrsauthentication']) {
 
-    if ($tincanlaunchsettings['tincanlaunchlrsauthentication'] != "0") { //LRS integrated basic authentication is 0
-        $basicauth = base64_encode($basicLogin.":".$basicPass);
-    } else {
-        $creds = tincanlaunch_get_creds($tincanlaunchsettings['tincanlaunchlrslogin'], $tincanlaunchsettings['tincanlaunchlrspass'], $data, $url);
-        $basicauth = base64_encode($creds["contents"]["key"].":".$creds["contents"]["secret"]);
+        //Learning Locker
+        case "0":
+            $creds = tincanlaunch_get_creds_learningLocker($tincanlaunchsettings['tincanlaunchlrslogin'], 
+                $tincanlaunchsettings['tincanlaunchlrspass'], 
+                $url,
+                $expiry
+            );
+            $basicauth = base64_encode($creds["contents"]["key"].":".$creds["contents"]["secret"]);
+            break;
+
+        //Watershed
+        case "2":
+            $creds = tincanlaunch_get_creds_watershed (
+                $tincanlaunchsettings['tincanlaunchwatershedlogin'], 
+                $tincanlaunchsettings['tincanlaunchwatershedpass'], 
+                $url,
+                $tincanlaunch->id,
+                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id.'&registration='.$registrationuuid,
+                $expiry
+            );
+            $basicauth = base64_encode($creds["key"].":".$creds["secret"]);
+            break;
+
+        default:
+            $basicauth = base64_encode($basicLogin.":".$basicPass);
+            break;
     }
 
     //build the URL to be returned
@@ -169,9 +191,8 @@ function tincanlaunch_get_launch_url($registrationuuid)
 }
 
 /**
- * Used with LRS integrated basic authentication to fetch credentials from the LRS.
+ * Used with Learning Locker integration to fetch credentials from the LRS.
  * This process is not part of the xAPI specification or the Tin Can launch spec.
- * It is not supported by all Learning Record Stores.
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -180,13 +201,13 @@ function tincanlaunch_get_launch_url($registrationuuid)
  * @param string $url LRS endpoint URL
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
-function tincanlaunch_get_creds($basicLogin, $basicPass, $url)
+function tincanlaunch_get_creds_learningLocker($basicLogin, $basicPass, $url, $expiry)
 {
     global $tincanlaunch;
     $actor = tincanlaunch_getactor($tincanlaunch->id);
     $data = array(
         'scope' => array ('all'),
-        'expiry' => $current_time->format(DATE_ATOM),
+        'expiry' => $expiry->format(DATE_ATOM),
         'historical' => false,
         'actors' => array(
             "objectType"=> 'Person',

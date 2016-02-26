@@ -43,27 +43,66 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
+    if ($oldversion < 2016021508) { //New version in version.php
+
+        // Define table tincanlaunch_credentials to be created.
+        $table = new xmldb_table('tincanlaunch_credentials');
+
+        // Adding fields to table tincanlaunch_credentials.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('tincanlaunchid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('credentialid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('expiry', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tincanlaunch_lrs.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table tincanlaunch_lrs.
+        $table->add_index('tincanlaunch_credentialid', XMLDB_INDEX_NOTUNIQUE, array('credentialid'));
+        $table->add_index('tincanlaunch_tincanlaunchid', XMLDB_INDEX_NOTUNIQUE, array('tincanlaunchid'));
+
+        // Conditionally launch create table for tincanlaunch_lrs.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2016021508, 'tincanlaunch');
+    }
+
+    if ($oldversion < 2016021502) { //New version in version.php
+        // Define field  to be added to table
+        $table = new xmldb_table('tincanlaunch_lrs');
+        $field = new xmldb_field('watershedlogin', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('watershedpass', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2016021502, 'tincanlaunch');
+    }
+
     if ($oldversion < 2015112702) { //New version in version.php
         // Define field tincanactivityid to be added to tincanlaunch
         $table = new xmldb_table('tincanlaunch');
         $field = new xmldb_field('tincanmultipleregs', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'tincanverbid');
-        
-        // Add field tincanactivityid
+
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         $table = new xmldb_table('tincanlaunch_lrs');
         $field = new xmldb_field('useactoremail', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
-        
-        // Add field tincanactivityid
+
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         $table->add_field('customacchp', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        
-        // Add field tincanactivityid
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }

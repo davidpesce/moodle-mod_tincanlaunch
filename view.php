@@ -135,8 +135,8 @@ if ($lrsrespond!= 200 && $lrsrespond != 404) {
     die();
 }
 
-$registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-if ($registrationdatafromlrs) {
+if ($lrsrespond == 200) {
+    $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
     if ($tincanlaunch->tincanmultipleregs) {
         echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
             .$registrationid
@@ -145,6 +145,11 @@ if ($registrationdatafromlrs) {
             ."</a></p>";
     }
     foreach ($registrationdatafromlrs as $key => $item) {
+
+        if (!is_array($registrationdatafromlrs[$key])){
+            $reason = "Excepted array, found ". $registrationdatafromlrs[$key];
+            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]); 
+        }
         array_push(
             $registrationdatafromlrs[$key],
             "<a onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"

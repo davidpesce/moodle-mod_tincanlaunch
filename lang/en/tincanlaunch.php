@@ -53,10 +53,13 @@ $string['tincanlaunchlrsduration'] = 'Duration';
 $string['tincanlaunchlrsduration_help'] = 'Used with \'LRS integrated basic authentication\'. Requests the LRS to keep credentials valid for this number of minutes.';
 $string['tincanlaunchlrsduration_default'] = '9000';
 
-$string['tincanlaunchlrsauthentication'] = 'Authentication settings';
-$string['tincanlaunchlrsauthentication_help'] = 'Use "Simple basic authentication" unless another setting is explicitly supported by your LRS.';
-$string['tincanlaunchlrsauthentication_option_0'] = 'LRS integrated basic authentication';
-$string['tincanlaunchlrsauthentication_option_1'] = 'Simple basic authentication';
+$string['tincanlaunchlrsauthentication'] = 'LRS integration';
+$string['tincanlaunchlrsauthentication_help'] = 'Use additional integration features to create new authentication credentials for each launch for supported LRSs.';
+$string['tincanlaunchlrsauthentication_watershedhelp'] = 'For Watershed integration, enter Watershed login credentials in the Login and Password fields below. Be aware that these details are stored in the Moodle database. Use an account created for the prupose with a password that is not used for any other account. For other integration settings enter the Basic Auth Login/Password below.';
+$string['tincanlaunchlrsauthentication_watershedhelp_label'] = 'Watershed integration';
+$string['tincanlaunchlrsauthentication_option_0'] = 'None';
+$string['tincanlaunchlrsauthentication_option_1'] = 'Watershed';
+$string['tincanlaunchlrsauthentication_option_2'] = 'Learning Locker';
 
 $string['tincanlaunchuseactoremail'] = 'Identify by email';
 $string['tincanlaunchuseactoremail_help'] = 'If selected, learners will be identified by their email address if they have one recorded in Moodle.';
@@ -96,6 +99,7 @@ $string['tincanmultipleregs'] = 'Allow multiple registrations.';
 $string['tincanmultipleregs_help'] = 'If selected, allow the learner to start more than one registration for the activity. Learners can always return to any registrations they have started, even if this setting is unchecked.';
 
 //End Activity Settings
+$string['apCreationFailed'] = 'Failed to create Watershed Activity Provider.'; 
 
 //Zip errors
 $string['badmanifest'] = 'Some manifest errors: see errors log';
@@ -134,3 +138,5 @@ $string['eventactivitylaunched'] = 'Activity launched';
 $string['eventactivitycompleted'] = 'Activity completed';
 
 $string['tincanlaunch:addinstance'] = 'Add a new Tin Can (xAPI) activity to a course';
+
+$string['expirecredentials'] = 'Expire credentials';
