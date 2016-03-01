@@ -721,7 +721,7 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
 
     $allTheStatements = $statementsResponse->content->getStatements();
     $moreStatementsURL = $statementsResponse->content->getMore();
-    while (!is_null($moreStatementsURL)) {
+    while (!empty($moreStatementsURL)) {
         $moreStmtsResponse = $lrs->moreStatements($moreStatementsURL);
         if ($moreStmtsResponse->success == false) {
             return $moreStmtsResponse;
