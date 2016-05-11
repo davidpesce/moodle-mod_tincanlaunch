@@ -817,7 +817,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $tincanlaunc
     $wsServer = $explodedEndpoint[0].'//'.$explodedEndpoint[2];
     $orgId = $explodedEndpoint[5];
 
-    $wsclient = new \WatershedClient\Watershed($wsServer, $auth);
+    $wsclient = new \WatershedClient\Watershed($wsServer, $auth, $orgId, 'Moodle');
 
     if (is_null($expiry)) {
         $expiryUnix = 0;
