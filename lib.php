@@ -269,7 +269,6 @@ function tincanlaunch_delete_instance($id)
         $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunch_lrs_id));
     }
 
-    # Delete any dependent records here #
     $DB->delete_records('tincanlaunch', array('id' => $tincanlaunch->id));
 
     return true;
@@ -754,16 +753,8 @@ function tincanlaunch_getactor($instance)
 
     $settings = tincanlaunch_settings($instance);
 
-    /*echo "<pre>";
-    var_dump($USER->email);
-    echo "</pre>";
-    echo "<pre>";
-    var_dump($settings['tincanlaunchuseactoremail']);
-    echo "</pre>";
-    die();*/
-
     if ($USER->idnumber && $settings['tincanlaunchcustomacchp']) {
-        return array(
+        $agent = array(
             "name" => fullname($USER),
             "account" => array(
                 "homePage" => $settings['tincanlaunchcustomacchp'],
@@ -870,7 +861,7 @@ function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid)
     $wsServer = $explodedEndpoint[0].'//'.$explodedEndpoint[2];
     $orgId = $explodedEndpoint[5];
 
-    $wsclient = new \WatershedClient\Watershed($wsServer, $auth);
+    $wsclient = new \WatershedClient\Watershed($wsServer, $auth, $orgId, 'Moodle');
 
     $response = $wsclient->deleteActivityProvider($credentialid, $orgId);
     if ($response["success"]) {
