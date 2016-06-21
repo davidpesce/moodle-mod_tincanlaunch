@@ -517,9 +517,9 @@ It looks like the standard Quiz module does that same thing, so I don't feel so 
 */
 
 /**
- * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents 
+ * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents
  * and extracts the launch url and activity id from the tincan.xml file.
- * Note: This takes the *first* activity from the tincan.xml file to be the activity intended 
+ * Note: This takes the *first* activity from the tincan.xml file to be the activity intended
  * to be launched. It will not go hunting for launch URLs any activities listed below.
  * Based closely on code from the SCORM and (to a lesser extent) Resource modules.
  * @package  mod_tincanlaunch

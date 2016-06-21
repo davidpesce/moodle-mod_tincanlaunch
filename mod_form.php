@@ -247,19 +247,18 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         );
         $group[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
-        
+
         $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'), array(' '), false);
         $mform->addGroupRule('completionverbgroup', array(
-            'tincanverbid' => array( 
+            'tincanverbid' => array(
                 array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
                 )
             )
         );
-        
+
         $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
-        $mform->disabledIf('tincanverbid','completionverbenabled', 'notchecked');
-        $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed'); 
-        
+        $mform->disabledIf('tincanverbid', 'completionverbenabled', 'notchecked');
+        $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed');
 
         return array('completionverbgroup');
     }
@@ -277,7 +276,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
             // Turn off completion settings if the checkboxes aren't ticked.
             $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
             if (empty($data->completionverbenabled) || !$autocompletion) {
-               $data->tincanverbid = '';
+                $data->tincanverbid = '';
             }
         }
         return $data;
@@ -290,13 +289,13 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 
         // Determine if default lrs settings were overriden.
         if (!empty($defaultvalues['overridedefaults'])) {
-            if ($defaultvalues['overridedefaults']=='1') {
+            if ($defaultvalues['overridedefaults'] == '1') {
                 // Retrieve activity lrs settings from DB.
                 $tincanlaunchlrs = $DB->get_record(
                     'tincanlaunch_lrs',
                     array('tincanlaunchid' => $defaultvalues['instance']),
-                    $fields='*',
-                    $strictness=IGNORE_MISSING
+                    $fields = '*',
+                    IGNORE_MISSING
                 );
                 $defaultvalues['tincanlaunchlrsendpoint'] = $tincanlaunchlrs->lrsendpoint;
                 $defaultvalues['tincanlaunchlrsauthentication'] = $tincanlaunchlrs->lrsauthentication;
@@ -308,8 +307,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
                 if ($tincanlaunchlrs->lrsauthentication == '2') {
                     $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->watershedlogin;
                     $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->watershedpass;
-                }
-                else {
+                } else {
                     $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->lrslogin;
                     $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->lrspass;
                 }
