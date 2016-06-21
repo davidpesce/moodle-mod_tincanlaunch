@@ -83,7 +83,7 @@ if (is_null($registrationdata)) {
     if ($registrationdata->httpResponse['status'] = 404) {
         $registrationdata = $registrationdataforthisattempt;
     }
-} else if (array_key_exists($registrationid,$registrationdata)) { 
+} else if (array_key_exists($registrationid, $registrationdata)) {
     // Else if the regsitration exists update the lastlaunched date.
     $registrationdata[$registrationid]["lastlaunched"] = $datenow;
 } else { // Push the new data on the end.

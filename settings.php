@@ -22,7 +22,7 @@ if ($ADMIN->fulltree) {
     require_once($CFG->dirroot . '/mod/tincanlaunch/locallib.php');
     require_once($CFG->dirroot . '/mod/tincanlaunch/settingslib.php');
 
-    //default display settings
+    // Default display settings.
     $settings->add(new admin_setting_heading('tincanlaunch/tincanlaunchlrsfieldset',
         get_string('tincanlaunchlrsfieldset', 'tincanlaunch'),
         get_string('tincanlaunchlrsfieldset_help', 'tincanlaunch')));
@@ -32,8 +32,13 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchlrsendpoint_help', 'tincanlaunch'),
         get_string('tincanlaunchlrsendpoint_default', 'tincanlaunch'), PARAM_URL));
 
-    $options = array(1=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 2=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 0=>get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch'));
-    //Note the numbers above are deliberately mis-ordered for reasons of backwards compatibility with older settings. 
+    $options = array(
+        1 => get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'),
+        2 => get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 
+        0 => get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch')
+    );
+    // Note the numbers above are deliberately mis-ordered for reasons of backwards compatibility with older settings.
+
     $setting = new admin_setting_configselect('tincanlaunch/tincanlaunchlrsauthentication',
         get_string('tincanlaunchlrsauthentication', 'tincanlaunch'),
         get_string('tincanlaunchlrsauthentication_help', 'tincanlaunch').'<br/>'
@@ -63,9 +68,8 @@ if ($ADMIN->fulltree) {
         get_string('tincanlaunchcustomacchp_help', 'tincanlaunch'),
         get_string('tincanlaunchcustomacchp_default', 'tincanlaunch')));
 
-    $settings->add(new admin_setting_configcheckbox('tincanlaunch/tincanlaunchuseactoremail', 
+    $settings->add(new admin_setting_configcheckbox('tincanlaunch/tincanlaunchuseactoremail',
         get_string('tincanlaunchuseactoremail', 'tincanlaunch'),
-        get_string('tincanlaunchuseactoremail_help', 'tincanlaunch'), 
+        get_string('tincanlaunchuseactoremail_help', 'tincanlaunch'),
         1));
-
 }

@@ -141,7 +141,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 
         // Learning Locker.
         case "0":
-            $creds = tincanlaunch_get_creds_learningLocker($tincanlaunchsettings['tincanlaunchlrslogin'],
+            $creds = tincanlaunch_get_creds_learninglocker($tincanlaunchsettings['tincanlaunchlrslogin'],
                 $tincanlaunchsettings['tincanlaunchlrspass'],
                 $url,
                 $expiry
@@ -152,8 +152,8 @@ function tincanlaunch_get_launch_url($registrationuuid) {
         // Watershed.
         case "2":
             $creds = tincanlaunch_get_creds_watershed (
-                $tincanlaunchsettings['tincanlaunchwatershedlogin'], 
-                $tincanlaunchsettings['tincanlaunchwatershedpass'], 
+                $tincanlaunchsettings['tincanlaunchwatershedlogin'],
+                $tincanlaunchsettings['tincanlaunchwatershedpass'],
                 $url,
                 $tincanlaunch->id,
                 $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id.'&registration='.$registrationuuid,
@@ -183,7 +183,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
         '&',
         PHP_QUERY_RFC3986
     );
-    
+
     return $rtnString;
 }
 
@@ -198,7 +198,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
  * @param string $url LRS endpoint URL
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
-function tincanlaunch_get_creds_learningLocker($basiclogin, $basicpass, $url, $expiry) {
+function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $expiry) {
     global $tincanlaunch;
     $actor = tincanlaunch_getactor($tincanlaunch->id);
     $data = array(
@@ -206,8 +206,8 @@ function tincanlaunch_get_creds_learningLocker($basiclogin, $basicpass, $url, $e
         'expiry' => $expiry->format(DATE_ATOM),
         'historical' => false,
         'actors' => array(
-            "objectType"=> 'Person',
-            "name"=> array($actor->getName())
+            "objectType" => 'Person',
+            "name" => array($actor->getName())
         ),
         'auth' => $actor,
         'activity' => array(
@@ -215,14 +215,14 @@ function tincanlaunch_get_creds_learningLocker($basiclogin, $basicpass, $url, $e
         ),
         'registration' => $registrationuuid
     );
-    
+
     if (null !== $actor->getMbox()) {
         $data['actors']['mbox'] = array($actor->getMbox());
-    } elseif (null !== $actor->getMbox_sha1sum()) {
+    } else if (null !== $actor->getMbox_sha1sum()) {
         $data['actors']['mbox_sha1sum'] = array($actor->getMbox_sha1sum());
-    } elseif (null !== $actor->getOpenid()) {
+    } else if (null !== $actor->getOpenid()) {
         $data['actors']['openid'] = array($actor->getOpenid());
-    } elseif (null !== $actor->getAccount()) {
+    } else if (null !== $actor->getAccount()) {
         $data['actors']['account'] = array($actor->getAccount());
     }
 
@@ -273,7 +273,7 @@ function tincanlaunch_get_creds_learningLocker($basiclogin, $basicpass, $url, $e
 }
 
 /**
- * By default, PHP escapes slashes when encoding into JSON. This cause problems for Tin Can, 
+ * By default, PHP escapes slashes when encoding into JSON. This cause problems for Tin Can,
  * so this function unescapes the slashes after encoding.
  *
  * @package  mod_tincanlaunch
@@ -306,7 +306,7 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag) {
     );
 
     return $lrs->saveState(
-        new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))),
+        new \TinCan\Activity(array("id" => trim($tincanlaunch->tincanactivityid))),
         tincanlaunch_getactor($tincanlaunch->id),
         $key,
         tincanlaunch_myjson_encode($data),
@@ -339,20 +339,20 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($data, $key) {
         $tincanlaunchsettings['tincanlaunchlrspass']
     );
 
-    $getResponse = $lrs->retrieveAgentProfile(tincanlaunch_getactor($tincanlaunch->id), $key);
+    $getresponse = $lrs->retrieveAgentProfile(tincanlaunch_getactor($tincanlaunch->id), $key);
 
-    $Opts = array(
+    $opts = array(
         'contentType' => 'application/json'
     );
-    if ($getResponse->success) {
-        $Opts['etag'] = $getResponse->content->getEtag();
+    if ($getresponse->success) {
+        $opts['etag'] = $getresponse->content->getEtag();
     }
 
     return $lrs->saveAgentProfile(
         tincanlaunch_getactor($tincanlaunch->id),
         $key,
         tincanlaunch_myjson_encode($data),
-        $Opts
+        $opts
     );
 }
 
@@ -376,7 +376,7 @@ function tincanlaunch_get_global_parameters_and_get_state($key) {
     );
 
     return $lrs->retrieveState(
-        new \TinCan\Activity(array("id"=> trim($tincanlaunch->tincanactivityid))),
+        new \TinCan\Activity(array("id" => trim($tincanlaunch->tincanactivityid))),
         tincanlaunch_getactor($tincanlaunch->id),
         $key
     );

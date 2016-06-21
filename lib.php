@@ -124,9 +124,14 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     $tincanlaunchlrs = tincanlaunch_build_lrs_settings($tincanlaunch);
 
     // Determine if override defaults checkbox is checked.
-    if ($tincanlaunch->overridedefault s== '1') {
+    if ($tincanlaunch->overridedefaults == '1') {
         // Check to see if there is a record of this instance in the table.
-        $tincanlaunchlrsid = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness = IGNORE_MISSING);
+        $tincanlaunchlrsid = $DB->get_field(
+            'tincanlaunch_lrs',
+            'id',
+            array('tincanlaunchid' => $tincanlaunch->instance),
+            IGNORE_MISSING
+        );
         // If not, will need to insert_record.
         if (!$tincanlaunchlrsid) {
             if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
@@ -415,7 +420,7 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $filename = array_pop($args);
         $filepath = implode('/', $args);
         $lifetime = null;
-    } elseif ($filearea === 'package') {
+    } else if ($filearea === 'package') {
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/tincanlaunch/package/0/$relativepath";
         $lifetime = 0; // No caching here.
@@ -426,7 +431,10 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
 
     $fs = get_file_storage();
 
-    if (!$file = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/'.$filepath.'/', $filename) or $file->is_directory()) {
+    if (
+        !$file = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/'.$filepath.'/', $filename)
+        or $file->is_directory()
+    ) {
         if ($filearea === 'content') { // Return file not found straight away to improve performance.
             send_header_404();
             die;
@@ -499,7 +507,6 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
 
     return $result;
 }
-
 
 // TinCanLaunch specific functions.
 
@@ -663,15 +670,15 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
     $allthestatements = $statementsresponse->content->getStatements();
     $morestatementsurl = $statementsresponse->content->getMore();
     while (!empty($morestatementsurl)) {
-        $moreStmtsResponse = $lrs->moreStatements($morestatementsurl);
-        if ($moreStmtsResponse->success == false) {
-            return $moreStmtsResponse;
+        $morestmtsresponse = $lrs->moreStatements($morestatementsurl);
+        if ($morestmtsresponse->success == false) {
+            return $morestmtsresponse;
         }
-        $moreStatements = $moreStmtsResponse->content->getStatements();
-        $morestatementsurl = $moreStmtsResponse->content->getMore();
+        $morestatements = $morestmtsresponse->content->getStatements();
+        $morestatementsurl = $morestmtsresponse->content->getMore();
         // Note: due to the structure of the arrays, array_merge does not work as expected.
-        foreach ($moreStatements as $moreStatement) {
-            array_push($allthestatements, $moreStatement);
+        foreach ($morestatements as $morestatement) {
+            array_push($allthestatements, $morestatement);
         }
     }
 
@@ -746,30 +753,29 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $tincanlaunc
 
     $explodedendpoint = explode ('/', $endpoint);
     $wsserver = $explodedendpoint[0].'//'.$explodedendpoint[2];
-    $orgId = $explodedendpoint[5];
+    $orgid = $explodedendpoint[5];
 
-    $wsclient = new \WatershedClient\Watershed($wsserver, $auth, $orgId, 'Moodle');
+    $wsclient = new \WatershedClient\Watershed($wsserver, $auth, $orgid, 'Moodle');
 
     if (is_null($expiry)) {
-        $expiryUnix = 0;
+        $expiryunix = 0;
     } else {
-        $expiryUnix = $expiry->getTimestamp();
-    } 
+        $expiryunix = $expiry->getTimestamp();
+    }
 
-    $response = $wsclient->createActivityProvider($apname, $orgId);
+    $response = $wsclient->createActivityProvider($apname, $orgid);
     if ($response["success"]) {
-        $credentialId = json_decode($response["content"])->id;
+        $credentialid = json_decode($response["content"])->id;
         $DB->insert_record('tincanlaunch_credentials', (object)[
             "tincanlaunchid" => $tincanlaunchid,
-            "credentialid" => $credentialId,
-            "expiry" => $expiryUnix 
+            "credentialid" => $credentialid,
+            "expiry" => $expiryunix 
         ], false);
         return $response;
-    } 
-    else {
+    } else {
         $reason = get_string('apCreationFailed', 'tincanlaunch')
         ." Status: ". $response["status"].". Response: ".$response["content"]."<br/>";
-        throw new moodle_exception($reason, 'tincanlaunch', ''); 
+        throw new moodle_exception($reason, 'tincanlaunch', '');
     }
 }
 
@@ -797,17 +803,16 @@ function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid) {
 
     $explodedendpoint = explode ('/', $tincanlaunchsettings['tincanlaunchlrsendpoint']);
     $wsserver = $explodedendpoint[0].'//'.$explodedendpoint[2];
-    $orgId = $explodedendpoint[5];
+    $orgid = $explodedendpoint[5];
 
-    $wsclient = new \WatershedClient\Watershed($wsserver, $auth, $orgId, 'Moodle');
+    $wsclient = new \WatershedClient\Watershed($wsserver, $auth, $orgid, 'Moodle');
 
-    $response = $wsclient->deleteActivityProvider($credentialid, $orgId);
+    $response = $wsclient->deleteActivityProvider($credentialid, $orgid);
     if ($response["success"]) {
-        echo("Deleted credential id {$credentialid} on organization id {$orgId}");
+        echo("Deleted credential id {$credentialid} on organization id {$orgid}");
         return true;
-    } 
-    else {
-        echo("Failed to delete credential id {$credentialid} on organization id {$orgId}");
+    } else {
+        echo("Failed to delete credential id {$credentialid} on organization id {$orgid}");
         echo ('<pre>');
         var_dump($response);
         echo ('</pre>');
@@ -832,9 +837,9 @@ function tincanlaunch_settings($instance) {
 
     $expresult = array();
     $activitysettings = $DB->get_record(
-        'tincanlaunch_lrs', 
+        'tincanlaunch_lrs',
         array('tincanlaunchid'=>$instance),
-        $fields = '*', 
+        $fields = '*',
         $strictness = IGNORE_MISSING
     );
 
@@ -909,9 +914,7 @@ function tincanlaunch_settings($instance) {
                         return false;
                     }
                 }
-            }
-            // Relevant instance settings match global settings; no need to create new creds.
-            else {
+            } else { // Relevant instance settings match global settings; no need to create new creds.
                 // Use global settings, plus instance specific xapi creds.
                 $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
                 $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
