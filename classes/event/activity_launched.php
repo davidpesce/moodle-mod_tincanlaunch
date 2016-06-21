@@ -76,7 +76,7 @@ class activity_launched extends \core\event\base {
     public function get_url() {
         return new \moodle_url(
             '/mod/tincanlaunch/launch.php',
-            array('id' => $this->contextinstanceid,'activityid' => $this->objectid)
+            array('id' => $this->contextinstanceid, 'activityid' => $this->objectid)
         );
     }
 
