@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * launches the experience with the requested registration 
+ * launches the experience with the requested registration
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -26,7 +25,7 @@
 require_once('header.php');
 require_once('completion_check.php');
 
-//return to the course
+// Return to the course.
 header("Location: ". $CFG->wwwroot.'/course/view.php?id='.$tincanlaunch->course);
 
 exit;

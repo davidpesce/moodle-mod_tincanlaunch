@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * launches the experience with the requested registration 
+ * launches the experience with the requested registration
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -26,8 +26,8 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once('locallib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // tincanlaunch instance ID - it should be named as the first character of the module
+$id = optional_param('id', 0, PARAM_INT);
+$n  = optional_param('n', 0, PARAM_INT);
 
 if ($id) {
     $cm         = get_coursemodule_from_id('tincanlaunch', $id, 0, false, MUST_EXIST);

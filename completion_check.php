@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * launches the experience with the requested registration 
+ * launches the experience with the requested registration
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -25,8 +25,8 @@
 require_once('header.php');
 
 $completion = new completion_info($course);
-if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-	$completion->update_state($cm,COMPLETION_COMPLETE);
+if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
+    $completion->update_state($cm, COMPLETION_COMPLETE);
 
     // Trigger Activity completed event.
     $event = \mod_tincanlaunch\event\activity_completed::create(array(

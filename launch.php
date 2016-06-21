@@ -36,7 +36,7 @@ $event->trigger();
 // Get the registration id.
 $registrationid = $_GET["launchform_registration"];
 if (empty($registrationid)) {
-    echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty','tincanlaunch')."</div>";
+    echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty', 'tincanlaunch')."</div>";
     // Failed to connect to LRS.
     if ($CFG->debug == 32767) {
         echo "<p>Error attempting to get registration id querystring parameter.</p>";
@@ -46,8 +46,10 @@ if (empty($registrationid)) {
 
 // Save a record of this registration to the LRS state API.
 
-$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state("http://tincanapi.co.uk/stateapikeys/registrations");
-$errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable','tincanlaunch')."</div>";
+$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
+    "http://tincanapi.co.uk/stateapikeys/registrations"
+);
+$errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable', 'tincanlaunch')."</div>";
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 if ($lrsrespond != 200 && $lrsrespond != 404) {
     // Failed to connect to LRS.
@@ -62,8 +64,7 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
 }
 if ($lrsrespond == 200) {
     $registrationdata = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-}
-else {
+} else {
     $registrationdata = null;
 }
 $registrationdataetag = $getregistrationdatafromlrsstate->content->getEtag();
@@ -77,7 +78,7 @@ $registrationdataforthisattempt = array(
     )
 );
 
-if (is_null($registrationdata)){
+if (is_null($registrationdata)) {
     // If the error is 404 create a new registration data array.
     if ($registrationdata->httpResponse['status'] = 404){
         $registrationdata = $registrationdataforthisattempt;
@@ -85,7 +86,7 @@ if (is_null($registrationdata)){
         // TODO: Some other error - possibly network connection. Consider re-trying.
     }
 } else if (array_key_exists($registrationid,$registrationdata)) { 
-// Else if the regsitration exists update the lastlaunched date.
+    // Else if the regsitration exists update the lastlaunched date.
     $registrationdata[$registrationid]["lastlaunched"] = $datenow;
 } else { // Push the new data on the end.
     $registrationdata[$registrationid] = $registrationdataforthisattempt[$registrationid];
@@ -96,8 +97,8 @@ uasort($registrationdata, function($a, $b) {
     return strtotime($b['lastlaunched']) - strtotime($a['lastlaunched']);
 });
 
-// TODO: Currently this is re-PUTting all of the data - it may be better just to POST the new data. 
-// This will prevent us sorting, but sorting could be done on output. 
+// TODO: Currently this is re-PUTting all of the data - it may be better just to POST the new data.
+// This will prevent us sorting, but sorting could be done on output.
 $saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state(
     $registrationdata,
     "http://tincanapi.co.uk/stateapikeys/registrations",
@@ -117,10 +118,10 @@ if ($lrsrespond != 204) {
 }
 
 $langpreference = array(
-    "languagePreference" =>  tincanlaunch_get_moodle_langauge()
+    "languagePreference" => tincanlaunch_get_moodle_langauge()
 );
 
-$saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($langpreference,"CMI5LearnerPreferences");
+$saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($langpreference, "CMI5LearnerPreferences");
 
 $lrsrespond = $saveagentprofile->httpResponse['status'];
 if ($lrsrespond != 204) {
@@ -150,7 +151,7 @@ if ($lrsrespond != 204) {
     die();
 }
 
-//launch the experience
+// Launch the experience.
 header("Location: ". tincanlaunch_get_launch_url($registrationid));
 
 exit;

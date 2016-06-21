@@ -64,7 +64,7 @@ $string['tincanlaunchuseactoremail'] = 'Identify by email';
 $string['tincanlaunchuseactoremail_help'] = 'If selected, learners will be identified by their email address if they have one recorded in Moodle.';
 
 $string['tincanlaunchcustomacchp'] = 'Custom account homePage';
-$string['tincanlaunchcustomacchp_help'] = 'If entered, Moodle will use this homePage in conjunction with the ID number user profile field to identify the learner. 
+$string['tincanlaunchcustomacchp_help'] = 'If entered, Moodle will use this homePage in conjunction with the ID number user profile field to identify the learner.
 If the ID number is not entered for a learner, they will instead be identified by email or Moodle ID number.
 Note: If a learner\'s id changes, they will lose access to registrations associated with former ids and completion data may be reset. Reports in your LRS may also be affected.';
 $string['tincanlaunchcustomacchp_default'] = '';
@@ -96,7 +96,7 @@ $string['behaviorheading'] = 'Module behavior';
 $string['tincanmultipleregs'] = 'Allow multiple registrations.';
 $string['tincanmultipleregs_help'] = 'If selected, allow the learner to start more than one registration for the activity. Learners can always return to any registrations they have started, even if this setting is unchecked.';
 
-$string['apCreationFailed'] = 'Failed to create Watershed Activity Provider.'; 
+$string['apCreationFailed'] = 'Failed to create Watershed Activity Provider.';
 
 // Zip errors.
 $string['badmanifest'] = 'Some manifest errors: see errors log';
@@ -123,7 +123,7 @@ $string['tincanlaunchviewlaunchlink'] = 'launch';
 $string['tincanlaunch_completed'] = 'Experience complete!';
 $string['tincanlaunch_progress'] = 'Attempt in progress.';
 $string['tincanlaunch_attempt'] = 'Start New Registration';
-$string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator. 
+$string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator.
 
 If you are the system administrator, go to Site admin / Development / Debugging and set Debug messages to DEVELOPER. Set it back to NONE or MINIMAL once the error details have been recorded.';
 $string['tincanlaunch_regidempty'] = 'Registration id not found. Please close this window.';

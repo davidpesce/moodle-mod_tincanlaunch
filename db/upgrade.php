@@ -40,7 +40,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_tincanlaunch_upgrade($oldversion) {
     global $DB;
 
-    $dbman = $DB->get_manager(); 
+    $dbman = $DB->get_manager();
 
     if ($oldversion < 2016021508) {
 
@@ -68,7 +68,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016021508, 'tincanlaunch');
     }
 
-    if ($oldversion < 2016021502) { 
+    if ($oldversion < 2016021502) {
         // Define field  to be added to table.
         $table = new xmldb_table('tincanlaunch_lrs');
         $field = new xmldb_field('watershedlogin', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
@@ -113,7 +113,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         // Define field tincanactivityid to be added to tincanlaunch.
         $table = new xmldb_table('tincanlaunch');
         $field = new xmldb_field('tincanactivityid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
-        
+
         // Add field tincanactivityid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -121,12 +121,12 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
     }
-    
+
     if ($oldversion < 2013111600) {
         // Define field tincanverbid to be added to tincanlaunch.
         $table = new xmldb_table('tincanlaunch');
         $field = new xmldb_field('tincanverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
-        
+
         // Add field tincanactivityid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -173,7 +173,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015032500, 'tincanlaunch');
     }
 
-    if($oldversion < 2015033100) {
+    if ($oldversion < 2015033100) {
 
         unset_config('tincanlaunchlrsversion', 'tincanlaunch');
         unset_config('tincanlaunchlrauthentication', 'tincanlaunch');

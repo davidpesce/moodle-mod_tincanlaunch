@@ -29,7 +29,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['tincanlaunchviewfirstlaunched'] = 'Lanciato';
-$string['tincanlaunchviewlastlaunched'] = 'Ultimo lanciato'	;
+$string['tincanlaunchviewlastlaunched'] = 'Ultimo lanciato';
 $string['tincanlaunchviewlaunchlinkheader'] = 'Collegamento di lancio';
 $string['tincanlaunchviewlaunchlink'] = 'Lancio';
 
