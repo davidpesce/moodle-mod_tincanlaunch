@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-include 'header.php';
+require_once('header.php');
 
 $completion = new completion_info($course);
 if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {

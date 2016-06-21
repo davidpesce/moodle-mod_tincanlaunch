@@ -74,7 +74,10 @@ class activity_completed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/tincanlaunch/launch.php', array('id' => $this->contextinstanceid, 'activityid' => $this->objectid));
+        return new \moodle_url(
+            '/mod/tincanlaunch/launch.php',
+            array('id' => $this->contextinstanceid, 'activityid' => $this->objectid)
+        );
     }
 
     /**

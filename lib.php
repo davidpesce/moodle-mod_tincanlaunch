@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -31,21 +30,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//TinCanPHP - required for interacting with the LRS in tincanlaunch_get_statements
+// TinCanPHP - required for interacting with the LRS in tincanlaunch_get_statements.
 require_once("$CFG->dirroot/mod/tincanlaunch/TinCanPHP/autoload.php");
 
-//WatershedPHP - required for Watershed integration
+// WatershedPHP - required for Watershed integration.
 require_once("$CFG->dirroot/mod/tincanlaunch/WatershedPHP/watershed.php");
 
-//SCORM library from the SCORM module. Required for its xml2Array class by tincanlaunch_process_new_package
+// SCORM library from the SCORM module. Required for its xml2Array class by tincanlaunch_process_new_package.
 require_once("$CFG->dirroot/mod/scorm/datamodels/scormlib.php");
 
-global $TINCANLAUNCH_SETTINGS;
-$TINCANLAUNCH_SETTINGS = null;
+global $tincanlaunch_settings;
+$tincanlaunch_settings = null;
 
-////////////////////////////////////////////////////////////////////////////////
-// Moodle core API                                                            //
-////////////////////////////////////////////////////////////////////////////////
+// Moodle Core API
 
 /**
  * Returns the information on whether the module supports a feature
@@ -86,22 +83,22 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
 
     $tincanlaunch->timecreated = time();
 
-    //need the id of the newly created instance to return (and use if override defaults checkbox is checked)
+    // Need the id of the newly created instance to return (and use if override defaults checkbox is checked).
     $tincanlaunch->id = $DB->insert_record('tincanlaunch', $tincanlaunch);
 
-    $tincanlaunch_lrs = tincanlaunch_build_lrs_settings($tincanlaunch);
+    $tincanlaunchlrs = tincanlaunch_build_lrs_settings($tincanlaunch);
 
-    //determine if override defaults checkbox is checked or we need to save watershed creds
-    if ($tincanlaunch->overridedefaults=='1' || $tincanlaunch_lrs->lrsauthentication == '2') {
-        $tincanlaunch_lrs->tincanlaunchid = $tincanlaunch->id;
+    // Determine if override defaults checkbox is checked or we need to save watershed creds.
+    if ($tincanlaunch->overridedefaults=='1' || $tincanlaunchlrs->lrsauthentication == '2') {
+        $tincanlaunchlrs->tincanlaunchid = $tincanlaunch->id;
 
-        //insert data into tincanlaunch_lrs table
-        if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+        // Insert data into tincanlaunch_lrs table.
+        if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
             return false;
         }
     }
 
-    //process uploaded file
+    // Process uploaded file.
     if (!empty($tincanlaunch->packagefile)) {
         tincanlaunch_process_new_package($tincanlaunch);
     }
@@ -127,21 +124,21 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
 
-    $tincanlaunch_lrs = tincanlaunch_build_lrs_settings($tincanlaunch);
+    $tincanlaunchlrs = tincanlaunch_build_lrs_settings($tincanlaunch);
 
-    //determine if override defaults checkbox is checked
+    // Determine if override defaults checkbox is checked.
     if ($tincanlaunch->overridedefaults=='1') {
-        //check to see if there is a record of this instance in the table
-        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness = IGNORE_MISSING);
-        //if not, will need to insert_record
-        if (!$tincanlaunch_lrs_id) {
-            if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+        // Check to see if there is a record of this instance in the table.
+        $tincanlaunchlrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness = IGNORE_MISSING);
+        // If not, will need to insert_record.
+        if (!$tincanlaunchlrs_id) {
+            if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
                 return false;
             }
-        } else {//if it does exist, update it
-            $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
+        } else { // If it does exist, update it.
+            $tincanlaunchlrs->id = $tincanlaunchlrs_id;
 
-            if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+            if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
                 return false;
             }
         }
@@ -151,7 +148,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
         return false;
     }
 
-    //process uploaded file
+    // Process uploaded file.
     if (!empty($tincanlaunch->packagefile)) {
         tincanlaunch_process_new_package($tincanlaunch);
     }
@@ -162,47 +159,47 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
 function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
     global $DB; 
 
-    //Data for tincanlaunch_lrs table
-    $tincanlaunch_lrs = new stdClass();
-    $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
-    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
-    $tincanlaunch_lrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
-    $tincanlaunch_lrs->useactoremail = $tincanlaunch->tincanlaunchuseactoremail;
-    $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
+    // Data for tincanlaunch_lrs table.
+    $tincanlaunchlrs = new stdClass();
+    $tincanlaunchlrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
+    $tincanlaunchlrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
+    $tincanlaunchlrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
+    $tincanlaunchlrs->useactoremail = $tincanlaunch->tincanlaunchuseactoremail;
+    $tincanlaunchlrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
 
-    //if watershed integration
-    if ($tincanlaunch_lrs->lrsauthentication == '2') {
-        $tincanlaunch_lrs->watershedlogin = $tincanlaunch->tincanlaunchlrslogin;
-        $tincanlaunch_lrs->watershedpass = $tincanlaunch->tincanlaunchlrspass;
+    // If Watershed integration.
+    if ($tincanlaunchlrs->lrsauthentication == '2') {
+        $tincanlaunchlrs->watershedlogin = $tincanlaunch->tincanlaunchlrslogin;
+        $tincanlaunchlrs->watershedpass = $tincanlaunch->tincanlaunchlrspass;
 
-        // If Watershed creds have changed
-        $tincanlaunch_lrs_old =  $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid' => $tincanlaunch->id));
+        // If Watershed creds have changed.
+        $tincanlaunchlrsold =  $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid' => $tincanlaunch->id));
         if (
-            $tincanlaunch_lrs_old == false
-            || $tincanlaunch_lrs_old->watershedlogin !== $tincanlaunch_lrs->watershedlogin
-            || $tincanlaunch_lrs_old->watershedpass !== $tincanlaunch_lrs->watershedpass
-            || $tincanlaunch_lrs_old->lrsauthentication !== '2'
+            $tincanlaunchlrsold == false
+            || $tincanlaunchlrsold->watershedlogin !== $tincanlaunchlrs->watershedlogin
+            || $tincanlaunchlrsold->watershedpass !== $tincanlaunchlrs->watershedpass
+            || $tincanlaunchlrsold->lrsauthentication !== '2'
         ) {
-            // Create a new Watershed activity provider
+            // Create a new Watershed activity provider.
             $creds = tincanlaunch_get_creds_watershed(
-                $tincanlaunch_lrs->watershedlogin, 
-                $tincanlaunch_lrs->watershedpass, 
-                $tincanlaunch_lrs->lrsendpoint,
+                $tincanlaunchlrs->watershedlogin, 
+                $tincanlaunchlrs->watershedpass, 
+                $tincanlaunchlrs->lrsendpoint,
                 $tincanlaunch->id,
                 $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id,
                 null
             );
 
-            $tincanlaunch_lrs->lrslogin = $creds["key"];
-            $tincanlaunch_lrs->lrspass = $creds["secret"];
+            $tincanlaunchlrs->lrslogin = $creds["key"];
+            $tincanlaunchlrs->lrspass = $creds["secret"];
         }
     } 
     else { 
-        $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
-        $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
+        $tincanlaunchlrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
+        $tincanlaunchlrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
     }
 
-    return $tincanlaunch_lrs;
+    return $tincanlaunchlrs;
 }
 
 /**
@@ -223,18 +220,18 @@ function tincanlaunch_delete_instance($id)
         return false;
     }
 
-    // Delete master LRS credentials for this instance
+    // Delete master LRS credentials for this instance.
     if ($credentialid = $DB->get_field('tincanlaunch_credentials', 'credentialid', array('tincanlaunchid' => $id))) {
         if (tincanlaunch_delete_creds_watershed($id, $credentialid) == true) {
             $DB->delete_records('tincanlaunch_credentials', ['credentialid' => $credentialid]);
         }
     }
 
-    //determine if there is a record of this (ever) in the tincanlaunch_lrs table
-    $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$id), $strictness = IGNORE_MISSING);
-    if ($tincanlaunch_lrs_id) {
-        //if there is, delete it
-        $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunch_lrs_id));
+    // Determine if there is a record of this (ever) in the tincanlaunch_lrs table.
+    $tincanlaunchlrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$id), $strictness = IGNORE_MISSING);
+    if ($tincanlaunchlrs_id) {
+        // If there is, delete it.
+        $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunchlrs_id));
     }
 
     $DB->delete_records('tincanlaunch', array('id' => $tincanlaunch->id));
@@ -282,7 +279,7 @@ function tincanlaunch_user_complete($course, $user, $mod, $tincanlaunch)
  */
 function tincanlaunch_print_recent_activity($course, $viewfullnames, $timestart)
 {
-    return false;  //  True if anything was printed, otherwise false
+    return false;  // True if anything was printed, otherwise false.
 }
 
 /**
@@ -337,9 +334,7 @@ function tincanlaunch_get_extra_capabilities()
     return array();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// File API                                                                   //
-////////////////////////////////////////////////////////////////////////////////
+// File API
 
 /**
  * Returns the lists of all browsable file areas within the given module context
@@ -458,10 +453,7 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     send_stored_file($file, $lifetime, 0, false, $options);
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Navigation API                                                             //
-////////////////////////////////////////////////////////////////////////////////
+// Navigation API
 
 /**
  * Extends the global navigation tree by adding tincanlaunch nodes if there is a relevant content
@@ -490,21 +482,21 @@ function tincanlaunch_extend_settings_navigation(settings_navigation $settingsna
 {
 }
 
-// Called by Moodle core
+// Called by Moodle core.
 function tincanlaunch_get_completion_state($course, $cm, $userid, $type)
 {
     global $CFG,$DB;
-    $result=$type; // Default return value
+    $result=$type; // Default return value.
 
      // Get tincanlaunch
     if (!$tincanlaunch= $DB->get_record('tincanlaunch', array('id' => $cm->instance))) {
-        throw new Exception("Can't find activity {$cm->instance}"); //TODO: localise this
+        throw new Exception("Can't find activity {$cm->instance}"); // TODO: localise this.
     }
 
     $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
 
     if (!empty($tincanlaunch->tincanverbid)) {
-        //Try to get a statement matching actor, verb and object specified in module settings
+        // Try to get a statement matching actor, verb and object specified in module settings.
         $statementquery = tincanlaunch_get_statements(
             $tincanlaunchsettings['tincanlaunchlrsendpoint'],
             $tincanlaunchsettings['tincanlaunchlrslogin'],
@@ -515,7 +507,7 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type)
             $tincanlaunch->tincanverbid
         );
 
-        //if the statement exists, return true else return false
+        // If the statement exists, return true else return false.
         if (!empty($statementquery->content) && $statementquery->success) {
             $result = true;
         } else {
@@ -526,12 +518,11 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type)
     return $result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// TinCanLaunch specific functions                                            //
-////////////////////////////////////////////////////////////////////////////////
 
-//The functions below should really be in locallib, however they are required for one or more of the functions above so need to be here. 
-//It looks like the standard Quiz module does that same thing, so I don't feel so bad. 
+// TinCanLaunch specific functions
+
+// The functions below should really be in locallib, however they are required for one or more of the functions above so need to be here. 
+// It looks like the standard Quiz module does that same thing, so I don't feel so bad. 
 
 /**
  * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents and extracts the launch url and activity id from the tincan.xml file.
@@ -582,7 +573,8 @@ function tincanlaunch_process_new_package($tincanlaunch)
     $packer = get_file_packer('application/zip');
     $packagefile->extract_to_storage($packer, $context->id, 'mod_tincanlaunch', 'content', 0, '/');
 
-    //If the tincan.xml file isn't there, don't do try to use it. This is unlikely as it should have been checked when the file was validated.
+    // If the tincan.xml file isn't there, don't do try to use it.
+    // This is unlikely as it should have been checked when the file was validated.
     if ($manifestFile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml')) {
         $xmltext = $manifestFile->get_content();
 
@@ -596,12 +588,14 @@ function tincanlaunch_process_new_package($tincanlaunch)
         $objxml = new xml2Array();
         $manifest = $objxml->parse($xmltext);
 
-        //Update activity id from the first activity in tincan.xml, if it is found. Skip without error if not. (The Moodle admin will need to enter the id manually.)
+        // Update activity id from the first activity in tincan.xml, if it is found.
+        // Skip without error if not. (The Moodle admin will need to enter the id manually).
         if (isset($manifest[0]["children"][0]["children"][0]["attrs"]["ID"])) {
             $record->tincanactivityid = $manifest[0]["children"][0]["children"][0]["attrs"]["ID"];
         }
 
-        //Update launch from the first activity in tincan.xml, if it is found. Skip if not. (The Moodle admin will need to enter the url manually.)
+        // Update launch from the first activity in tincan.xml, if it is found. 
+        // Skip if not. (The Moodle admin will need to enter the url manually).
         foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
             if ($property["name"] === "LAUNCH") {
                 $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/".$manifestFile->get_filearea()."/".$property["tagData"];
@@ -674,11 +668,10 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
         "verb" => new \TinCan\Verb(array("id"=> trim($verb))),
         "activity" => new \TinCan\Activity(array("id"=> trim($activityid))),
         "related_activities" => "false",
-        //"limit" => 1, //Use this to test the "more" statements feature
         "format"=>"ids"
     );
 
-    //Get all the statements from the LRS
+    // Get all the statements from the LRS.
     $statementsResponse = $lrs->queryStatements($statementsQuery);
 
 
@@ -695,7 +688,7 @@ function tincanlaunch_get_statements($url, $basicLogin, $basicPass, $version, $a
         }
         $moreStatements = $moreStmtsResponse->content->getStatements();
         $moreStatementsURL = $moreStmtsResponse->content->getMore();
-        //Note: due to the structure of the arrays, array_merge does not work as expected.
+        // Note: due to the structure of the arrays, array_merge does not work as expected.
         foreach ($moreStatements as $moreStatement) {
             array_push($allTheStatements, $moreStatement);
         }
@@ -765,7 +758,7 @@ function tincanlaunch_getactor($instance)
 function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $tincanlaunchid, $APName, $expiry)
 {
     global $CFG, $DB;
-    // Create a new Watershed activity provider
+    // Create a new Watershed activity provider.
     $auth = array(
         "method" => "BASIC",
         "username" => $login,
@@ -818,7 +811,7 @@ function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid)
 
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunchid);
 
-    // Create a new Watershed activity provider
+    // Create a new Watershed activity provider.
     $auth = array(
         "method" => "BASIC",
         "username" => $tincanlaunchsettings['tincanlaunchwatershedlogin'],
@@ -855,10 +848,10 @@ function tincanlaunch_delete_creds_watershed($tincanlaunchid, $credentialid)
  */
 function tincanlaunch_settings($instance)
 {
-    global $DB, $CFG, $TINCANLAUNCH_SETTINGS;
+    global $DB, $CFG, $tincanlaunch_settings;
 
-    if (!is_null($TINCANLAUNCH_SETTINGS)) {
-        return $TINCANLAUNCH_SETTINGS;
+    if (!is_null($tincanlaunch_settings)) {
+        return $tincanlaunch_settings;
     }
 
     $expresult = array();
@@ -869,7 +862,7 @@ function tincanlaunch_settings($instance)
         $strictness = IGNORE_MISSING
     );
 
-    //if global settings are not used, retrieve activity settings
+    // If global settings are not used, retrieve activity settings.
     if (!use_global_lrs_settings($instance)) {
         $expresult['tincanlaunchlrsendpoint'] = $activitysettings->lrsendpoint;
         $expresult['tincanlaunchlrsauthentication'] = $activitysettings->lrsauthentication;
@@ -886,14 +879,14 @@ function tincanlaunch_settings($instance)
             $expresult[$value->name] = $value->value;
         }
 
-        // If Watershed integration, don't use global xAPI creds
+        // If Watershed integration, don't use global xAPI creds.
         if ($expresult['tincanlaunchlrsauthentication'] == '2') {
 
-            //the global login and password are always Watershed creds, not xapi creds
+            // The global login and password are always Watershed creds, not xapi creds.
             $expresult['tincanlaunchwatershedlogin'] = $expresult['tincanlaunchlrslogin'];
             $expresult['tincanlaunchwatershedpass'] = $expresult['tincanlaunchlrspass'];
 
-            //Check if we need to update instance record (endpoint, username, password or auth type have changed)
+            // Check if we need to update instance record (endpoint, username, password or auth type have changed).
             if (
                 $activitysettings == false
                 || $activitysettings->watershedlogin !== $expresult['tincanlaunchlrslogin']
@@ -902,7 +895,7 @@ function tincanlaunch_settings($instance)
                 || $activitysettings->lrsauthentication !== '2'
             ) { 
 
-                // Create a new Watershed activity provider
+                // Create a new Watershed activity provider.
                 $creds = tincanlaunch_get_creds_watershed(
                     $expresult['tincanlaunchlrslogin'], 
                     $expresult['tincanlaunchlrspass'], 
@@ -912,18 +905,18 @@ function tincanlaunch_settings($instance)
                     null
                 );
 
-                // Update database with newly created xapi creds
-                $tincanlaunch_lrs = new stdClass();
-                $tincanlaunch_lrs->lrsendpoint = $expresult['tincanlaunchlrsendpoint'];
-                $tincanlaunch_lrs->lrslogin = $creds["key"];
-                $tincanlaunch_lrs->lrspass = $creds["secret"];
-                $tincanlaunch_lrs->watershedlogin = $expresult['tincanlaunchlrslogin'];
-                $tincanlaunch_lrs->watershedpass = $expresult['tincanlaunchlrspass'];
-                $tincanlaunch_lrs->lrsauthentication = '2';
-                $tincanlaunch_lrs->customacchp = $expresult['tincanlaunchcustomacchp'];
-                $tincanlaunch_lrs->useactoremail = $expresult['tincanlaunchuseactoremail'];
-                $tincanlaunch_lrs->lrsduration = $expresult['tincanlaunchlrsduration'];
-                $tincanlaunch_lrs->tincanlaunchid = $instance;
+                // Update database with newly created xapi creds.
+                $tincanlaunchlrs = new stdClass();
+                $tincanlaunchlrs->lrsendpoint = $expresult['tincanlaunchlrsendpoint'];
+                $tincanlaunchlrs->lrslogin = $creds["key"];
+                $tincanlaunchlrs->lrspass = $creds["secret"];
+                $tincanlaunchlrs->watershedlogin = $expresult['tincanlaunchlrslogin'];
+                $tincanlaunchlrs->watershedpass = $expresult['tincanlaunchlrspass'];
+                $tincanlaunchlrs->lrsauthentication = '2';
+                $tincanlaunchlrs->customacchp = $expresult['tincanlaunchcustomacchp'];
+                $tincanlaunchlrs->useactoremail = $expresult['tincanlaunchuseactoremail'];
+                $tincanlaunchlrs->lrsduration = $expresult['tincanlaunchlrsduration'];
+                $tincanlaunchlrs->tincanlaunchid = $instance;
 
                 //populate xapi creds in result
                 $expresult['tincanlaunchlrslogin'] = $creds["key"];
@@ -931,12 +924,12 @@ function tincanlaunch_settings($instance)
 
                 //if record does not exist, will need to insert_record
                 if ($activitysettings == false) {
-                    if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+                    if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
                         return false;
                     }
                 } else {//if it does exist, update it
-                    $tincanlaunch_lrs->id = $activitysettings->id;
-                    if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+                    $tincanlaunchlrs->id = $activitysettings->id;
+                    if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
                         return false;
                     }
                 }
@@ -952,7 +945,7 @@ function tincanlaunch_settings($instance)
     }
     $expresult['tincanlaunchlrsversion'] = '1.0.0';
 
-    $TINCANLAUNCH_SETTINGS = $expresult;
+    $tincanlaunch_settings = $expresult;
     return $expresult;
 }
 

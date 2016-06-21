@@ -23,8 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-include 'header.php';
-include 'completion_check.php';
+require_once('header.php');
+require_once('completion_check.php');
 
 //return to the course
 header("Location: ". $CFG->wwwroot.'/course/view.php?id='.$tincanlaunch->course);

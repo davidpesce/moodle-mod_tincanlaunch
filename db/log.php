@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,9 +17,6 @@
 /**
  * Definition of log events
  *
- * NOTE: this is an example how to insert log event during installation/update.
- * It is not really essential to know about it, but these logs were created as example
- * in the previous 1.9 tincanlaunch.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes mrdownes@hotmail.com
@@ -32,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 global $DB;
 
 $logs = array(
-    array('module'=>'tincanlaunch', 'action'=>'add', 'mtable'=>'tincanlaunch', 'field'=>'name'),
-    array('module'=>'tincanlaunch', 'action'=>'update', 'mtable'=>'tincanlaunch', 'field'=>'name'),
-    array('module'=>'tincanlaunch', 'action'=>'view', 'mtable'=>'tincanlaunch', 'field'=>'name'),
-    array('module'=>'tincanlaunch', 'action'=>'view all', 'mtable'=>'tincanlaunch', 'field'=>'name')
+    array('module' => 'tincanlaunch', 'action' => 'add', 'mtable' => 'tincanlaunch', 'field' => 'name'),
+    array('module' => 'tincanlaunch', 'action' => 'update', 'mtable' => 'tincanlaunch', 'field' => 'name'),
+    array('module' => 'tincanlaunch', 'action' => 'view', 'mtable' => 'tincanlaunch', 'field' => 'name'),
+    array('module' => 'tincanlaunch', 'action' => 'view all', 'mtable' => 'tincanlaunch', 'field' => 'name')
 );

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,19 +25,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/// Replace tincanlaunch with the name of your module and remove this line
-
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 
-$id = required_param('id', PARAM_INT);   // course
+$id = required_param('id', PARAM_INT);
 
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_course_login($course);
 
 // Trigger instances list viewed event.
-$event = \mod_tincanlaunch\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
+$event = \mod_tincanlaunch\event\course_module_instance_list_viewed::create(
+    array('context' => context_course::instance($course->id))
+);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
@@ -83,7 +82,7 @@ foreach ($tincanlaunchs as $tincanlaunch) {
     } else {
         $table->data[] = array($link);
     }
-	
+
 }
 echo $OUTPUT->heading(get_string('modulenameplural', 'tincanlaunch'), 2);
 echo html_writer::table($table);

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,7 +28,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//View settings
 $string['tincanlaunchviewfirstlaunched'] = 'Lançado pela primeira vez';
 $string['tincanlaunchviewlastlaunched'] = 'Último lançado';
 $string['tincanlaunchviewlaunchlinkheader'] = 'Link do Início';

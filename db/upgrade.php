@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,9 +40,9 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_tincanlaunch_upgrade($oldversion) {
     global $DB;
 
-    $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
+    $dbman = $DB->get_manager(); 
 
-    if ($oldversion < 2016021508) { //New version in version.php
+    if ($oldversion < 2016021508) {
 
         // Define table tincanlaunch_credentials to be created.
         $table = new xmldb_table('tincanlaunch_credentials');
@@ -69,8 +68,8 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016021508, 'tincanlaunch');
     }
 
-    if ($oldversion < 2016021502) { //New version in version.php
-        // Define field  to be added to table
+    if ($oldversion < 2016021502) { 
+        // Define field  to be added to table.
         $table = new xmldb_table('tincanlaunch_lrs');
         $field = new xmldb_field('watershedlogin', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
 
@@ -86,8 +85,8 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016021502, 'tincanlaunch');
     }
 
-    if ($oldversion < 2015112702) { //New version in version.php
-        // Define field tincanactivityid to be added to tincanlaunch
+    if ($oldversion < 2015112702) {
+        // Define field tincanactivityid to be added to tincanlaunch.
         $table = new xmldb_table('tincanlaunch');
         $field = new xmldb_field('tincanmultipleregs', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'tincanverbid');
 
@@ -110,12 +109,12 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015112702, 'tincanlaunch');
     }
 
-    if ($oldversion < 2013083100) { //New version in version.php
-        // Define field tincanactivityid to be added to tincanlaunch
+    if ($oldversion < 2013083100) {
+        // Define field tincanactivityid to be added to tincanlaunch.
         $table = new xmldb_table('tincanlaunch');
         $field = new xmldb_field('tincanactivityid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
         
-        // Add field tincanactivityid
+        // Add field tincanactivityid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -123,12 +122,12 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2013083100, 'tincanlaunch');
     }
     
-    if ($oldversion < 2013111600) { //New version in version.php
-        // Define field tincanverbid to be added to tincanlaunch
+    if ($oldversion < 2013111600) {
+        // Define field tincanverbid to be added to tincanlaunch.
         $table = new xmldb_table('tincanlaunch');
         $field = new xmldb_field('tincanverbid', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, null, 'tincanlaunchurl');
         
-        // Add field tincanactivityid
+        // Add field tincanactivityid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -174,7 +173,7 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015032500, 'tincanlaunch');
     }
 
-    if($oldversion < 2015033100){
+    if($oldversion < 2015033100) {
 
         unset_config('tincanlaunchlrsversion', 'tincanlaunch');
         unset_config('tincanlaunchlrauthentication', 'tincanlaunch');
