@@ -43,10 +43,10 @@ $PAGE->set_context($context);
 
 $PAGE->requires->jquery();
 
-// Output starts here,
+// Output starts here.
 echo $OUTPUT->header();
 
-if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever,
+if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever.
     echo $OUTPUT->box(
         format_module_intro('tincanlaunch', $tincanlaunch, $cm->id),
         'generalbox mod_introbox',
@@ -54,7 +54,7 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     );
 }
 
-// TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file,
+// TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file.
 ?> 
 <script>
     // Function to run when the experience is launched.
@@ -101,8 +101,8 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
 
-if ($lrsrespond!= 200 && $lrsrespond != 404) {
-    //On clicking new attempt, save the registration details to the LRS State and launch a new attempt
+if ($lrsrespond != 200 && $lrsrespond != 404) {
+    // On clicking new attempt, save the registration details to the LRS State and launch a new attempt.
     echo "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable', 'tincanlaunch')."</div>";
 
     if ($CFG->debug == 32767) {
@@ -127,7 +127,7 @@ if ($lrsrespond == 200) {
 
         if (!is_array($registrationdatafromlrs[$key])) {
             $reason = "Excepted array, found ". $registrationdatafromlrs[$key];
-            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]); 
+            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
         array_push(
             $registrationdatafromlrs[$key],
@@ -144,7 +144,7 @@ if ($lrsrespond == 200) {
         );
     }
     $table = new html_table();
-    $table->id ='tincanlaunch_attempttable';
+    $table->id = 'tincanlaunch_attempttable';
     $table->head = array(
         get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
         get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
