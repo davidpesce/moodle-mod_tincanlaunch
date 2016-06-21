@@ -23,43 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-include 'locallib.php';
-
-$id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // tincanlaunch instance ID - it should be named as the first character of the module
-
-if ($id) {
-    $cm         = get_coursemodule_from_id('tincanlaunch', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $tincanlaunch  = $DB->get_record('tincanlaunch', array('id' => $cm->instance), '*', MUST_EXIST);
-} elseif ($n) {
-    $tincanlaunch  = $DB->get_record('tincanlaunch', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $tincanlaunch->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('tincanlaunch', $tincanlaunch->id, $course->id, false, MUST_EXIST);
-} else {
-	error( get_string('idmissing', 'report_tincan') );
-}
-
-require_login($course, true, $cm);
-$context = context_module::instance($cm->id);
-
-//Update the completion status
-$completion=new completion_info($course);
-if($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    $completion->update_state($cm,COMPLETION_COMPLETE);
-
-    // Trigger Activity completed event.
-    $event = \mod_tincanlaunch\event\activity_completed::create(array(
-        'objectid' => $tincanlaunch->id,
-        'context' => $context,
-    ));
-    $event->add_record_snapshot('course_modules', $cm);
-    $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
-    $event->trigger();
-
-}
+include 'header.php';
+include 'completion_check.php';
 
 //return to the course
 header("Location: ". $CFG->wwwroot.'/course/view.php?id='.$tincanlaunch->course);

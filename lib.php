@@ -89,45 +89,7 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
     //need the id of the newly created instance to return (and use if override defaults checkbox is checked)
     $tincanlaunch->id = $DB->insert_record('tincanlaunch', $tincanlaunch);
 
-    //Data for tincanlaunch_lrs table
-    $tincanlaunch_lrs = new stdClass();
-    $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
-    $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
-    $tincanlaunch_lrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
-    $tincanlaunch_lrs->useactoremail = $tincanlaunch->tincanlaunchuseactoremail;
-    $tincanlaunch_lrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
-
-    //if watershed integration
-    if ($tincanlaunch_lrs->lrsauthentication == '2') {
-        $tincanlaunch_lrs->watershedlogin = $tincanlaunch->tincanlaunchlrslogin;
-        $tincanlaunch_lrs->watershedpass = $tincanlaunch->tincanlaunchlrspass;
-
-        // If Watershed creds have changed
-        $tincanlaunch_lrs_old =  $DB->get_record('tincanlaunch_lrs', array('tincanlaunchid' => $tincanlaunch->id));
-        if (
-            $tincanlaunch_lrs_old == false
-            || $tincanlaunch_lrs_old->watershedlogin !== $tincanlaunch_lrs->watershedlogin
-            || $tincanlaunch_lrs_old->watershedpass !== $tincanlaunch_lrs->watershedpass
-            || $tincanlaunch_lrs_old->lrsauthentication !== '2'
-        ) {
-            // Create a new Watershed activity provider
-            $creds = tincanlaunch_get_creds_watershed(
-                $tincanlaunch_lrs->watershedlogin, 
-                $tincanlaunch_lrs->watershedpass, 
-                $tincanlaunch_lrs->lrsendpoint,
-                $tincanlaunch->id,
-                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id,
-                null
-            );
-
-            $tincanlaunch_lrs->lrslogin = $creds["key"];
-            $tincanlaunch_lrs->lrspass = $creds["secret"];
-        }
-    } 
-    else { 
-        $tincanlaunch_lrs->lrslogin = $tincanlaunch->tincanlaunchlrslogin;
-        $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
-    }
+    $tincanlaunch_lrs = tincanlaunch_build_lrs_settings($tincanlaunch);
 
     //determine if override defaults checkbox is checked or we need to save watershed creds
     if ($tincanlaunch->overridedefaults=='1' || $tincanlaunch_lrs->lrsauthentication == '2') {
@@ -165,9 +127,43 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
 
+    $tincanlaunch_lrs = tincanlaunch_build_lrs_settings($tincanlaunch);
+
+    //determine if override defaults checkbox is checked
+    if ($tincanlaunch->overridedefaults=='1') {
+        //check to see if there is a record of this instance in the table
+        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness = IGNORE_MISSING);
+        //if not, will need to insert_record
+        if (!$tincanlaunch_lrs_id) {
+            if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+                return false;
+            }
+        } else {//if it does exist, update it
+            $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
+
+            if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
+                return false;
+            }
+        }
+    }
+
+    if (!$DB->update_record('tincanlaunch', $tincanlaunch)) {
+        return false;
+    }
+
+    //process uploaded file
+    if (!empty($tincanlaunch->packagefile)) {
+        tincanlaunch_process_new_package($tincanlaunch);
+    }
+
+    return true;
+}
+
+function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
+    global $DB; 
+
     //Data for tincanlaunch_lrs table
     $tincanlaunch_lrs = new stdClass();
-    $tincanlaunch_lrs->tincanlaunchid = $tincanlaunch->instance;
     $tincanlaunch_lrs->lrsendpoint = $tincanlaunch->tincanlaunchlrsendpoint;
     $tincanlaunch_lrs->lrsauthentication = $tincanlaunch->tincanlaunchlrsauthentication;
     $tincanlaunch_lrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
@@ -206,35 +202,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
         $tincanlaunch_lrs->lrspass = $tincanlaunch->tincanlaunchlrspass;
     }
 
-
-    //determine if override defaults checkbox is checked
-    if ($tincanlaunch->overridedefaults=='1') {
-        //check to see if there is a record of this instance in the table
-        $tincanlaunch_lrs_id = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid'=>$tincanlaunch->instance), $strictness = IGNORE_MISSING);
-        //if not, will need to insert_record
-        if (!$tincanlaunch_lrs_id) {
-            if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
-                return false;
-            }
-        } else {//if it does exist, update it
-            $tincanlaunch_lrs->id = $tincanlaunch_lrs_id;
-
-            if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunch_lrs)) {
-                return false;
-            }
-        }
-    }
-
-    if (!$DB->update_record('tincanlaunch', $tincanlaunch)) {
-        return false;
-    }
-
-    //process uploaded file
-    if (!empty($tincanlaunch->packagefile)) {
-        tincanlaunch_process_new_package($tincanlaunch);
-    }
-
-    return true;
+    return $tincanlaunch_lrs;
 }
 
 /**
