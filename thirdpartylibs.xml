@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>TinCanPHP/</location>
+        <name>TinCanPHP</name>
+        <version>0.40.0</version>
+        <license>Apache</license>
+        <licenseversion>2</licenseversion>
+    </library>
+    <library>
+        <location>WatershedPHP/</location>
+        <name>WatershedPHP</name>
+        <version>0.0</version>
+        <license>Apache</license>
+        <licenseversion>2</licenseversion>
+    </library>
+</libraries>
