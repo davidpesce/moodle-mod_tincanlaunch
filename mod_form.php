@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,16 +40,16 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
     public function definition() {
 
         global $CFG;
-        $cfg_tincanlaunch = get_config('tincanlaunch');
+        $cfgtincanlaunch = get_config('tincanlaunch');
 
         $mform = $this->_form;
 
-        //-------------------------------------------------------------------------------
-        // Adding the "general" fieldset, where all the common settings are showed
+
+        // Adding the "general" fieldset, where all the common settings are showed.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        // Adding the standard "name" field
-        $mform->addElement('text', 'name', get_string('tincanlaunchname', 'tincanlaunch'), array('size'=>'64'));
+        // Adding the standard "name" field.
+        $mform->addElement('text', 'name', get_string('tincanlaunchname', 'tincanlaunch'), array('size' => '64'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -60,27 +59,27 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'tincanlaunchname', 'tincanlaunch');
 
-        // Adding the standard "intro" and "introformat" fields
+        // Adding the standard "intro" and "introformat" fields.
         $this->standard_intro_elements();
 
         $mform->addElement('header', 'packageheading', get_string('tincanpackagetitle', 'tincanlaunch'));
         $mform->addElement('static', 'packagesettingsdescription', get_string('tincanpackagetitle', 'tincanlaunch'), get_string('tincanpackagetext', 'tincanlaunch'));
-        //-------------------------------------------------------------------------------
-        //Start required Fields for Activity
-        $mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), array('size'=>'64'));
+
+        //Start required Fields for Activity.
+        $mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanlaunchurl', PARAM_TEXT);
         $mform->addRule('tincanlaunchurl', null, 'required', null, 'client');
         $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
         $mform->setDefault('tincanlaunchurl', 'https://example.com/example-activity/index.html');
         
-        $mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size'=>'64'));
+        $mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanactivityid', PARAM_TEXT);
         $mform->addRule('tincanactivityid', null, 'required', null, 'client');
         $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
         $mform->setDefault('tincanactivityid', 'https://example.com/example-activity');
-        //End required Fields for Activity
+        // End required Fields for Activity.
 
         // New local package upload.
 
@@ -96,43 +95,48 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         //Start advanced settings
         $mform->addElement('header', 'lrsheading', get_string('lrsheading', 'tincanlaunch'));
 
-        $mform->addElement('static', 'description', get_string('lrsdefaults', 'tincanlaunch'), get_string('lrssettingdescription', 'tincanlaunch'));
+        $mform->addElement(
+            'static',
+            'description',
+            get_string('lrsdefaults', 'tincanlaunch'),
+            get_string('lrssettingdescription', 'tincanlaunch')
+        );
 
-        //Override default LRS settings
+        // Override default LRS settings.
         $mform->addElement('advcheckbox', 'overridedefaults', get_string('overridedefaults', 'tincanlaunch'));
         $mform->addHelpButton('overridedefaults', 'overridedefaults', 'tincanlaunch');
 
-        //Add LRS endpoint
-        $mform->addElement('text', 'tincanlaunchlrsendpoint', get_string('tincanlaunchlrsendpoint', 'tincanlaunch'), array('size'=>'64'));
+        // Add LRS endpoint.
+        $mform->addElement('text', 'tincanlaunchlrsendpoint', get_string('tincanlaunchlrsendpoint', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanlaunchlrsendpoint', PARAM_TEXT);
         $mform->addRule('tincanlaunchlrsendpoint', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrsendpoint', 'tincanlaunchlrsendpoint', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchlrsendpoint', $cfg_tincanlaunch->tincanlaunchlrsendpoint);
+        $mform->setDefault('tincanlaunchlrsendpoint', $cfgtincanlaunch->tincanlaunchlrsendpoint);
         $mform->disabledIf('tincanlaunchlrsendpoint', 'overridedefaults');
 
-        //Add LRS Authentication
-        $authoptions = array(1=>get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 2=>get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 0=>get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch'));
+        // Add LRS Authentication.
+        $authoptions = array(1 => get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'), 2 => get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 0 => get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch'));
         $mform->addElement('select', 'tincanlaunchlrsauthentication', get_string('tincanlaunchlrsauthentication','tincanlaunch'), $authoptions);
         $mform->disabledIf('tincanlaunchlrsauthentication', 'overridedefaults');
         $mform->addHelpButton('tincanlaunchlrsauthentication', 'tincanlaunchlrsauthentication', 'tincanlaunch');
-        $mform->getElement('tincanlaunchlrsauthentication')->setSelected($cfg_tincanlaunch->tincanlaunchlrsauthentication);
+        $mform->getElement('tincanlaunchlrsauthentication')->setSelected($cfgtincanlaunch->tincanlaunchlrsauthentication);
 
         $mform->addElement('static', 'description', get_string('tincanlaunchlrsauthentication_watershedhelp_label', 'tincanlaunch'), get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch'));
 
-        //Add basic authorisation login.
-        $mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size'=>'64'));
+        // Add basic authorisation login.
+        $mform->addElement('text', 'tincanlaunchlrslogin', get_string('tincanlaunchlrslogin', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanlaunchlrslogin', PARAM_TEXT);
         $mform->addRule('tincanlaunchlrslogin', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrslogin', 'tincanlaunchlrslogin', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchlrslogin', $cfg_tincanlaunch->tincanlaunchlrslogin);
+        $mform->setDefault('tincanlaunchlrslogin', $cfgtincanlaunch->tincanlaunchlrslogin);
         $mform->disabledIf('tincanlaunchlrslogin', 'overridedefaults');
 
-        //Add basic authorisation pass.
-        $mform->addElement('password', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size'=>'64'));
+        // Add basic authorisation pass.
+        $mform->addElement('password', 'tincanlaunchlrspass', get_string('tincanlaunchlrspass', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanlaunchlrspass', PARAM_TEXT);
         $mform->addRule('tincanlaunchlrspass', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchlrspass', 'tincanlaunchlrspass', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchlrspass', $cfg_tincanlaunch->tincanlaunchlrspass);
+        $mform->setDefault('tincanlaunchlrspass', $cfgtincanlaunch->tincanlaunchlrspass);
         $mform->disabledIf('tincanlaunchlrspass', 'overridedefaults');
 
         $mform->addElement('hidden', 'tincanlaunchwatershedlogin', '');
@@ -140,28 +144,28 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addElement('hidden', 'tincanlaunchwatershedpass', '');
         $mform->setType('tincanlaunchwatershedpass', PARAM_TEXT);
 
-        //Duration
-        $mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size'=>'64'));
+        // Duration.
+        $mform->addElement('text', 'tincanlaunchlrsduration', get_string('tincanlaunchlrsduration', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanlaunchlrsduration', PARAM_TEXT);
         $mform->addRule('tincanlaunchlrsduration', get_string('maximumchars', '', 5), 'maxlength', 5, 'client');
         $mform->addHelpButton('tincanlaunchlrsduration', 'tincanlaunchlrsduration', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchlrsduration', $cfg_tincanlaunch->tincanlaunchlrsduration);
+        $mform->setDefault('tincanlaunchlrsduration', $cfgtincanlaunch->tincanlaunchlrsduration);
         $mform->disabledIf('tincanlaunchlrsduration', 'overridedefaults');
 
-        //Actor account homePage
-        $mform->addElement('text', 'tincanlaunchcustomacchp', get_string('tincanlaunchcustomacchp', 'tincanlaunch'), array('size'=>'64'));
+        // Actor account homePage.
+        $mform->addElement('text', 'tincanlaunchcustomacchp', get_string('tincanlaunchcustomacchp', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanlaunchcustomacchp', PARAM_TEXT);
         $mform->addRule('tincanlaunchcustomacchp', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchcustomacchp', 'tincanlaunchcustomacchp', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchcustomacchp', $cfg_tincanlaunch->tincanlaunchcustomacchp);
+        $mform->setDefault('tincanlaunchcustomacchp', $cfgtincanlaunch->tincanlaunchcustomacchp);
         $mform->disabledIf('tincanlaunchcustomacchp', 'overridedefaults');
 
-        //Don't use email
+        // Don't use email.
         $mform->addElement('advcheckbox', 'tincanlaunchuseactoremail', get_string('tincanlaunchuseactoremail', 'tincanlaunch'));
         $mform->addHelpButton('tincanlaunchuseactoremail', 'tincanlaunchuseactoremail', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchuseactoremail', $cfg_tincanlaunch->tincanlaunchuseactoremail);
+        $mform->setDefault('tincanlaunchuseactoremail', $cfgtincanlaunch->tincanlaunchuseactoremail);
         $mform->disabledIf('tincanlaunchuseactoremail', 'overridedefaults');
-        //End advanced settings
+        // End advanced settings.
 
         //-------------------------------------------------------------------------------
         //Behavior settings
@@ -185,7 +189,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
     
         $group=array();
         $group[] =& $mform->createElement('checkbox', 'completionverbenabled', ' ', get_string('completionverb','tincanlaunch'));
-        $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size'=>'64'));
+        $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
         
         $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
