@@ -168,7 +168,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
     }
 
     // Build the URL to be returned.
-    $rtnString = $tincanlaunch->tincanlaunchurl."?".http_build_query(
+    $rtnstring = $tincanlaunch->tincanlaunchurl."?".http_build_query(
         array(
             "endpoint" => $url,
             "auth" => "Basic ".$basicauth,
@@ -184,7 +184,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
         PHP_QUERY_RFC3986
     );
 
-    return $rtnString;
+    return $rtnstring;
 }
 
 /**

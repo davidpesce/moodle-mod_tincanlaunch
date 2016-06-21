@@ -76,7 +76,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
         $mform->setDefault('tincanlaunchurl', 'https://example.com/example-activity/index.html');
-        
+
         $mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), array('size' => '64'));
         $mform->setType('tincanactivityid', PARAM_TEXT);
         $mform->addRule('tincanactivityid', null, 'required', null, 'client');
@@ -146,7 +146,12 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('tincanlaunchlrsauthentication', 'tincanlaunchlrsauthentication', 'tincanlaunch');
         $mform->getElement('tincanlaunchlrsauthentication')->setSelected($cfgtincanlaunch->tincanlaunchlrsauthentication);
 
-        $mform->addElement('static', 'description', get_string('tincanlaunchlrsauthentication_watershedhelp_label', 'tincanlaunch'), get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch'));
+        $mform->addElement(
+            'static',
+            'description',
+            get_string('tincanlaunchlrsauthentication_watershedhelp_label', 'tincanlaunch'),
+            get_string('tincanlaunchlrsauthentication_watershedhelp', 'tincanlaunch')
+        );
 
         // Add basic authorisation login.
         $mform->addElement(
@@ -219,7 +224,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         // Behavior settings.
         $mform->addElement('header', 'behaviorheading', get_string('behaviorheading', 'tincanlaunch'));
 
-        //Allow multiple ongoing registrations
+        // Allow multiple ongoing registrations.
         $mform->addElement('advcheckbox', 'tincanmultipleregs', get_string('tincanmultipleregs', 'tincanlaunch'));
         $mform->addHelpButton('tincanmultipleregs', 'tincanmultipleregs', 'tincanlaunch');
         $mform->setDefault('tincanmultipleregs', 1);
@@ -233,17 +238,17 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
     public function add_completion_rules() {
         $mform =& $this->_form;
 
-        $group=array();
+        $group = array();
         $group[] =& $mform->createElement(
             'checkbox',
             'completionverbenabled',
             ' ',
-            get_string('completionverb','tincanlaunch')
+            get_string('completionverb', 'tincanlaunch')
         );
-        $group[] =& $mform->createElement('text', 'tincanverbid', ' ',array('size' => '64'));
+        $group[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
         
-        $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup','tincanlaunch'), array(' '), false);
+        $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'), array(' '), false);
         $mform->addGroupRule('completionverbgroup', array(
             'tincanverbid' => array( 
                 array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
@@ -252,8 +257,8 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         );
         
         $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
-        $mform->disabledIf('tincanverbid','completionverbenabled','notchecked');
-        $mform->setDefault('tincanverbid','http://adlnet.gov/expapi/verbs/completed'); 
+        $mform->disabledIf('tincanverbid','completionverbenabled', 'notchecked');
+        $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed'); 
         
 
         return array('completionverbgroup');
@@ -303,8 +308,8 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
                 if ($tincanlaunchlrs->lrsauthentication == '2') {
                     $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->watershedlogin;
                     $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->watershedpass;
-                } 
-                else { 
+                }
+                else {
                     $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->lrslogin;
                     $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->lrspass;
                 }
@@ -312,16 +317,21 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         }
 
         $draftitemid = file_get_submitted_draft_itemid('packagefile');
-        file_prepare_draft_area($draftitemid, $this->context->id, 'mod_tincanlaunch', 'package', 0, array('subdirs' => 0, 'maxfiles' => 1));
+        file_prepare_draft_area(
+            $draftitemid,
+            $this->context->id,
+            'mod_tincanlaunch',
+            'package',
+            0,
+            array('subdirs' => 0, 'maxfiles' => 1)
+        );
         $defaultvalues['packagefile'] = $draftitemid;
 
         // Set up the completion checkboxes which aren't part of standard data.
         // We also make the default value (if you turn on the checkbox) for those
         // numbers to be 1, this will not apply unless checkbox is ticked.
-        $defaultvalues['completionverbenabled']=
-            !empty($defaultvalues['tincanverbid']) ? 1 : 0;
         if (empty($defaultvalues['tincanverbid'])) {
-            $defaultvalues['completionverbenabled']=1;
+            $defaultvalues['completionverbenabled'] = 1;
         }
     }
     // Validate the form elements after submitting (server-side).

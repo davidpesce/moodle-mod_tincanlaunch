@@ -350,7 +350,7 @@ function tincanlaunch_get_file_areas($course, $cm, $context) {
 /**
  * File browsing support for tincanlaunch file areas
  *
-  * @package mod_tincanlaunch
+ * @package mod_tincanlaunch
  * @category files
  *
  * @param file_browser $browser
@@ -446,7 +446,7 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     send_stored_file($file, $lifetime, 0, false, $options);
 }
 
-// Navigation API
+// Navigation API.
 
 /**
  * Extends the global navigation tree by adding tincanlaunch nodes if there is a relevant content
@@ -475,10 +475,10 @@ function tincanlaunch_extend_settings_navigation(settings_navigation $settingsna
 
 // Called by Moodle core.
 function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
-    global $CFG,$DB;
+    global $CFG, $DB;
     $result = $type; // Default return value.
 
-     // Get tincanlaunch
+     // Get tincanlaunch.
     if (!$tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $cm->instance))) {
         throw new Exception("Can't find activity {$cm->instance}"); // TODO: localise this.
     }
@@ -510,15 +510,17 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
 
 // TinCanLaunch specific functions.
 
-/* 
+/*
 The functions below should really be in locallib, however they are required for one
 or more of the functions above so need to be here.
 It looks like the standard Quiz module does that same thing, so I don't feel so bad.
 */
 
 /**
- * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents and extracts the launch url and activity id from the tincan.xml file.
- * Note: This takes the *first* activity from the tincan.xml file to be the activity intended to be launched. It will not go hunting for launch URLs any activities listed below.
+ * Handles uploaded zip packages when a module is added or updated. Unpacks the zip contents 
+ * and extracts the launch url and activity id from the tincan.xml file.
+ * Note: This takes the *first* activity from the tincan.xml file to be the activity intended 
+ * to be launched. It will not go hunting for launch URLs any activities listed below.
  * Based closely on code from the SCORM and (to a lesser extent) Resource modules.
  * @package  mod_tincanlaunch
  * @category tincan
@@ -589,7 +591,8 @@ function tincanlaunch_process_new_package($tincanlaunch) {
         // Skip if not. (The Moodle admin will need to enter the url manually).
         foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
             if ($property["name"] === "LAUNCH") {
-                $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/".$manifestfile->get_filearea()."/".$property["tagData"];
+                $record->tincanlaunchurl = $CFG->wwwroot."/pluginfile.php/".$context->id."/mod_tincanlaunch/"
+                .$manifestfile->get_filearea()."/".$property["tagData"];
             }
         }
     }
@@ -634,7 +637,8 @@ function tincanlaunch_validate_package($file) {
 }
 
 /**
- * Fetches Statements from the LRS. This is used for completion tracking - we check for a statement matching certain criteria for each learner.
+ * Fetches Statements from the LRS. This is used for completion tracking -
+ * we check for a statement matching certain criteria for each learner.
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -661,7 +665,6 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
 
     // Get all the statements from the LRS.
     $statementsresponse = $lrs->queryStatements($statementsquery);
-
 
     if ($statementsresponse->success == false) {
         return $statementsresponse;
@@ -769,7 +772,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $tincanlaunc
         $DB->insert_record('tincanlaunch_credentials', (object)[
             "tincanlaunchid" => $tincanlaunchid,
             "credentialid" => $credentialid,
-            "expiry" => $expiryunix 
+            "expiry" => $expiryunix
         ], false);
         return $response;
     } else {
@@ -838,7 +841,7 @@ function tincanlaunch_settings($instance) {
     $expresult = array();
     $activitysettings = $DB->get_record(
         'tincanlaunch_lrs',
-        array('tincanlaunchid'=>$instance),
+        array('tincanlaunchid' => $instance),
         $fields = '*',
         $strictness = IGNORE_MISSING
     );
@@ -874,8 +877,7 @@ function tincanlaunch_settings($instance) {
                 || $activitysettings->watershedpass !== $expresult['tincanlaunchlrspass']
                 || $activitysettings->lrsendpoint !== $expresult['tincanlaunchlrsendpoint']
                 || $activitysettings->lrsauthentication !== '2'
-            ) { 
-
+            ) {
                 // Create a new Watershed activity provider.
                 $creds = tincanlaunch_get_creds_watershed(
                     $expresult['tincanlaunchlrslogin'],

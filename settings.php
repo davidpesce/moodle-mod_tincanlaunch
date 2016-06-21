@@ -34,7 +34,7 @@ if ($ADMIN->fulltree) {
 
     $options = array(
         1 => get_string('tincanlaunchlrsauthentication_option_0', 'tincanlaunch'),
-        2 => get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'), 
+        2 => get_string('tincanlaunchlrsauthentication_option_1', 'tincanlaunch'),
         0 => get_string('tincanlaunchlrsauthentication_option_2', 'tincanlaunch')
     );
     // Note the numbers above are deliberately mis-ordered for reasons of backwards compatibility with older settings.

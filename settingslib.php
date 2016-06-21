@@ -31,8 +31,7 @@ class admin_setting_configtext_mod_tincanlaunch extends admin_setting_configtext
      * @param array $data An array of data, if not array returns empty str
      * @return mixed empty string on useless data or success, error string if failed
      */
-    public function write_setting($data)
-    {
+    public function write_setting($data) {
         if ($this->paramtype === PARAM_INT and $data === '') {
             // Do not complain if '' used instead of 0.
             $data = 0;
