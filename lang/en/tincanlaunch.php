@@ -54,7 +54,7 @@ $string['tincanlaunchlrsduration_default'] = '9000';
 
 $string['tincanlaunchlrsauthentication'] = 'LRS integration';
 $string['tincanlaunchlrsauthentication_help'] = 'Use additional integration features to create new authentication credentials for each launch for supported LRSs.';
-$string['tincanlaunchlrsauthentication_watershedhelp'] = 'For Watershed integration, enter Watershed login credentials in the Login and Password fields below. Be aware that these details are stored in the Moodle database. Use an account created for the prupose with a password that is not used for any other account. For other integration settings enter the Basic Auth Login/Password below.';
+$string['tincanlaunchlrsauthentication_watershedhelp'] = 'For Watershed integration, ensure that the Activity Provider is configured with API Access enabled.';
 $string['tincanlaunchlrsauthentication_watershedhelp_label'] = 'Watershed integration';
 $string['tincanlaunchlrsauthentication_option_0'] = 'None';
 $string['tincanlaunchlrsauthentication_option_1'] = 'Watershed';
