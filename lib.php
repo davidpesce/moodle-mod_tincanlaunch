@@ -159,7 +159,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
 }
 
 function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
-    global $DB;
+    global $DB, $CFG;
 
     // Data for tincanlaunch_lrs table.
     $tincanlaunchlrs = new stdClass();
@@ -758,7 +758,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $tincanlaunc
     $wsserver = $explodedendpoint[0].'//'.$explodedendpoint[2];
     $orgid = $explodedendpoint[5];
 
-    $wsclient = new \WatershedClient\Watershed($wsserver, $auth, $orgid, 'Moodle');
+    $wsclient = new \WatershedClient\Watershed($wsserver, $auth, $orgid, null);
 
     if (is_null($expiry)) {
         $expiryunix = 0;
