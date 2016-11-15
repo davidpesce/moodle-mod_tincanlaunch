@@ -416,15 +416,12 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     require_login($course, true, $cm);
     $canmanageactivity = has_capability('moodle/course:manageactivities', $context);
 
+    $filename = array_pop($args);
+    $filepath = implode('/', $args);
     if ($filearea === 'content') {
-        $filename = array_pop($args);
-        $filepath = implode('/', $args);
         $lifetime = null;
     } else if ($filearea === 'package') {
-        $relativepath = implode('/', $args);
-        $fullpath = "/$context->id/tincanlaunch/package/0/$relativepath";
         $lifetime = 0; // No caching here.
-
     } else {
         return false;
     }
@@ -432,7 +429,7 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     $fs = get_file_storage();
 
     if (
-        !$file = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/'.$filepath.'/', $filename)
+        !$file = $fs->get_file($context->id, 'mod_tincanlaunch', $filearea, 0, '/'.$filepath.'/', $filename)
         or $file->is_directory()
     ) {
         if ($filearea === 'content') { // Return file not found straight away to improve performance.
