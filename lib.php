@@ -464,7 +464,8 @@ function tincanlaunch_export_contents($cm, $baseurl) {
         $file['filename']     = $fileinfo->get_filename();
         $file['filepath']     = $fileinfo->get_filepath();
         $file['filesize']     = $fileinfo->get_filesize();
-        $file['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_tincanlaunch/package'.$fileinfo->get_filepath().$fileinfo->get_filename(), true);
+        $file['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_tincanlaunch/package'.
+            $fileinfo->get_filepath().$fileinfo->get_filename(), true);
         $file['timecreated']  = $fileinfo->get_timecreated();
         $file['timemodified'] = $fileinfo->get_timemodified();
         $file['sortorder']    = $fileinfo->get_sortorder();
