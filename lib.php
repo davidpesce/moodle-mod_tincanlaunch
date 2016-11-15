@@ -446,6 +446,40 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     send_stored_file($file, $lifetime, 0, false, $options);
 }
 
+/**
+ * Export file resource contents for web service access.
+ *
+ * @param cm_info $cm Course module object.
+ * @param string $baseurl Base URL for Moodle.
+ * @return array array of file content
+ */
+function tincanlaunch_export_contents($cm, $baseurl) {
+    global $CFG;
+    $contents = array();
+    $context = context_module::instance($cm->id);
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_tincanlaunch', 'package', 0, 'sortorder DESC, id ASC', false);
+
+    foreach ($files as $fileinfo) {
+        $file = array();
+        $file['type'] = 'file';
+        $file['filename']     = $fileinfo->get_filename();
+        $file['filepath']     = $fileinfo->get_filepath();
+        $file['filesize']     = $fileinfo->get_filesize();
+        $file['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_tincanlaunch/package'.$fileinfo->get_filepath().$fileinfo->get_filename(), true);
+        $file['timecreated']  = $fileinfo->get_timecreated();
+        $file['timemodified'] = $fileinfo->get_timemodified();
+        $file['sortorder']    = $fileinfo->get_sortorder();
+        $file['userid']       = $fileinfo->get_userid();
+        $file['author']       = $fileinfo->get_author();
+        $file['license']      = $fileinfo->get_license();
+        $contents[] = $file;
+    }
+
+    return $contents;
+}
+
 // Navigation API.
 
 /**
