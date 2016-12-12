@@ -485,6 +485,14 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
 
     $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
 
+    $expirydate = null;
+    $expirydays = $tincanlaunch->tincanexpiry;
+    if ($expirydays > 0) {
+        $expirydatetime = new DateTime();
+        $expirydatetime->sub(new DateInterval('P'.$expirydays.'D'));
+        $expirydate = $expirydatetime->format('c');
+    }
+
     if (!empty($tincanlaunch->tincanverbid)) {
         // Try to get a statement matching actor, verb and object specified in module settings.
         $statementquery = tincanlaunch_get_statements(
@@ -494,7 +502,8 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
             $tincanlaunchsettings['tincanlaunchlrsversion'],
             $tincanlaunch->tincanactivityid,
             tincanlaunch_getactor($cm->instance),
-            $tincanlaunch->tincanverbid
+            $tincanlaunch->tincanverbid,
+            $expirydate
         );
 
         // If the statement exists, return true else return false.
@@ -649,9 +658,10 @@ function tincanlaunch_validate_package($file) {
  * @param string $activityid Activity Id to filter by
  * @param TinCan Agent $agent Agent to filter by
  * @param string $verb Verb Id to filter by
+ * @param string $since Since date to filter by
  * @return TinCan LRS Response
  */
-function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $activityid, $agent, $verb) {
+function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $activityid, $agent, $verb, $since = null) {
 
     $lrs = new \TinCan\RemoteLRS($url, $version, $basiclogin, $basicpass);
 
@@ -662,6 +672,10 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
         "related_activities" => "false",
         "format" => "ids"
     );
+
+    if (!is_null($since)){
+        $statementsquery["since"] = $since;
+    }
 
     // Get all the statements from the LRS.
     $statementsresponse = $lrs->queryStatements($statementsquery);
@@ -862,67 +876,68 @@ function tincanlaunch_settings($instance) {
         foreach ($result as $value) {
             $expresult[$value->name] = $value->value;
         }
+    }
 
-        // If Watershed integration, don't use global xAPI creds.
-        if ($expresult['tincanlaunchlrsauthentication'] == '2') {
+    // If Watershed integration, don't use global xAPI creds.
+    if ($expresult['tincanlaunchlrsauthentication'] == '2') {
 
-            // The global login and password are always Watershed creds, not xapi creds.
-            $expresult['tincanlaunchwatershedlogin'] = $expresult['tincanlaunchlrslogin'];
-            $expresult['tincanlaunchwatershedpass'] = $expresult['tincanlaunchlrspass'];
+        // The global login and password are always Watershed creds, not xapi creds.
+        $expresult['tincanlaunchwatershedlogin'] = $expresult['tincanlaunchlrslogin'];
+        $expresult['tincanlaunchwatershedpass'] = $expresult['tincanlaunchlrspass'];
 
-            // Check if we need to update instance record (endpoint, username, password or auth type have changed).
-            if (
-                $activitysettings == false
-                || $activitysettings->watershedlogin !== $expresult['tincanlaunchlrslogin']
-                || $activitysettings->watershedpass !== $expresult['tincanlaunchlrspass']
-                || $activitysettings->lrsendpoint !== $expresult['tincanlaunchlrsendpoint']
-                || $activitysettings->lrsauthentication !== '2'
-            ) {
-                // Create a new Watershed activity provider.
-                $creds = tincanlaunch_get_creds_watershed(
-                    $expresult['tincanlaunchlrslogin'],
-                    $expresult['tincanlaunchlrspass'],
-                    $expresult['tincanlaunchlrsendpoint'],
-                    $instance,
-                    $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $instance,
-                    null
-                );
+        // Check if we need to update instance record (endpoint, username, password or auth type have changed).
+        if (
+            $activitysettings == false
+            || $activitysettings->watershedlogin !== $expresult['tincanlaunchlrslogin']
+            || $activitysettings->watershedpass !== $expresult['tincanlaunchlrspass']
+            || $activitysettings->lrsendpoint !== $expresult['tincanlaunchlrsendpoint']
+            || $activitysettings->lrsauthentication !== '2'
+        ) {
+            // Create a new Watershed activity provider.
+            $creds = tincanlaunch_get_creds_watershed(
+                $expresult['tincanlaunchlrslogin'],
+                $expresult['tincanlaunchlrspass'],
+                $expresult['tincanlaunchlrsendpoint'],
+                $instance,
+                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $instance,
+                null
+            );
 
-                // Update database with newly created xapi creds.
-                $tincanlaunchlrs = new stdClass();
-                $tincanlaunchlrs->lrsendpoint = $expresult['tincanlaunchlrsendpoint'];
-                $tincanlaunchlrs->lrslogin = $creds["key"];
-                $tincanlaunchlrs->lrspass = $creds["secret"];
-                $tincanlaunchlrs->watershedlogin = $expresult['tincanlaunchlrslogin'];
-                $tincanlaunchlrs->watershedpass = $expresult['tincanlaunchlrspass'];
-                $tincanlaunchlrs->lrsauthentication = '2';
-                $tincanlaunchlrs->customacchp = $expresult['tincanlaunchcustomacchp'];
-                $tincanlaunchlrs->useactoremail = $expresult['tincanlaunchuseactoremail'];
-                $tincanlaunchlrs->lrsduration = $expresult['tincanlaunchlrsduration'];
-                $tincanlaunchlrs->tincanlaunchid = $instance;
+            // Update database with newly created xapi creds.
+            $tincanlaunchlrs = new stdClass();
+            $tincanlaunchlrs->lrsendpoint = $expresult['tincanlaunchlrsendpoint'];
+            $tincanlaunchlrs->lrslogin = $creds["key"];
+            $tincanlaunchlrs->lrspass = $creds["secret"];
+            $tincanlaunchlrs->watershedlogin = $expresult['tincanlaunchlrslogin'];
+            $tincanlaunchlrs->watershedpass = $expresult['tincanlaunchlrspass'];
+            $tincanlaunchlrs->lrsauthentication = '2';
+            $tincanlaunchlrs->customacchp = $expresult['tincanlaunchcustomacchp'];
+            $tincanlaunchlrs->useactoremail = $expresult['tincanlaunchuseactoremail'];
+            $tincanlaunchlrs->lrsduration = $expresult['tincanlaunchlrsduration'];
+            $tincanlaunchlrs->tincanlaunchid = $instance;
 
-                // Populate xapi creds in result.
-                $expresult['tincanlaunchlrslogin'] = $creds["key"];
-                $expresult['tincanlaunchlrspass'] = $creds["secret"];
+            // Populate xapi creds in result.
+            $expresult['tincanlaunchlrslogin'] = $creds["key"];
+            $expresult['tincanlaunchlrspass'] = $creds["secret"];
 
-                // If record does not exist, will need to insert_record.
-                if ($activitysettings == false) {
-                    if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
-                        return false;
-                    }
-                } else {// If it does exist, update it.
-                    $tincanlaunchlrs->id = $activitysettings->id;
-                    if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
-                        return false;
-                    }
+            // If record does not exist, will need to insert_record.
+            if ($activitysettings == false) {
+                if (!$DB->insert_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
+                    return false;
                 }
-            } else { // Relevant instance settings match global settings; no need to create new creds.
-                // Use global settings, plus instance specific xapi creds.
-                $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
-                $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
+            } else {// If it does exist, update it.
+                $tincanlaunchlrs->id = $activitysettings->id;
+                if (!$DB->update_record('tincanlaunch_lrs', $tincanlaunchlrs)) {
+                    return false;
+                }
             }
+        } else { // Relevant instance settings match global settings; no need to create new creds.
+            // Use global settings, plus instance specific xapi creds.
+            $expresult['tincanlaunchlrslogin'] = $activitysettings->lrslogin;
+            $expresult['tincanlaunchlrspass'] = $activitysettings->lrspass;
         }
     }
+
     $expresult['tincanlaunchlrsversion'] = '1.0.0';
 
     $tincanlaunchsettings = $expresult;

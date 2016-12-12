@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/tincanlaunch/db" VERSION="2016062400" COMMENT="XMLDB file for Moodle mod/tincanlaunch"
+<XMLDB PATH="mod/tincanlaunch/db" VERSION="2016121200" COMMENT="XMLDB file for Moodle mod/tincanlaunch"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -14,6 +14,7 @@
         <FIELD NAME="tincanlaunchurl" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL"/>
         <FIELD NAME="tincanactivityid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL"/>
         <FIELD NAME="tincanverbid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL"/>
+        <FIELD NAME="tincanexpiry" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="365" SEQUENCE="false" COMMENT="Number of days to expire completion after"/>
         <FIELD NAME="overridedefaults" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Determines if the activity is inheriting the global defaults or has overriden them at the activity level."/>
         <FIELD NAME="tincanmultipleregs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="1" />
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>

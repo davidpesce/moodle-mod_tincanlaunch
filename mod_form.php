@@ -238,20 +238,22 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
     public function add_completion_rules() {
         $mform =& $this->_form;
 
-        $group = array();
-        $group[] =& $mform->createElement(
+        // Add Verb Id setting,
+        $verbGroup = array();
+        $verbGroup[] =& $mform->createElement(
             'checkbox',
             'completionverbenabled',
             ' ',
             get_string('completionverb', 'tincanlaunch')
         );
-        $group[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
+        $verbGroup[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
 
-        $mform->addGroup($group, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'), array(' '), false);
-        $mform->addGroupRule('completionverbgroup', array(
-            'tincanverbid' => array(
-                array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
+        $mform->addGroup($verbGroup, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'), array(' '), false);
+        $mform->addGroupRule(
+            'completionverbgroup', array(
+                'tincanverbid' => array(
+                    array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
                 )
             )
         );
@@ -260,11 +262,41 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->disabledIf('tincanverbid', 'completionverbenabled', 'notchecked');
         $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed');
 
-        return array('completionverbgroup');
+        // Add Completion Expiry Date setting,
+        $completionGroup = array();
+        $completionGroup[] =& $mform->createElement(
+            'checkbox',
+            'completionexpiryenabled',
+            ' ',
+            get_string('completionexpiry', 'tincanlaunch')
+        );
+        $completionGroup[] =& $mform->createElement('text', 'tincanexpiry', ' ', array('size' => '64'));
+        $mform->setType('tincanexpiry', PARAM_TEXT);
+
+        $mform->addGroup($completionGroup, 'completionexpirygroup', get_string('completionexpirygroup', 'tincanlaunch'), array(' '), false);
+        $mform->addGroupRule(
+            'completionexpirygroup', array(
+                'tincanexpiry' => array(
+                    array(get_string('maximumchars', '', 10), 'maxlength', 10, 'client')
+                )
+            )
+        );
+
+        $mform->addHelpButton('completionexpirygroup', 'completionexpirygroup', 'tincanlaunch');
+        $mform->disabledIf('tincanexpiry', 'completionexpiryenabled', 'notchecked');
+        $mform->setDefault('tincanexpiry', '365');
+
+        return array('completionverbgroup', 'completionexpirygroup');
     }
 
     public function completion_rule_enabled($data) {
-        return (!empty($data['completionverbenabled']) && !empty($data['tincanverbid']));
+        if (!empty($data['completionverbenabled']) && !empty($data['tincanverbid'])){
+            return true;
+        }
+        if (!empty($data['completionexpiryenabled']) && !empty($data['tincanexpiry'])){
+            return true;
+        }
+        return false;
     }
 
     public function get_data() {
@@ -277,6 +309,9 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
             $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
             if (empty($data->completionverbenabled) || !$autocompletion) {
                 $data->tincanverbid = '';
+            }
+            if (empty($data->completionexpiryenabled) || !$autocompletion) {
+                $data->tincanexpiry = '';
             }
         }
         return $data;
@@ -328,9 +363,17 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         // Set up the completion checkboxes which aren't part of standard data.
         // We also make the default value (if you turn on the checkbox) for those
         // numbers to be 1, this will not apply unless checkbox is ticked.
-        if (empty($defaultvalues['tincanverbid'])) {
+        if (!empty($defaultvalues['tincanverbid'])) {
             $defaultvalues['completionverbenabled'] = 1;
+        } else {
+            $defaultvalues['tincanverbid'] = 'http://adlnet.gov/expapi/verbs/completed';
         }
+        if (!empty($defaultvalues['tincanexpiry'])) {
+            $defaultvalues['completionexpiryenabled'] = 1;
+        } else {
+            $defaultvalues['tincanexpiry'] = 365;
+        }
+
     }
     // Validate the form elements after submitting (server-side).
     public function validation($data, $files) {

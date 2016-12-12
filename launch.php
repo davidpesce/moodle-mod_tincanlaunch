@@ -149,6 +149,9 @@ if ($lrsrespond != 204) {
     die();
 }
 
+$completion = new completion_info($course);
+$completion->set_module_viewed($cm);
+
 // Launch the experience.
 header("Location: ". tincanlaunch_get_launch_url($registrationid));
 

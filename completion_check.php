@@ -25,8 +25,15 @@
 require_once('header.php');
 
 $completion = new completion_info($course);
+
+$possibleResult = COMPLETION_COMPLETE;
+
+if ($tincanlaunch->tincanexpiry > 0) {
+    $possibleResult = COMPLETION_UNKNOWN;
+}
+
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    $completion->update_state($cm, COMPLETION_COMPLETE);
+    $completion->update_state($cm, $possibleResult);
 
     // Trigger Activity completed event.
     $event = \mod_tincanlaunch\event\activity_completed::create(array(
