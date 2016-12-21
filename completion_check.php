@@ -33,15 +33,18 @@ if ($tincanlaunch->tincanexpiry > 0) {
 }
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
+    $oldState = $completion->get_data($cm, false, 0);
     $completion->update_state($cm, $possibleResult);
+    $newState = $completion->get_data($cm, false, 0);
 
-    // Trigger Activity completed event.
-    $event = \mod_tincanlaunch\event\activity_completed::create(array(
-        'objectid' => $tincanlaunch->id,
-        'context' => $context,
-    ));
-    $event->add_record_snapshot('course_modules', $cm);
-    $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
-    $event->trigger();
-
+    if ($oldState->completionstate !== $newState->completionstate) {
+        // Trigger Activity completed event.
+        $event = \mod_tincanlaunch\event\activity_completed::create(array(
+            'objectid' => $tincanlaunch->id,
+            'context' => $context,
+        ));
+        $event->add_record_snapshot('course_modules', $cm);
+        $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+        $event->trigger();
+    }
 }
