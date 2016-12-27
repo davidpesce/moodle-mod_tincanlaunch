@@ -34,7 +34,7 @@ $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
 $event->trigger();
 
 // Get the registration id.
-$registrationid = $_GET["launchform_registration"];
+$registrationid = required_param('launchform_registration', PARAM_TEXT);
 if (empty($registrationid)) {
     echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty', 'tincanlaunch')."</div>";
     // Failed to connect to LRS.
