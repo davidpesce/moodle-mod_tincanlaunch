@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/restore_tincanlaunch_stepslib.php'); // Because it exists (must)
+require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/restore_tincanlaunch_stepslib.php'); // Because it exists (must).
 
 class restore_tincanlaunch_activity_task extends restore_activity_task {
 
@@ -73,10 +73,10 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
         // List of tincanlaunchs in course.
         $rules[] = new restore_decode_rule('TINCANLAUNCHINDEX', '/mod/tincanlaunch/index.php?id=$1', 'course');
 
-        // tincanlaunch by cm->id.
+        // Tincanlaunch by cm->id.
         $rules[] = new restore_decode_rule('TINCANLAUNCHVIEWBYID', '/mod/tincanlaunch/view.php?id=$1', 'course_module');
 
-        // tincanlaunch by tincanlaunch->id.
+        // Tincanlaunch by tincanlaunch->id.
         $rules[] = new restore_decode_rule('TINCANLAUNCHVIEWBYB', '/mod/tincanlaunch/view.php?b=$1', 'tincanlaunch');
 
         // Convert old tincanlaunch links MDL-33362 & MDL-35007.
