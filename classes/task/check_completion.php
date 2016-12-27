@@ -21,9 +21,9 @@
  */
 
 namespace mod_tincanlaunch\task;
+defined('MOODLE_INTERNAL') || die();
 require_once(dirname(dirname(dirname(__FILE__))).'/lib.php');
 require_once($CFG->dirroot.'/lib/completionlib.php');
-defined('MOODLE_INTERNAL') || die();
 
 class check_completion extends \core\task\scheduled_task {
     public function get_name() {
@@ -38,7 +38,13 @@ class check_completion extends \core\task\scheduled_task {
         $courses = array(); // Cache course data incase the multiple modules exist in a course.
 
         foreach ($modules as $tincanlaunch) {
-            $cm = $DB->get_record('course_modules', array('module' => $module->id, 'instance' => $tincanlaunch->id), '*', MUST_EXIST);
+            $cm = $DB->get_record(
+                'course_modules',
+                array('module' => $module->id,
+                    'instance' => $tincanlaunch->id),
+                '*',
+                MUST_EXIST
+            );
             if (!isset($courses[$cm->course])) {
                 $courses[$cm->course] = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
                 $courses[$cm->course]->enrolments = $DB->get_records('user_enrolments', array('status' => 0));
@@ -46,19 +52,19 @@ class check_completion extends \core\task\scheduled_task {
             $course = $courses[$cm->course];
             $completion = new \completion_info($course);
 
-            $possibleResult = COMPLETION_COMPLETE;
+            $possible_result = COMPLETION_COMPLETE;
 
             if ($tincanlaunch->tincanexpiry > 0) {
-                $possibleResult = COMPLETION_UNKNOWN;
+                $possible_result = COMPLETION_UNKNOWN;
             }
 
             if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
                 foreach ($course->enrolments as $enrolment) {
-                    $oldState = $completion->get_data($cm, false, $enrolment->userid);
-                    $completion->update_state($cm, $possibleResult);
-                    $newState = $completion->get_data($cm, false, $enrolment->userid);
+                    $old_state = $completion->get_data($cm, false, $enrolment->userid);
+                    $completion->update_state($cm, $possible_result);
+                    $new_state = $completion->get_data($cm, false, $enrolment->userid);
 
-                    if ($oldState->completionstate !== $newState->completionstate) {
+                    if ($old_state->completionstate !== $new_state->completionstate) {
                         // Trigger Activity completed event.
                         $event = \mod_tincanlaunch\event\activity_completed::create(array(
                             'objectid' => $tincanlaunch->id,

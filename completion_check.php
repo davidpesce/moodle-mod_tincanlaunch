@@ -21,23 +21,23 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('header.php');
 
 $completion = new completion_info($course);
 
-$possibleResult = COMPLETION_COMPLETE;
+$possible_result = COMPLETION_COMPLETE;
 
 if ($tincanlaunch->tincanexpiry > 0) {
-    $possibleResult = COMPLETION_UNKNOWN;
+    $possible_result = COMPLETION_UNKNOWN;
 }
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    $oldState = $completion->get_data($cm, false, 0);
-    $completion->update_state($cm, $possibleResult);
-    $newState = $completion->get_data($cm, false, 0);
+    $old_state = $completion->get_data($cm, false, 0);
+    $completion->update_state($cm, $possible_result);
+    $new_state = $completion->get_data($cm, false, 0);
 
-    if ($oldState->completionstate !== $newState->completionstate) {
+    if ($old_state->completionstate !== $new_state->completionstate) {
         // Trigger Activity completed event.
         $event = \mod_tincanlaunch\event\activity_completed::create(array(
             'objectid' => $tincanlaunch->id,
