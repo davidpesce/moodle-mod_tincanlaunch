@@ -34,7 +34,7 @@ if ($tincanlaunch->tincanexpiry > 0) {
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
     $oldstate = $completion->get_data($cm, false, 0);
-    $completion->updatestate($cm, $possibleresult);
+    $completion->update_state($cm, $possibleresult);
     $newstate = $completion->get_data($cm, false, 0);
 
     if ($oldstate->completionstate !== $newstate->completionstate) {
