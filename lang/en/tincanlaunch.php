@@ -116,7 +116,7 @@ $string['completionverbgroup_help'] = 'Moodle will look for statements where the
 // Expiry completion settings.
 $string['completionexpiry'] = 'Expiry';
 $string['completionexpirygroup'] = 'Completion Expires After (days)';
-$string['completionexpirygroup_help'] = 'If checked, when looking for completion Moodle will only look at data for the previous X days. It will unset completion for learners who had previously completed but whose completion has now expired.';
+$string['completionexpirygroup_help'] = 'If checked, when looking for completion Moodle will only look at data stored in the LRS in the previous X days. It will unset completion for learners who had previously completed but whose completion has now expired.';
 
 // View settings.
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';
