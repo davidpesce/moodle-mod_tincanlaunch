@@ -22,27 +22,29 @@
 
 namespace mod_tincanlaunch\task;
 require_once(dirname(dirname(dirname(__FILE__))).'/lib.php');
+require_once($CFG->dirroot.'/lib/completionlib.php');
 defined('MOODLE_INTERNAL') || die();
 
 class check_completion extends \core\task\scheduled_task {
     public function get_name() {
-        return get_string('expirecredentials', 'mod_tincanlaunch');
+        return get_string('checkcompletion', 'mod_tincanlaunch');
     }
 
     public function execute() {
         global $DB;
 
+        $module = $DB->get_record('modules', array('name' => 'tincanlaunch'), '*', MUST_EXIST);
         $modules = $DB->get_records('tincanlaunch');
         $courses = array(); // Cache course data incase the multiple modules exist in a course.
 
         foreach ($modules as $tincanlaunch) {
-            $cm = get_coursemodule_from_id('tincanlaunch', $tincanlaunch->id, 0, false, MUST_EXIST);
+            $cm = $DB->get_record('course_modules', array('module' => $module->id, 'instance' => $tincanlaunch->id), '*', MUST_EXIST);
             if (!isset($courses[$cm->course])) {
                 $courses[$cm->course] = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
                 $courses[$cm->course]->enrolments = $DB->get_records('user_enrolments', array('status' => 0));
             }
             $course = $courses[$cm->course];
-            $completion = new completion_info($course);
+            $completion = new \completion_info($course);
 
             $possibleResult = COMPLETION_COMPLETE;
 
