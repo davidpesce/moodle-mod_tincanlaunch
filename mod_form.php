@@ -239,42 +239,42 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform =& $this->_form;
 
         // Add Verb Id setting.
-        $verb_group = array();
-        $verb_group[] =& $mform->createElement(
+        $verbgroup = array();
+        $verbgroup[] =& $mform->createElement(
             'checkbox',
             'completionverbenabled',
             ' ',
             get_string('completionverb', 'tincanlaunch')
         );
-        $verb_group[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
+        $verbgroup[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
 
-        $mform->addGroup($verb_group, 'completionverb_group', get_string('completionverb_group', 'tincanlaunch'), array(' '), false);
+        $mform->addGroup($verbgroup, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'), array(' '), false);
         $mform->addGroupRule(
-            'completionverb_group', array(
+            'completionverbgroup', array(
                 'tincanverbid' => array(
                     array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
                 )
             )
         );
 
-        $mform->addHelpButton('completionverb_group', 'completionverb_group', 'tincanlaunch');
+        $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
         $mform->disabledIf('tincanverbid', 'completionverbenabled', 'notchecked');
         $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed');
 
         // Add Completion Expiry Date setting.
-        $completion_group = array();
-        $completion_group[] =& $mform->createElement(
+        $completiongroup = array();
+        $completiongroup[] =& $mform->createElement(
             'checkbox',
             'completionexpiryenabled',
             ' ',
             get_string('completionexpiry', 'tincanlaunch')
         );
-        $completion_group[] =& $mform->createElement('text', 'tincanexpiry', ' ', array('size' => '64'));
+        $completiongroup[] =& $mform->createElement('text', 'tincanexpiry', ' ', array('size' => '64'));
         $mform->setType('tincanexpiry', PARAM_TEXT);
 
         $mform->addGroup(
-            $completion_group,
+            $completiongroup,
             'completionexpirygroup',
             get_string('completionexpirygroup', 'tincanlaunch'),
             array(' '),
@@ -292,7 +292,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->disabledIf('tincanexpiry', 'completionexpiryenabled', 'notchecked');
         $mform->setDefault('tincanexpiry', '365');
 
-        return array('completionverb_group', 'completionexpirygroup');
+        return array('completionverbgroup', 'completionexpirygroup');
     }
 
     public function completion_rule_enabled($data) {

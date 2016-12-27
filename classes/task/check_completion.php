@@ -52,19 +52,19 @@ class check_completion extends \core\task\scheduled_task {
             $course = $courses[$cm->course];
             $completion = new \completion_info($course);
 
-            $possible_result = COMPLETION_COMPLETE;
+            $possibleresult = COMPLETION_COMPLETE;
 
             if ($tincanlaunch->tincanexpiry > 0) {
-                $possible_result = COMPLETION_UNKNOWN;
+                $possibleresult = COMPLETION_UNKNOWN;
             }
 
             if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
                 foreach ($course->enrolments as $enrolment) {
-                    $old_state = $completion->get_data($cm, false, $enrolment->userid);
-                    $completion->update_state($cm, $possible_result);
-                    $new_state = $completion->get_data($cm, false, $enrolment->userid);
+                    $oldstate = $completion->get_data($cm, false, $enrolment->userid);
+                    $completion->updatestate($cm, $possibleresult);
+                    $newstate = $completion->get_data($cm, false, $enrolment->userid);
 
-                    if ($old_state->completionstate !== $new_state->completionstate) {
+                    if ($oldstate->completionstate !== $newstate->completionstate) {
                         // Trigger Activity completed event.
                         $event = \mod_tincanlaunch\event\activity_completed::create(array(
                             'objectid' => $tincanlaunch->id,

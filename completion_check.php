@@ -26,18 +26,18 @@ require_once('header.php');
 
 $completion = new completion_info($course);
 
-$possible_result = COMPLETION_COMPLETE;
+$possibleresult = COMPLETION_COMPLETE;
 
 if ($tincanlaunch->tincanexpiry > 0) {
-    $possible_result = COMPLETION_UNKNOWN;
+    $possibleresult = COMPLETION_UNKNOWN;
 }
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    $old_state = $completion->get_data($cm, false, 0);
-    $completion->update_state($cm, $possible_result);
-    $new_state = $completion->get_data($cm, false, 0);
+    $oldstate = $completion->get_data($cm, false, 0);
+    $completion->updatestate($cm, $possibleresult);
+    $newstate = $completion->get_data($cm, false, 0);
 
-    if ($old_state->completionstate !== $new_state->completionstate) {
+    if ($oldstate->completionstate !== $newstate->completionstate) {
         // Trigger Activity completed event.
         $event = \mod_tincanlaunch\event\activity_completed::create(array(
             'objectid' => $tincanlaunch->id,
