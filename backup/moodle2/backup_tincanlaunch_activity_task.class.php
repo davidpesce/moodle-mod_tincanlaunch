@@ -24,33 +24,33 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_stepslib.php');    // Because it exists (must)
-require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_settingslib.php'); // Because it exists (optional)
+require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_stepslib.php');    // Because it exists (must).
+require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_settingslib.php'); // Because it exists (optional).
 
 class backup_tincanlaunch_activity_task extends backup_activity_task {
 
     /**
-     * Define (add) particular settings this activity can have
+     * Define (add) particular settings this activity can have.
      *
      * @return void
      */
     protected function define_my_settings() {
-        // No particular settings for this activity
+        // No particular settings for this activity.
     }
 
     /**
-     * Define (add) particular steps this activity can have
+     * Define (add) particular steps this activity can have.
      *
      * @return void
      */
     protected function define_my_steps() {
-        // tincanlaunch only has one structure step
+        // Module tincanlaunch only has one structure step.
         $this->add_step(new backup_tincanlaunch_activity_structure_step('tincanlaunch_structure', 'tincanlaunch.xml'));
     }
 
     /**
      * Code the transformations to perform in the activity in
-     * order to get transportable (encoded) links
+     * order to get transportable (encoded) links.
      *
      * @param string $content
      * @return string encoded content
@@ -60,7 +60,7 @@ class backup_tincanlaunch_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of tincanlaunchs
+        // Link to the list of tincanlaunchs.
         $search  = "/($base\/mod\/tincanlaunch\/index.php\?id=)([0-9]+)/";
         $content = preg_replace($search, '$@tincanlaunchINDEX*$2@$', $content);
 

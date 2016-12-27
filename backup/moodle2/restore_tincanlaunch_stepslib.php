@@ -35,7 +35,7 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
 
         $paths[] = new restore_path_element('tincanlaunch', '/activity/tincanlaunch');
 
-        // Return the paths wrapped into standard activity structure
+        // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
     }
 
@@ -57,7 +57,7 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
     protected function after_execute() {
         global $DB;
 
-        // Add tincanlaunch related files
+        // Add tincanlaunch related files.
         $this->add_related_files('mod_tincanlaunch', 'intro', null);
     }
 }

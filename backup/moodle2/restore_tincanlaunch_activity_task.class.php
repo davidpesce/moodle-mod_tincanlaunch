@@ -29,27 +29,27 @@ require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/restore_tincanlau
 class restore_tincanlaunch_activity_task extends restore_activity_task {
 
     /**
-     * Define (add) particular settings this activity can have
+     * Define (add) particular settings this activity can have.
      *
      * @return void
      */
     protected function define_my_settings() {
-        // No particular settings for this activity
+        // No particular settings for this activity.
     }
 
     /**
-     * Define (add) particular steps this activity can have
+     * Define (add) particular steps this activity can have.
      *
      * @return void
      */
     protected function define_my_steps() {
-        // Choice only has one structure step
+        // Choice only has one structure step.
         $this->add_step(new restore_tincanlaunch_activity_structure_step('tincanlaunch_structure', 'tincanlaunch.xml'));
     }
 
     /**
      * Define the contents in the activity that must be
-     * processed by the link decoder
+     * processed by the link decoder.
      *
      * @return array
      */
@@ -63,23 +63,23 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
 
     /**
      * Define the decoding rules for links belonging
-     * to the activity to be executed by the link decoder
+     * to the activity to be executed by the link decoder.
      *
      * @return array
      */
     static public function define_decode_rules() {
         $rules = array();
 
-        // List of tincanlaunchs in course
+        // List of tincanlaunchs in course.
         $rules[] = new restore_decode_rule('TINCANLAUNCHINDEX', '/mod/tincanlaunch/index.php?id=$1', 'course');
 
-        // tincanlaunch by cm->id
+        // tincanlaunch by cm->id.
         $rules[] = new restore_decode_rule('TINCANLAUNCHVIEWBYID', '/mod/tincanlaunch/view.php?id=$1', 'course_module');
 
-        // tincanlaunch by tincanlaunch->id
+        // tincanlaunch by tincanlaunch->id.
         $rules[] = new restore_decode_rule('TINCANLAUNCHVIEWBYB', '/mod/tincanlaunch/view.php?b=$1', 'tincanlaunch');
 
-        // Convert old tincanlaunch links MDL-33362 & MDL-35007
+        // Convert old tincanlaunch links MDL-33362 & MDL-35007.
         $rules[] = new restore_decode_rule('TINCANLAUNCHSTART', '/mod/tincanlaunch/view.php?id=$1', 'course_module');
 
         return $rules;
@@ -89,7 +89,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      * Define the restore log rules that will be applied
      * by the {@link restore_logs_processor} when restoring
      * tincanlaunch logs. It must return one array
-     * of {@link restore_log_rule} objects
+     * of {@link restore_log_rule} objects.
      *
      * @return array
      */
@@ -107,11 +107,11 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      * Define the restore log rules that will be applied
      * by the {@link restore_logs_processor} when restoring
      * course logs. It must return one array
-     * of {@link restore_log_rule} objects
+     * of {@link restore_log_rule} objects.
      *
      * Note this rules are applied when restoring course logs
      * by the restore final task, but are defined here at
-     * activity level. All them are rules not linked to any module instance (cmid = 0)
+     * activity level. All them are rules not linked to any module instance (cmid = 0).
      *
      * @return array
      */

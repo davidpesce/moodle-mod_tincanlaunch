@@ -37,10 +37,10 @@ class backup_tincanlaunch_activity_structure_step extends backup_activity_struct
             'tincanverbid', 'overridedefaults', 'tincanmultipleregs', 'timecreated',
             'timemodified'));
 
-        // Define sources
+        // Define sources.
         $tincanlaunch->set_source_table('tincanlaunch', array('id' => backup::VAR_ACTIVITYID));
 
-        // Return the root element (tincanlaunch), wrapped into standard activity structure
+        // Return the root element (tincanlaunch), wrapped into standard activity structure.
         return $this->prepare_activity_structure($tincanlaunch);
     }
 }
