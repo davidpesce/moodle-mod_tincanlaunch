@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('header.php');
 
 // Trigger Activity launched event.
@@ -148,6 +149,9 @@ if ($lrsrespond != 204) {
     }
     die();
 }
+
+$completion = new completion_info($course);
+$completion->set_module_viewed($cm);
 
 // Launch the experience.
 header("Location: ". tincanlaunch_get_launch_url($registrationid));

@@ -21,8 +21,8 @@
  */
 
 namespace mod_tincanlaunch\task;
-require_once(dirname(dirname(dirname(__FILE__))).'/lib.php');
 defined('MOODLE_INTERNAL') || die();
+require_once(dirname(dirname(dirname(__FILE__))).'/lib.php');
 
 class expire_credentials extends \core\task\scheduled_task {
     public function get_name() {

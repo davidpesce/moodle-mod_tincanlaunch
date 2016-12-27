@@ -42,6 +42,15 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2016121200) {
+        $table = new xmldb_table('tincanlaunch');
+        $field = new xmldb_field('tincanexpiry', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 365);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+
     if ($oldversion < 2016021508) {
 
         // Define table tincanlaunch_credentials to be created.

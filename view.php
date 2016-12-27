@@ -21,7 +21,7 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require('header.php');
 
 // Trigger module viewed event.

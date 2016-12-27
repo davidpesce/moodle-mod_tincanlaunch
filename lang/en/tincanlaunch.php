@@ -113,6 +113,10 @@ $string['completionverb'] = 'Verb';
 $string['completionverbgroup'] = 'Track completion by verb';
 $string['completionverbgroup_help'] = 'Moodle will look for statements where the actor is the current user, the object is the specified activity id and the verb is the one set here. If it finds a matching statement, the activity will be marked complete.';
 
+// Expiry completion settings.
+$string['completionexpiry'] = 'Expiry';
+$string['completionexpirygroup'] = 'Completion Expires After (days)';
+$string['completionexpirygroup_help'] = 'If checked, when looking for completion Moodle will only look at data for the previous X days. It will unset completion for learners who had previously completed but whose completion has now expired.';
 
 // View settings.
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';
@@ -137,3 +141,4 @@ $string['eventactivitycompleted'] = 'Activity completed';
 $string['tincanlaunch:addinstance'] = 'Add a new Tin Can (xAPI) activity to a course';
 
 $string['expirecredentials'] = 'Expire credentials';
+$string['checkcompletion'] = 'Check Completion';

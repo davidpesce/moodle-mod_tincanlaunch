@@ -21,20 +21,30 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('header.php');
 
 $completion = new completion_info($course);
+
+$possibleresult = COMPLETION_COMPLETE;
+
+if ($tincanlaunch->tincanexpiry > 0) {
+    $possibleresult = COMPLETION_UNKNOWN;
+}
+
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    $completion->update_state($cm, COMPLETION_COMPLETE);
+    $oldstate = $completion->get_data($cm, false, 0);
+    $completion->updatestate($cm, $possibleresult);
+    $newstate = $completion->get_data($cm, false, 0);
 
-    // Trigger Activity completed event.
-    $event = \mod_tincanlaunch\event\activity_completed::create(array(
-        'objectid' => $tincanlaunch->id,
-        'context' => $context,
-    ));
-    $event->add_record_snapshot('course_modules', $cm);
-    $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
-    $event->trigger();
-
+    if ($oldstate->completionstate !== $newstate->completionstate) {
+        // Trigger Activity completed event.
+        $event = \mod_tincanlaunch\event\activity_completed::create(array(
+            'objectid' => $tincanlaunch->id,
+            'context' => $context,
+        ));
+        $event->add_record_snapshot('course_modules', $cm);
+        $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+        $event->trigger();
+    }
 }

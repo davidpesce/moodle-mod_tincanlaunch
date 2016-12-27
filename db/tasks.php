@@ -28,5 +28,11 @@ $tasks = array(
         'classname' => 'mod_tincanlaunch\task\expire_credentials',
         'blocking' => 0,
         'minute' => '*'
+    ),
+    array(
+        'classname' => 'mod_tincanlaunch\task\check_completion',
+        'blocking' => 0,
+        'minute' => '01',
+        'hour' => '23'
     )
 );
