@@ -38,6 +38,7 @@ class check_completion extends \core\task\scheduled_task {
         $courses = array(); // Cache course data incase the multiple modules exist in a course.
 
         foreach ($modules as $tincanlaunch) {
+            echo ('Checking module id '.$tincanlaunch->id.'. '.PHP_EOL);
             $cm = $DB->get_record(
                 'course_modules',
                 array('module' => $module->id,
@@ -60,15 +61,17 @@ class check_completion extends \core\task\scheduled_task {
 
             if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
                 foreach ($course->enrolments as $enrolment) {
-                    $oldstate = $completion->get_data($cm, false, $enrolment->userid);
-                    $completion->update_state($cm, $possibleresult);
-                    $newstate = $completion->get_data($cm, false, $enrolment->userid);
-
-                    if ($oldstate->completionstate !== $newstate->completionstate) {
+                    echo ('Checking user id '.$enrolment->userid.'. ');
+                    $oldstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
+                    echo ('Old completion state was '.$oldstate.'. ');
+                    $completion->update_state($cm, $possibleresult, $enrolment->userid);
+                    $newstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
+                    echo ('New completion state is '.$newstate.'. '.PHP_EOL);
+                    if ($oldstate !== $newstate) {
                         // Trigger Activity completed event.
                         $event = \mod_tincanlaunch\event\activity_completed::create(array(
                             'objectid' => $tincanlaunch->id,
-                            'context' => $context,
+                            'context' => \context_module::instance($cm->id),
                             'userid' => $enrolment->userid
                         ));
                         $event->add_record_snapshot('course_modules', $cm);
