@@ -707,7 +707,7 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
         "format" => "ids"
     );
 
-    if (!is_null($since)){
+    if (!is_null($since)) {
         $statementsquery["since"] = $since;
     }
 
