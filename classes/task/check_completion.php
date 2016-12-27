@@ -61,7 +61,7 @@ class check_completion extends \core\task\scheduled_task {
             if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
                 foreach ($course->enrolments as $enrolment) {
                     $oldstate = $completion->get_data($cm, false, $enrolment->userid);
-                    $completion->updatestate($cm, $possibleresult);
+                    $completion->update_state($cm, $possibleresult);
                     $newstate = $completion->get_data($cm, false, $enrolment->userid);
 
                     if ($oldstate->completionstate !== $newstate->completionstate) {
