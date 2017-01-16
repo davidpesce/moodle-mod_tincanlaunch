@@ -31,7 +31,7 @@ require_once($CFG->libdir . '/completionlib.php');
  * mod_tincanlaunch module external functions
  */
 class mod_tincanlaunch_external extends external_api {
-        
+
     /**
      * Describes the parameters for update_completion.
      *
@@ -46,9 +46,9 @@ class mod_tincanlaunch_external extends external_api {
             )
         );
     }
-    
+
     /**
-     * Reaches out to the LRS and checks if the specified module is completed 
+     * Reaches out to the LRS and checks if the specified module is completed
      * for the specified user.
      *
      * @return array of warnings and the updated completion status
@@ -87,7 +87,7 @@ class mod_tincanlaunch_external extends external_api {
         $result = array();
         $result['completionstatus'] = $newstate->completionstate;
         $result['warnings'] = array();
-        return $result; 
+        return $result;
     }
 
     /**
