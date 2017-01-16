@@ -23,6 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.0
  */
+
+defined('MOODLE_INTERNAL') || die();
+
 $functions = array(
     'mod_tincanlaunch_update_completion' => array(
         'classname'     => 'mod_tincanlaunch_external',
