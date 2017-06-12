@@ -40,6 +40,8 @@ SCORM Cloud)
 
 ##Installation
 
+It is recommended to get this plugin from the Moodle Plugins Database (https://moodle.org/plugins/mod_tincanlaunch)
+
 This plugin is installed in the same way as any activity plugin. Simply drop the tincanlaunch folder into your 
 mod folder on your moodle and then install via system administration as normal.
 
@@ -47,6 +49,17 @@ It's a known issue that the upgrade script for this plugin needs some attention.
 from a previous version of this plugin, and you don't know how to fix the upgrade code, please delete the plugin 
 from the mod directory on your server and uninstall the plugin from system administration before trying again. 
 Note that this workaround will delete any instances of the plugin that you have set up in your courses.
+
+##Installation from Github
+
+This is recommended only for developers or if you need the very latest versions. 
+
+The plugin has two submodule dependencies and will not work directly from a clone. Go into the plugin folder
+and type the command...
+
+git submodule update --init --recursive
+
+...this should clone the outstanding dependencies. The plugin is now ready for use. 
 
 ###Course set up
 
