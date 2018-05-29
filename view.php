@@ -127,8 +127,8 @@ aria-label=\"" . get_string('tincanlaunch_attempt', 'tincanlaunch') . "\" onclic
     foreach ($registrationdatafromlrs as $key => $item) {
 
         if (!is_array($registrationdatafromlrs[$key])) {
-           $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
-           throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
+            $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
+            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
         array_push(
            $registrationdatafromlrs[$key],
