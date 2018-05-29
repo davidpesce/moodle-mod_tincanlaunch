@@ -179,7 +179,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
                 )
             ),
             "registration" => $registrationuuid,
-			"activity_id" => $tincanlaunch->tincanactivityid
+            "activity_id" => $tincanlaunch->tincanactivityid
         ),
         '',
         '&',
