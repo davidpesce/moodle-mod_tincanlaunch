@@ -115,49 +115,53 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
 }
 $tab_index = 'tabindex="0"';
 if ($lrsrespond == 200) {
-    $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-    if ($tincanlaunch->tincanmultipleregs) {
-        echo "<p id='tincanlaunch_newattempt'><a $tab_index onclick=\"mod_tincanlaunch_launchexperience('"
-            .$registrationid
-            ."')\" style=\"cursor: pointer;\">"
-            .get_string('tincanlaunch_attempt', 'tincanlaunch')
-            ."</a></p>";
-    }
-    foreach ($registrationdatafromlrs as $key => $item) {
+   $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+   if ($tincanlaunch->tincanmultipleregs) {
+       echo "<p id='tincanlaunch_newattempt'><a $tab_index
+aria-label=\"" . get_string('tincanlaunch_attempt', 'tincanlaunch') . "\" onclick=\"mod_tincanlaunch_launchexperience('"
+           . $registrationid
+           . "')\" style=\"cursor: pointer;\">"
+           . get_string('tincanlaunch_attempt', 'tincanlaunch')
+           . "</a></p>";
+   }
+   foreach ($registrationdatafromlrs as $key => $item) {
 
-        if (!is_array($registrationdatafromlrs[$key])) {
-            $reason = "Excepted array, found ". $registrationdatafromlrs[$key];
-            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
-        }
-        array_push(
-            $registrationdatafromlrs[$key],
-            "<a $tab_index onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
-            .get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a>"
-        );
-        $registrationdatafromlrs[$key]['created'] = date_format(
-            date_create($registrationdatafromlrs[$key]['created']),
-            'D, d M Y H:i:s'
-        );
-        $registrationdatafromlrs[$key]['lastlaunched'] = date_format(
-            date_create($registrationdatafromlrs[$key]['lastlaunched']),
-            'D, d M Y H:i:s'
-        );
-    }
-    $table = new html_table();
-    $table->id = 'tincanlaunch_attempttable';
-    $table->head = array(
-        get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
-    );
-    $table->data = $registrationdatafromlrs;
-    echo html_writer::table($table);
+       if (!is_array($registrationdatafromlrs[$key])) {
+           $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
+           throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
+       }
+       array_push(
+           $registrationdatafromlrs[$key],
+           "<a $tab_index aria-label=\"" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "\"
+onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
+           . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
+       );
+       $registrationdatafromlrs[$key]['created'] = date_format(
+           date_create($registrationdatafromlrs[$key]['created']),
+           'D, d M Y H:i:s'
+       );
+       $registrationdatafromlrs[$key]['lastlaunched'] = date_format(
+           date_create($registrationdatafromlrs[$key]['lastlaunched']),
+           'D, d M Y H:i:s'
+       );
+   }
+   $table = new html_table();
+   $table->id = 'tincanlaunch_attempttable';
+   $table->head = array(
+       get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
+       get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
+       get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
+   );
+   $table->data = $registrationdatafromlrs;
+   echo html_writer::table($table);
 } else {
-    echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
-        .$registrationid
-        ."')\" style=\"cursor: pointer;\">"
-        .get_string('tincanlaunch_attempt', 'tincanlaunch')
-        ."</a></p>";
+   echo "<p $tab_index aria-label=\""
+       .get_string('tincanlaunch_attempt', 'tincanlaunch')
+       ."\"id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+       . $registrationid
+       . "')\" style=\"cursor: pointer;\">"
+       . get_string('tincanlaunch_attempt', 'tincanlaunch')
+       . "</a></p>";
 }
 
 // Add a form to be posted based on the attempt selected.
