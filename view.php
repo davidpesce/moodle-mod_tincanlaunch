@@ -113,11 +113,11 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
     }
     die();
 }
-$tabIndex = 'tabindex="0"';
+$tab_index = 'tabindex="0"';
 if ($lrsrespond == 200) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
     if ($tincanlaunch->tincanmultipleregs) {
-        echo "<p id='tincanlaunch_newattempt'><a $tabIndex onclick=\"mod_tincanlaunch_launchexperience('"
+        echo "<p id='tincanlaunch_newattempt'><a $tab_index onclick=\"mod_tincanlaunch_launchexperience('"
             .$registrationid
             ."')\" style=\"cursor: pointer;\">"
             .get_string('tincanlaunch_attempt', 'tincanlaunch')
@@ -131,7 +131,7 @@ if ($lrsrespond == 200) {
         }
         array_push(
             $registrationdatafromlrs[$key],
-            "<a $tabIndex onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
+            "<a $tab_index onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
             .get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a>"
         );
         $registrationdatafromlrs[$key]['created'] = date_format(
