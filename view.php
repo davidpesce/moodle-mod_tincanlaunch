@@ -113,11 +113,11 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
     }
     die();
 }
-$tab_index = 'tabindex="0"';
+$tabindex = 'tabindex="0"';
 if ($lrsrespond == 200) {
    $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
    if ($tincanlaunch->tincanmultipleregs) {
-       echo "<p id='tincanlaunch_newattempt'><a $tab_index
+       echo "<p id='tincanlaunch_newattempt'><a $tabindex
 aria-label=\"" . get_string('tincanlaunch_attempt', 'tincanlaunch') . "\" onclick=\"mod_tincanlaunch_launchexperience('"
            . $registrationid
            . "')\" style=\"cursor: pointer;\">"
@@ -132,7 +132,7 @@ aria-label=\"" . get_string('tincanlaunch_attempt', 'tincanlaunch') . "\" onclic
        }
        array_push(
            $registrationdatafromlrs[$key],
-           "<a $tab_index aria-label=\"" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "\"
+           "<a $tabindex aria-label=\"" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "\"
 onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
            . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
        );
@@ -155,7 +155,7 @@ onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
    $table->data = $registrationdatafromlrs;
    echo html_writer::table($table);
 } else {
-   echo "<p $tab_index aria-label=\""
+   echo "<p $tabindex aria-label=\""
        .get_string('tincanlaunch_attempt', 'tincanlaunch')
        ."\"id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
        . $registrationid
