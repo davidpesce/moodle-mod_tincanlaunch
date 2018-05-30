@@ -122,7 +122,7 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
 
 if ($lrsrespond == 200) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-    
+
     foreach ($registrationdatafromlrs as $key => $item) {
 
         if (!is_array($registrationdatafromlrs[$key])) {
