@@ -57,6 +57,7 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 // TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file.
 ?>
     <script>
+		// Function to test for key press and call launch function if space or enter is hit.
         function key_test(registration) {
             if (event.keyCode === 13 || event.keyCode === 32) {
                 mod_tincanlaunch_launchexperience(registration);
@@ -122,7 +123,8 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
 if ($lrsrespond == 200) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
     if ($tincanlaunch->tincanmultipleregs) {
-        echo "<p id='tincanlaunch_newattempt'><a tabindex=\"1\" onkeyup=\"key_test('$registrationid')\" onclick=\"mod_tincanlaunch_launchexperience('"
+        echo "<p id='tincanlaunch_newattempt'><a tabindex=\"1\"
+		onkeyup=\"key_test('".$registrationid."')\" onclick=\"mod_tincanlaunch_launchexperience('"
             . $registrationid
             . "')\" style=\"cursor: pointer;\">"
             . get_string('tincanlaunch_attempt', 'tincanlaunch')
@@ -136,7 +138,8 @@ if ($lrsrespond == 200) {
         }
         array_push(
             $registrationdatafromlrs[$key],
-            "<a tabindex=\"0\" id='tincanrelaunch_attempt' onkeyup=\"key_test('$key')\" onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
+            "<a tabindex=\"0\" id='tincanrelaunch_attempt'
+			onkeyup=\"key_test('".$key."')\" onclick=\"mod_tincanlaunch_launchexperience('".$key."')\" style='cursor: pointer;'>"
             . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
         );
         $registrationdatafromlrs[$key]['created'] = date_format(
@@ -159,7 +162,9 @@ if ($lrsrespond == 200) {
     $table->data = $registrationdatafromlrs;
     echo html_writer::table($table);
 } else {
-    echo "<p $tab_index id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+    echo "<p tabindex=\"0\"
+		onkeyup=\"key_test('".$registrationid."')\" 
+		id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
         . $registrationid
         . "')\" style=\"cursor: pointer;\">"
         . get_string('tincanlaunch_attempt', 'tincanlaunch')
