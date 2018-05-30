@@ -57,7 +57,7 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 // TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file.
 ?>
     <script>
-		// Function to test for key press and call launch function if space or enter is hit.
+        // Function to test for key press and call launch function if space or enter is hit.
         function key_test(registration) {
             if (event.keyCode === 13 || event.keyCode === 32) {
                 mod_tincanlaunch_launchexperience(registration);
@@ -163,7 +163,7 @@ if ($lrsrespond == 200) {
     echo html_writer::table($table);
 } else {
     echo "<p tabindex=\"0\"
-		onkeyup=\"key_test('".$registrationid."')\" 
+		onkeyup=\"key_test('".$registrationid."')\"
 		id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
         . $registrationid
         . "')\" style=\"cursor: pointer;\">"
