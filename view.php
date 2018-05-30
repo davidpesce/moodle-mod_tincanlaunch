@@ -122,14 +122,7 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
 
 if ($lrsrespond == 200) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-    if ($tincanlaunch->tincanmultipleregs) {
-        echo "<p id='tincanlaunch_newattempt'><a tabindex=\"1\"
-		onkeyup=\"key_test('".$registrationid."')\" onclick=\"mod_tincanlaunch_launchexperience('"
-            . $registrationid
-            . "')\" style=\"cursor: pointer;\">"
-            . get_string('tincanlaunch_attempt', 'tincanlaunch')
-            . "</a></p>";
-    }
+    
     foreach ($registrationdatafromlrs as $key => $item) {
 
         if (!is_array($registrationdatafromlrs[$key])) {
@@ -139,7 +132,7 @@ if ($lrsrespond == 200) {
         array_push(
             $registrationdatafromlrs[$key],
             "<a tabindex=\"0\" id='tincanrelaunch_attempt'
-			onkeyup=\"key_test('".$key."')\" onclick=\"mod_tincanlaunch_launchexperience('".$key."')\" style='cursor: pointer;'>"
+            onkeyup=\"key_test('".$key."')\" onclick=\"mod_tincanlaunch_launchexperience('".$key."')\" style='cursor: pointer;'>"
             . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
         );
         $registrationdatafromlrs[$key]['created'] = date_format(
@@ -161,10 +154,19 @@ if ($lrsrespond == 200) {
     );
     $table->data = $registrationdatafromlrs;
     echo html_writer::table($table);
+    // Needs to come after previous attemps so a non-sighted user can hear launch options.
+    if ($tincanlaunch->tincanmultipleregs) {
+        echo "<p id='tincanlaunch_newattempt'><a tabindex=\"0\"
+        onkeyup=\"key_test('".$registrationid."')\" onclick=\"mod_tincanlaunch_launchexperience('"
+            . $registrationid
+            . "')\" style=\"cursor: pointer;\">"
+            . get_string('tincanlaunch_attempt', 'tincanlaunch')
+            . "</a></p>";
+    }
 } else {
     echo "<p tabindex=\"0\"
-		onkeyup=\"key_test('".$registrationid."')\"
-		id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+        onkeyup=\"key_test('".$registrationid."')\"
+        id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
         . $registrationid
         . "')\" style=\"cursor: pointer;\">"
         . get_string('tincanlaunch_attempt', 'tincanlaunch')
