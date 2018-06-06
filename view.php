@@ -154,7 +154,7 @@ if ($lrsrespond == 200) {
     );
     $table->data = $registrationdatafromlrs;
     echo html_writer::table($table);
-    // Needs to come after previous attemps so a non-sighted user can hear launch options.
+    // Needs to come after previous attempts so a non-sighted user can hear launch options.
     if ($tincanlaunch->tincanmultipleregs) {
         echo "<p id='tincanlaunch_newattempt'><a tabindex=\"0\"
         onkeyup=\"key_test('".$registrationid."')\" onclick=\"mod_tincanlaunch_launchexperience('"
