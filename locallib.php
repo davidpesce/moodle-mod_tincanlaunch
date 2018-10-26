@@ -178,7 +178,8 @@ function tincanlaunch_get_launch_url($registrationuuid) {
                     $tincanlaunchsettings['tincanlaunchlrsversion']
                 )
             ),
-            "registration" => $registrationuuid
+            "registration" => $registrationuuid,
+            "activity_id" => $tincanlaunch->tincanactivityid
         ),
         '',
         '&',
