@@ -58,7 +58,7 @@ $string['tincanlaunchlrsauthentication_watershedhelp'] = 'For Watershed integrat
 $string['tincanlaunchlrsauthentication_watershedhelp_label'] = 'Watershed integration';
 $string['tincanlaunchlrsauthentication_option_0'] = 'None';
 $string['tincanlaunchlrsauthentication_option_1'] = 'Watershed';
-$string['tincanlaunchlrsauthentication_option_2'] = 'Learning Locker';
+$string['tincanlaunchlrsauthentication_option_2'] = 'Learning Locker 1';
 
 $string['tincanlaunchuseactoremail'] = 'Identify by email';
 $string['tincanlaunchuseactoremail_help'] = 'If selected, learners will be identified by their email address if they have one recorded in Moodle.';

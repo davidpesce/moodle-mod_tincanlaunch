@@ -139,7 +139,7 @@ function tincanlaunch_get_launch_url($registrationuuid) {
 
     switch ($tincanlaunchsettings['tincanlaunchlrsauthentication']) {
 
-        // Learning Locker.
+        // Learning Locker 1.
         case "0":
             $creds = tincanlaunch_get_creds_learninglocker($tincanlaunchsettings['tincanlaunchlrslogin'],
                 $tincanlaunchsettings['tincanlaunchlrspass'],
