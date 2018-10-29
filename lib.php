@@ -170,6 +170,7 @@ function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
     $tincanlaunchlrs->customacchp = $tincanlaunch->tincanlaunchcustomacchp;
     $tincanlaunchlrs->useactoremail = $tincanlaunch->tincanlaunchuseactoremail;
     $tincanlaunchlrs->lrsduration = $tincanlaunch->tincanlaunchlrsduration;
+    $tincanlaunchlrs->tincanlaunchid = $tincanlaunch->instance;
 
     // If Watershed integration.
     if ($tincanlaunchlrs->lrsauthentication == '2') {
