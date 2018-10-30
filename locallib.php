@@ -434,21 +434,21 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
     $activityproviderid = $getactivityproviderresponse['content']->results[0]->id;
 
     // Create a session.
-    $createSessionResponse = tincanlaunch_send_api_request(
+    $createsessionresponse = tincanlaunch_send_api_request(
         $auth,
         "POST",
-        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/" 
+        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/"
         . $activityproviderid . "/sessions?expireSeconds=" . $expiry
     );
 
-    if ($createSessionResponse["status"] === 200) {
+    if ($createsessionresponse["status"] === 200) {
         return [
-            "key" => $createSessionResponse["content"]->key,
-            "secret" => $createSessionResponse["content"]->secret
+            "key" => $createsessionresponse["content"]->key,
+            "secret" => $createsessionresponse["content"]->secret
         ];
     } else {
         $reason = get_string('apCreationFailed', 'tincanlaunch')
-        ." Status: ". $createSessionResponse["status"].". Response: ".$createSessionResponse["content"]."<br/>";
+        ." Status: ". $createsessionresponse["status"].". Response: ".$createsessionresponse["content"]."<br/>";
         throw new moodle_exception($reason, 'tincanlaunch', '');
     }
 }
@@ -483,7 +483,7 @@ function tincanlaunch_send_api_request($auth, $method, $url) {
         'method' => $method,
         'header' => array()
     );
-    
+
     array_push($http['header'], 'Authorization: ' . $auth);
 
     if (($method === 'PUT' || $method === 'POST') && isset($options['content'])) {
