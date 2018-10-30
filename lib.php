@@ -33,9 +33,6 @@ defined('MOODLE_INTERNAL') || die();
 // TinCanPHP - required for interacting with the LRS in tincanlaunch_get_statements.
 require_once("$CFG->dirroot/mod/tincanlaunch/TinCanPHP/autoload.php");
 
-// WatershedPHP - required for Watershed integration.
-require_once("$CFG->dirroot/mod/tincanlaunch/WatershedPHP/watershed.php");
-
 // SCORM library from the SCORM module. Required for its xml2Array class by tincanlaunch_process_new_package.
 require_once("$CFG->dirroot/mod/scorm/datamodels/scormlib.php");
 
