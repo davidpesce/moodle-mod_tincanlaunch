@@ -417,29 +417,28 @@ function tincanlaunch_get_moodle_langauge() {
 function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
     global $CFG, $DB;
 
-    // Process input parameters
+    // Process input parameters.
     $auth = 'Basic '.base64_encode($login.':'.$pass);
 
     $explodedendpoint = explode ('/', $endpoint);
     $wsserver = $explodedendpoint[0].'//'.$explodedendpoint[2];
     $orgid = $explodedendpoint[5];
 
-    echo ("<pre>");
-
-    // Get the Activity Provider id required to create credentials. 
-    $getActivityProviderResponse = tincanlaunch_sendAPIRequest(
+    // Get the Activity Provider id required to create credentials.
+    $getactivityproviderresponse = tincanlaunch_send_api_request(
         $auth,
-        "GET", 
+        "GET",
         $wsserver . "/api/organizations/" . $orgid . "/activity-providers?key=" . $login
     );
 
-    $activityProviderId = $getActivityProviderResponse['content']->results[0]->id;
+    $activityproviderid = $getactivityproviderresponse['content']->results[0]->id;
 
-    // Create a session
-    $createSessionResponse = tincanlaunch_sendAPIRequest(
+    // Create a session.
+    $createSessionResponse = tincanlaunch_send_api_request(
         $auth,
-        "POST", 
-        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/" . $activityProviderId . "/sessions?expireSeconds=" . $expiry
+        "POST",
+        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/" 
+        . $activityproviderid . "/sessions?expireSeconds=" . $expiry
     );
 
     if ($createSessionResponse["status"] === 200) {
@@ -466,26 +465,20 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
     @return {String} [content] Raw content of the response
     @return {Integer} [status] HTTP status code of the response e.g. 201
 */
-function tincanlaunch_sendAPIRequest($auth, $method, $url) {
+function tincanlaunch_send_api_request($auth, $method, $url) {
     $options = func_num_args() === 4 ? func_get_arg(3) : array();
 
-    if (!isset($options['contentType'])){
+    if (!isset($options['contentType'])) {
         $options['contentType'] = 'application/json';
     }
 
     $http = array(
-        //
-        // we don't expect redirects
-        //
+        // We don't expect redirects.
         'max_redirects' => 0,
-        //
-        // this is here for some proxy handling
-        //
+        // This is here for some proxy handling.
         'request_fulluri' => 1,
-        //
-        // switching this to false causes non-2xx/3xx status codes to throw exceptions
-        // but we need to handle the "error" status codes ourselves in some cases
-        //
+        // Switching this to false causes non-2xx/3xx status codes to throw exceptions.
+        // but we need to handle the "error" status codes ourselves in some cases.
         'ignore_errors' => true,
         'method' => $method,
         'header' => array()
@@ -510,17 +503,17 @@ function tincanlaunch_sendAPIRequest($auth, $method, $url) {
     }
     $metadata = stream_get_meta_data($fp);
     $content  = stream_get_contents($fp);
-    $responseCode = (int)explode(' ', $metadata["wrapper_data"][0])[1];
+    $responsecode = (int)explode(' ', $metadata["wrapper_data"][0])[1];
 
     fclose($fp);
 
-    if ($options['contentType'] == 'application/json'){
+    if ($options['contentType'] == 'application/json') {
         $content = json_decode($content);
     }
 
     return array (
         "metadata" => $metadata,
         "content" => $content,
-        "status" => $responseCode
+        "status" => $responsecode
     );
 }

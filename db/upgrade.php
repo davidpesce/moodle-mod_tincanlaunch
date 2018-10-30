@@ -150,18 +150,18 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
     if ($oldversion < 2018103000) {
         $table = new xmldb_table('tincanlaunch_credentials');
         if ($dbman->table_exists($table)) {
-            $dbman->drop_table($table, $continue=true, $feedback=true);
+            $dbman->drop_table($table, $continue = true, $feedback = true);
         }
 
         $table = new xmldb_table('tincanlaunch_lrs');
         $field = new xmldb_field('watershedlogin', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
         if ($dbman->field_exists($table, $field)) {
-            $dbman->drop_field($table, $field, $continue=true, $feedback=true);
+            $dbman->drop_field($table, $field, $continue = true, $feedback = true);
         }
 
         $field = new xmldb_field('watershedpass', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
         if ($dbman->field_exists($table, $field)) {
-            $dbman->drop_field($table, $field, $continue=true, $feedback=true);
+            $dbman->drop_field($table, $field, $continue = true, $feedback = true);
         }
 
         upgrade_mod_savepoint(true, 2018103000, 'tincanlaunch');
