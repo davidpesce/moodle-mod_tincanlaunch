@@ -72,11 +72,12 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
             // Remove the launch links.
             $('#tincanlaunch_newattempt').remove();
             $('#tincanlaunch_attempttable').remove();
-            //A dd some new content.
+            //Add some new content.
             if (!$('#tincanlaunch_status').length) {
                 var message = "<?php echo get_string('tincanlaunch_progress', 'tincanlaunch'); ?>";
-                $('#region-main').append('\
+                $('#region-main .card-body').append('\
                 <div id="tincanlaunch_status"> \
+                    <span id="tincanlaunch_completioncheck"></span> \
                     <p id="tincanlaunch_attemptprogress">' + message + '</p> \
                     <p id="tincanlaunch_exit"> \
                         <a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course"> \
@@ -86,13 +87,13 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
                 </div>\
             ');
             }
-            $('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
+            $('#tincanlaunch_completioncheck').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
         }
 
         // TODO: there may be a better way to check completion. Out of scope for current project.
         $(document).ready(function() {
             setInterval(function() {
-                $('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
+                $('#tincanlaunch_completioncheck').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
             }, 30000); // TODO: make this interval a configuration setting.
         });
     </script>

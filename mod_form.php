@@ -179,11 +179,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->setDefault('tincanlaunchlrspass', $cfgtincanlaunch->tincanlaunchlrspass);
         $mform->disabledIf('tincanlaunchlrspass', 'overridedefaults');
 
-        $mform->addElement('hidden', 'tincanlaunchwatershedlogin', '');
-        $mform->setType('tincanlaunchwatershedlogin', PARAM_TEXT);
-        $mform->addElement('hidden', 'tincanlaunchwatershedpass', '');
-        $mform->setType('tincanlaunchwatershedpass', PARAM_TEXT);
-
         // Duration.
         $mform->addElement(
             'text',
@@ -343,15 +338,9 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
                 $defaultvalues['tincanlaunchcustomacchp'] = $tincanlaunchlrs->customacchp;
                 $defaultvalues['tincanlaunchuseactoremail'] = $tincanlaunchlrs->useactoremail;
                 $defaultvalues['tincanlaunchlrsduration'] = $tincanlaunchlrs->lrsduration;
+                $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->lrslogin;
+                $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->lrspass;
 
-                // If watershed integration.
-                if ($tincanlaunchlrs->lrsauthentication == '2') {
-                    $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->watershedlogin;
-                    $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->watershedpass;
-                } else {
-                    $defaultvalues['tincanlaunchlrslogin'] = $tincanlaunchlrs->lrslogin;
-                    $defaultvalues['tincanlaunchlrspass'] = $tincanlaunchlrs->lrspass;
-                }
             }
         }
 

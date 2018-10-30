@@ -153,12 +153,10 @@ function tincanlaunch_get_launch_url($registrationuuid) {
         // Watershed.
         case "2":
             $creds = tincanlaunch_get_creds_watershed (
-                $tincanlaunchsettings['tincanlaunchwatershedlogin'],
-                $tincanlaunchsettings['tincanlaunchwatershedpass'],
+                $basiclogin,
+                $basicpass,
                 $url,
-                $tincanlaunch->id,
-                $CFG->wwwroot.'/mod/tincanlaunch/view.php?id='. $tincanlaunch->id.'&registration='.$registrationuuid,
-                $expiry
+                $xapiduration * 60
             );
             $basicauth = base64_encode($creds["key"].":".$creds["secret"]);
             break;
@@ -401,4 +399,128 @@ function tincanlaunch_get_moodle_langauge() {
     } else {
         return $lang;
     }
+}
+
+
+/**
+ * Used with Watershed integration to fetch credentials from the LRS.
+ * This process is not part of the xAPI specification or the Tin Can launch spec.
+ *
+ * @package  mod_tincanlaunch
+ * @category tincan
+ * @param string $login login for Watershed
+ * @param string $pass pass for Watershed
+ * @param string $endpoint LRS endpoint URL
+ * @param int $expiry number of seconds the credentials are required for
+ * @return array the response of the LRS (Note: not a TinCan LRS Response object)
+ */
+function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
+    global $CFG, $DB;
+
+    // Process input parameters
+    $auth = 'Basic '.base64_encode($login.':'.$pass);
+
+    $explodedendpoint = explode ('/', $endpoint);
+    $wsserver = $explodedendpoint[0].'//'.$explodedendpoint[2];
+    $orgid = $explodedendpoint[5];
+
+    echo ("<pre>");
+
+    // Get the Activity Provider id required to create credentials. 
+    $getActivityProviderResponse = tincanlaunch_sendAPIRequest(
+        $auth,
+        "GET", 
+        $wsserver . "/api/organizations/" . $orgid . "/activity-providers?key=" . $login
+    );
+
+    $activityProviderId = $getActivityProviderResponse['content']->results[0]->id;
+
+    // Create a session
+    $createSessionResponse = tincanlaunch_sendAPIRequest(
+        $auth,
+        "POST", 
+        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/" . $activityProviderId . "/sessions?expireSeconds=" . $expiry
+    );
+
+    if ($createSessionResponse["status"] === 200) {
+        return [
+            "key" => $createSessionResponse["content"]->key,
+            "secret" => $createSessionResponse["content"]->secret
+        ];
+    } else {
+        $reason = get_string('apCreationFailed', 'tincanlaunch')
+        ." Status: ". $createSessionResponse["status"].". Response: ".$createSessionResponse["content"]."<br/>";
+        throw new moodle_exception($reason, 'tincanlaunch', '');
+    }
+}
+
+/*
+@method sendAPIRequest Sends a request to the API.
+@param {String} [$auth] Auth string
+@param {String} [$method] Method of the request e.g. POST.
+@param {String} [$url] URL to request
+@param {Array} [$options] Array of optional properties.
+    @param {String} [content] Content of the request (should be JSON).
+@return {Array} Details of the response
+    @return {String} [metadata] Raw metadata of the response
+    @return {String} [content] Raw content of the response
+    @return {Integer} [status] HTTP status code of the response e.g. 201
+*/
+function tincanlaunch_sendAPIRequest($auth, $method, $url) {
+    $options = func_num_args() === 4 ? func_get_arg(3) : array();
+
+    if (!isset($options['contentType'])){
+        $options['contentType'] = 'application/json';
+    }
+
+    $http = array(
+        //
+        // we don't expect redirects
+        //
+        'max_redirects' => 0,
+        //
+        // this is here for some proxy handling
+        //
+        'request_fulluri' => 1,
+        //
+        // switching this to false causes non-2xx/3xx status codes to throw exceptions
+        // but we need to handle the "error" status codes ourselves in some cases
+        //
+        'ignore_errors' => true,
+        'method' => $method,
+        'header' => array()
+    );
+    
+    array_push($http['header'], 'Authorization: ' . $auth);
+
+    if (($method === 'PUT' || $method === 'POST') && isset($options['content'])) {
+        $http['content'] = $options['content'];
+        array_push($http['header'], 'Content-length: ' . strlen($options['content']));
+        array_push($http['header'], 'Content-Type: ' . $options['contentType']);
+    }
+
+    $context = stream_context_create(array( 'http' => $http ));
+    $fp = fopen($url, 'rb', false, $context);
+    if (! $fp) {
+        return array (
+            "metadata" => null,
+            "content" => $content,
+            "status" => 0
+        );
+    }
+    $metadata = stream_get_meta_data($fp);
+    $content  = stream_get_contents($fp);
+    $responseCode = (int)explode(' ', $metadata["wrapper_data"][0])[1];
+
+    fclose($fp);
+
+    if ($options['contentType'] == 'application/json'){
+        $content = json_decode($content);
+    }
+
+    return array (
+        "metadata" => $metadata,
+        "content" => $content,
+        "status" => $responseCode
+    );
 }

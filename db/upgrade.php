@@ -147,47 +147,24 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2016021502) {
-        // Define field  to be added to table.
+    if ($oldversion < 2018103000) {
+        $table = new xmldb_table('tincanlaunch_credentials');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table, $continue=true, $feedback=true);
+        }
+
         $table = new xmldb_table('tincanlaunch_lrs');
         $field = new xmldb_field('watershedlogin', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field, $continue=true, $feedback=true);
         }
 
         $field = new xmldb_field('watershedpass', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field, $continue=true, $feedback=true);
         }
 
-        upgrade_mod_savepoint(true, 2016021502, 'tincanlaunch');
-    }
-
-    if ($oldversion < 2016021508) {
-
-        // Define table tincanlaunch_credentials to be created.
-        $table = new xmldb_table('tincanlaunch_credentials');
-
-        // Adding fields to table tincanlaunch_credentials.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('tincanlaunchid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('credentialid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('expiry', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-
-        // Adding keys to table tincanlaunch_lrs.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-        // Adding indexes to table tincanlaunch_lrs.
-        $table->add_index('tincanlaunch_credentialid', XMLDB_INDEX_NOTUNIQUE, array('credentialid'));
-        $table->add_index('tincanlaunch_tincanlaunchid', XMLDB_INDEX_NOTUNIQUE, array('tincanlaunchid'));
-
-        // Conditionally launch create table for tincanlaunch_lrs.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        upgrade_mod_savepoint(true, 2016021508, 'tincanlaunch');
+        upgrade_mod_savepoint(true, 2018103000, 'tincanlaunch');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
