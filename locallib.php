@@ -431,6 +431,12 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
         $wsserver . "/api/organizations/" . $orgid . "/activity-providers?key=" . $login
     );
 
+    if ($getactivityproviderresponse["status"] !== 200) {
+        $reason = get_string('apCreationFailed', 'tincanlaunch')
+        ." Status: ". $getactivityproviderresponse["status"].". Response: ".$getactivityproviderresponse["content"]->message;
+        throw new moodle_exception($reason, 'tincanlaunch', '');
+    }
+
     $activityproviderid = $getactivityproviderresponse['content']->results[0]->id;
 
     // Create a session.
@@ -438,7 +444,13 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
         $auth,
         "POST",
         $wsserver . "/api/organizations/" . $orgid . "/activity-providers/"
-        . $activityproviderid . "/sessions?expireSeconds=" . $expiry
+        . $activityproviderid . "/sessions",
+        [
+            "content" => json_encode([
+                "expireSeconds" => $expiry,
+                "scope" => "xapi:all"
+            ])
+        ]
     );
 
     if ($createsessionresponse["status"] === 200) {
@@ -448,7 +460,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
         ];
     } else {
         $reason = get_string('apCreationFailed', 'tincanlaunch')
-        ." Status: ". $createsessionresponse["status"].". Response: ".$createsessionresponse["content"]."<br/>";
+        ." Status: ". $createsessionresponse["status"].". Response: ".$createsessionresponse["content"]->message;
         throw new moodle_exception($reason, 'tincanlaunch', '');
     }
 }
