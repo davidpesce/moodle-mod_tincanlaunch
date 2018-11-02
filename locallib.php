@@ -424,27 +424,11 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
     $wsserver = $explodedendpoint[0].'//'.$explodedendpoint[2];
     $orgid = $explodedendpoint[5];
 
-    // Get the Activity Provider id required to create credentials.
-    $getactivityproviderresponse = tincanlaunch_send_api_request(
-        $auth,
-        "GET",
-        $wsserver . "/api/organizations/" . $orgid . "/activity-providers?key=" . $login
-    );
-
-    if ($getactivityproviderresponse["status"] !== 200) {
-        $reason = get_string('apCreationFailed', 'tincanlaunch')
-        ." Status: ". $getactivityproviderresponse["status"].". Response: ".$getactivityproviderresponse["content"]->message;
-        throw new moodle_exception($reason, 'tincanlaunch', '');
-    }
-
-    $activityproviderid = $getactivityproviderresponse['content']->results[0]->id;
-
     // Create a session.
     $createsessionresponse = tincanlaunch_send_api_request(
         $auth,
         "POST",
-        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/"
-        . $activityproviderid . "/sessions",
+        $wsserver . "/api/organizations/" . $orgid . "/activity-providers/self/sessions",
         [
             "content" => json_encode([
                 "expireSeconds" => $expiry,

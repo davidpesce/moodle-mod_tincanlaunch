@@ -54,7 +54,7 @@ $string['tincanlaunchlrsduration_default'] = '9000';
 
 $string['tincanlaunchlrsauthentication'] = 'LRS integration';
 $string['tincanlaunchlrsauthentication_help'] = 'Use additional integration features to create new authentication credentials for each launch for supported LRSs.';
-$string['tincanlaunchlrsauthentication_watershedhelp'] = 'For Watershed integration, ensure that the Activity Provider is configured with API Access enabled.';
+$string['tincanlaunchlrsauthentication_watershedhelp'] = 'Note: for Watershed integration, the Activity Provider does not require API access enabled.';
 $string['tincanlaunchlrsauthentication_watershedhelp_label'] = 'Watershed integration';
 $string['tincanlaunchlrsauthentication_option_0'] = 'None';
 $string['tincanlaunchlrsauthentication_option_1'] = 'Watershed';
