@@ -3,7 +3,7 @@ tincanlaunch
 
 A plug in for Moodle that allows the launch of Tin Can content which is then tracked to a separate LRS. 
 
-##Background
+## Background
 The [Tin Can API specification](https://www.tincanapi.co.uk) was released in April 2013 as a replacement for SCORM. 
 Tin Can allows for tracking of any learning experience. Tin Can was designed on the premise of a distributed system
 communicating via API calls over the internet. This means that whislt it is possible to include a Learner Record 
@@ -24,8 +24,7 @@ Currently, the main launch method in use is the [Rustici Software method](https:
 Another method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. This
 plugin uses the Rustici method. 
 
-##What you will need
-
+## What you will need
 To use this plugin you will need the following:
 
 * Moodle >2.5 fully set up and running on a server that you have ftp access to 
@@ -38,8 +37,7 @@ SCORM Cloud)
 * A Tin Can compliant reporting tool 
 * A copy of this plugin.
 
-##Installation
-
+## Installation
 It is recommended to get this plugin from the Moodle Plugins Database (https://moodle.org/plugins/mod_tincanlaunch)
 
 This plugin is installed in the same way as any activity plugin. Simply drop the tincanlaunch folder into your 
@@ -50,7 +48,7 @@ from a previous version of this plugin, and you don't know how to fix the upgrad
 from the mod directory on your server and uninstall the plugin from system administration before trying again. 
 Note that this workaround will delete any instances of the plugin that you have set up in your courses.
 
-##Installation from Github
+## Installation from Github
 
 This is recommended only for developers or if you need the very latest versions. 
 
@@ -61,8 +59,7 @@ and type the command...
 
 ...this should clone the outstanding dependencies. The plugin is now ready for use. 
 
-###Course set up
-
+### Course set up
 This plugin can be added to a course like any other course activity. Simply add an activity and select Tin Can 
 Launch from the list.
 
@@ -70,8 +67,7 @@ The settings for this module all have help text which can be accessed by clickin
 I don't intend to repeat that information here. If any of the help text is unclear, then please raise an issue here 
 and suggest an improvement.
 
-##Using the plugin
-
+## Using the plugin
 When the learner clicks the launch link, they are taken to a page listing all of their saved attempts for the 
 activity with the most recent attempt at the top and a new attempt button above that. Learners can choose to 
 launch a new attempt, or return to a previously saved attempt.
@@ -85,17 +81,16 @@ by another LMS or by the learning activity itself. Additionally, if another copy
 elsewhere on the Moodle or even on another Moodle, the data will be shared so long as the user email and activity 
 id are the same.
 
-##FAQ
+## FAQ
 So far nobody has asked any questions, but here's some I imagine people might ask:
 
-###Where does the tracking data go?
+### Where does the tracking data go?
 Tracking data from the learning activity is stored in your LRS and can be retrieved and viewed using any Tin 
 Can compliant reporting tool.
 
 It may be that a reporting tool plugin for Moodle is developed in future, or you could write your own.
 
-###On my Moodle, all/some of my users have the same dummy email address. The plugin is behaving oddly. 
-
+### On my Moodle, all/some of my users have the same dummy email address. The plugin is behaving oddly. 
 The plugin tells the e-learning to store data based on the learner's email address as stored in moodle. It's therefore 
 important that the Moodle email address is unique for each user, not just within the scope of the Moodle, but within 
 the scope of any system where the tracking data is used or will be used in the future. The safest best is to ensure 
@@ -103,26 +98,27 @@ it's universally unique.
 
 With a little work, the plugin can be modified to use the Moodle account id instead.
 
-###Why doesn't the plugin do x y and z?
+### Why doesn't the plugin do x y and z?
 If you'd like the plugin to do something, please raise an issue and perhaps somebody will do it for you for free. 
 If you want to make sure it happens, or get it done quickly, I recommended you hire a developer or add the feature 
 yourself. Email [mrdownes@hotmail.com](mailto:mrdownes@hotmail.com) if you'd like to hire me.
 
-###I'm developing a piece of e-learning or authoring tool and want to make sure it will work with Moodle
+### I'm developing a piece of e-learning or authoring tool and want to make sure it will work with Moodle
 Great! Please get in touch if you have any questions or want to hire a Tin Can expert. 
 [mrdownes@hotmail.com](mailto:mrdownes@hotmail.com)
 
 
-##Other projects for reference
-###Tin Launcher
+## Other projects for reference
+### Tin Launcher
 Tin Launcher is an open source JavaScript tool for launching Tin Can activities using the Rustici launch method. We can
 use this as a reference when building the launch URL. This was written by me and we can re-use the code for this 
 project if any of it fits. 
 
 [Demo](http://garemoko.github.io/Tin-launcher/)
+
 [Github](https://github.com/garemoko/Tin-launcher)
 
-###SCORM Cloud Moodle Module
+### SCORM Cloud Moodle Module
 The SCORM Cloud Moodle module is designed to intregrate SCORM Cloud into Moodle so that SCORM Cloud is used in
 place of Moodle's SCORM player. This also allows the upload of Tin Can packages. In it's current form this module only
 works with SCORM Cloud LRS. 
@@ -133,7 +129,7 @@ externally hosted content, so I think it makes more sense to start afresh and us
 
 [Github](https://github.com/RusticiSoftware/SCORMCloud_MoodleModule)
 
-###Jamie Smith's work
+### Jamie Smith's work
 Jamie Smith has created a couple of Github projects that work together to allow for Tin Can packages to be
 tracked in Moodle as though they are SCORM packages. The aims of his work are different to this project (he's dealing
 with content uplaoded to Moodle), but we'll need to consider if and how we build on or integrate with his work. 
@@ -142,10 +138,10 @@ activties to be tracked back inside Moodle instead of an external LRS.
 
 [Github](https://github.com/jgsmitty)
 
-##Useful Links
+## Useful Links
 [The Moodle tracker item relating to Tin Can](https://tracker.moodle.org/browse/MDL-35433)
 
-##Reporting issues
+## Reporting issues
 Please report any issues with this plugin here: https://github.com/garemoko/moodle-mod_tincanlaunch/issues
 Please provide screenshots of your settings (both at plugin and instance level) and a link to your content. 
 
