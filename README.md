@@ -6,7 +6,7 @@ A plug in for Moodle that allows the launch of Tin Can content which is then tra
 ## Background
 The [Tin Can API specification](https://www.tincanapi.co.uk) was released in April 2013 as a replacement for SCORM. 
 Tin Can allows for tracking of any learning experience. Tin Can was designed on the premise of a distributed system
-communicating via API calls over the internet. This means that whislt it is possible to include a Learner Record 
+communicating via API calls over the internet. This means that whilst it is possible to include a Learner Record 
 Store (LRS) and reporting tools inside an LMS like Moodle, it is equally possible for the LRS and reporting tools
 to exist as seprate entities outside of the LMS.
 
