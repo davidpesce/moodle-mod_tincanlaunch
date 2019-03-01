@@ -21,7 +21,7 @@ One of the key issues in Tin Can is launching e-learning activities in such a wa
 * user information. 
 
 Currently, the main launch method in use is the [Rustici Software method](https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md). 
-Another method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. This
+Another method which is likely to gain adoption is the CMI5 method, however this has not yet been finalised. This
 plugin uses the Rustici method. 
 
 ## What you will need
