@@ -6,7 +6,7 @@ A plug in for Moodle that allows the launch of Tin Can content which is then tra
 ## Background
 The [Tin Can API specification](https://www.tincanapi.co.uk) was released in April 2013 as a replacement for SCORM. 
 Tin Can allows for tracking of any learning experience. Tin Can was designed on the premise of a distributed system
-communicating via API calls over the internet. This means that whislt it is possible to include a Learner Record 
+communicating via API calls over the internet. This means that whilst it is possible to include a Learner Record 
 Store (LRS) and reporting tools inside an LMS like Moodle, it is equally possible for the LRS and reporting tools
 to exist as seprate entities outside of the LMS.
 
@@ -21,21 +21,21 @@ One of the key issues in Tin Can is launching e-learning activities in such a wa
 * user information. 
 
 Currently, the main launch method in use is the [Rustici Software method](https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md). 
-Another method which is likely to gain adopting is the CMI5 method, however this has not yet been finalised. This
+Another method which is likely to gain adoption is the CMI5 method, however this has not yet been finalised. This
 plugin uses the Rustici method. 
 
 ## What you will need
 To use this plugin you will need the following:
 
-* Moodle >2.5 fully set up and running on a server that you have ftp access to 
-* Login details for the admin account 
+* Moodle >2.5 fully set up and running on a server that you have ftp access to
+* Login details for the admin account
 * A Moodle course setup where you would like to add the activity
 * A piece of Tin Can compliant e-learning that also implements the launch mechanism outlined HERE, for 
 example e-learning produced using Articulate Storyline or Adobe Captivate. This should be put on the internet 
-somewhere, perhaps on your Moodle server. * A Tin Can compliant LRS (this plugin has been tested with Wax and 
-SCORM Cloud) 
-* A Tin Can compliant reporting tool 
-* A copy of this plugin.
+somewhere, perhaps on your Moodle server.
+* A Tin Can compliant LRS (this plugin has been tested with Wax and SCORM Cloud)
+* A Tin Can compliant reporting tool
+* A copy of this plugin
 
 ## Installation
 It is recommended to get this plugin from the Moodle Plugins Database (https://moodle.org/plugins/mod_tincanlaunch)
@@ -43,7 +43,7 @@ It is recommended to get this plugin from the Moodle Plugins Database (https://m
 This plugin is installed in the same way as any activity plugin. Simply drop the tincanlaunch folder into your 
 mod folder on your moodle and then install via system administration as normal.
 
-It's a known issue that the upgrade script for this plugin needs some attention.If you have any trouble upgrading 
+It's a known issue that the upgrade script for this plugin needs some attention. If you have any trouble upgrading
 from a previous version of this plugin, and you don't know how to fix the upgrade code, please delete the plugin 
 from the mod directory on your server and uninstall the plugin from system administration before trying again. 
 Note that this workaround will delete any instances of the plugin that you have set up in your courses.
