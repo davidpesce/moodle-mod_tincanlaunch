@@ -38,3 +38,4 @@ $string['tincanlaunch_progress'] = 'Intento en curso';
 $string['tincanlaunch_attempt'] = 'Nuevo intento';
 $string['tincanlaunch_notavailable'] = 'The Learning Record Store no está disponible. Por favor, póngase en contacto con el administrador del sistema.';
 
+$string['tincanlaunch:view'] = 'Ver actividad Tin Can (xAPI)';
