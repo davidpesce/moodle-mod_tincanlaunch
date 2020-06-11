@@ -21,7 +21,7 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require('header.php');
 
 // Trigger module viewed event.
@@ -55,23 +55,30 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 }
 
 // TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file.
-?> 
-<script>
-    // Function to run when the experience is launched.
-    function mod_tincanlaunch_launchexperience(registration) {
-        // Set the form paramters.
-        $('#launchform_registration').val(registration);
-        // Post it.
-        $('#launchform').submit();
-        // Remove the launch links.
-        $('#tincanlaunch_newattempt').remove(); 
-        $('#tincanlaunch_attempttable').remove();
-        //A dd some new content.
-        if (!$('#tincanlaunch_status').length) {
-            var message = "<?php echo get_string('tincanlaunch_progress', 'tincanlaunch'); ?>";
-            $('#region-main').append('\
+?>
+    <script>
+        // Function to test for key press and call launch function if space or enter is hit.
+        function key_test(registration) {
+            if (event.keyCode === 13 || event.keyCode === 32) {
+                mod_tincanlaunch_launchexperience(registration);
+            }
+        }
+        // Function to run when the experience is launched.
+        function mod_tincanlaunch_launchexperience(registration) {
+            // Set the form paramters.
+            $('#launchform_registration').val(registration);
+            // Post it.
+            $('#launchform').submit();
+            // Remove the launch links.
+            $('#tincanlaunch_newattempt').remove();
+            $('#tincanlaunch_attempttable').remove();
+            //Add some new content.
+            if (!$('#tincanlaunch_status').length) {
+                var message = "<?php echo get_string('tincanlaunch_progress', 'tincanlaunch'); ?>";
+                $('#region-main .card-body').append('\
                 <div id="tincanlaunch_status"> \
-                    <p id="tincanlaunch_attemptprogress">'+message+'</p> \
+                    <span id="tincanlaunch_completioncheck"></span> \
+                    <p id="tincanlaunch_attemptprogress">' + message + '</p> \
                     <p id="tincanlaunch_exit"> \
                         <a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course"> \
                             Return to course \
@@ -79,17 +86,17 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
                     </p> \
                 </div>\
             ');
+            }
+            $('#tincanlaunch_completioncheck').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
         }
-        $('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
-    }
 
-    // TODO: there may be a better way to check completion. Out of scope for current project.
-    $(document).ready(function() {
-        setInterval(function() { 
-            $('#tincanlaunch_attemptprogress').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
-        }, 30000); // TODO: make this interval a configuration setting.
-    });
-</script>
+        // TODO: there may be a better way to check completion. Out of scope for current project.
+        $(document).ready(function() {
+            setInterval(function() {
+                $('#tincanlaunch_completioncheck').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
+            }, 30000); // TODO: make this interval a configuration setting.
+        });
+    </script>
 <?php
 
 // Generate a registration id for any new attempt.
@@ -103,7 +110,7 @@ $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
 if ($lrsrespond != 200 && $lrsrespond != 404) {
     // On clicking new attempt, save the registration details to the LRS State and launch a new attempt.
-    echo "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable', 'tincanlaunch')."</div>";
+    echo "<div class='alert alert-error'>" . get_string('tincanlaunch_notavailable', 'tincanlaunch') . "</div>";
 
     if ($CFG->debug == 32767) {
         echo "<p>Error attempting to get registration data from State API.</p>";
@@ -116,23 +123,18 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
 
 if ($lrsrespond == 200) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-    if ($tincanlaunch->tincanmultipleregs) {
-        echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
-            .$registrationid
-            ."')\" style=\"cursor: pointer;\">"
-            .get_string('tincanlaunch_attempt', 'tincanlaunch')
-            ."</a></p>";
-    }
+
     foreach ($registrationdatafromlrs as $key => $item) {
 
         if (!is_array($registrationdatafromlrs[$key])) {
-            $reason = "Excepted array, found ". $registrationdatafromlrs[$key];
+            $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
             throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
         array_push(
             $registrationdatafromlrs[$key],
-            "<a onclick=\"mod_tincanlaunch_launchexperience('$key')\" style='cursor: pointer;'>"
-            .get_string('tincanlaunchviewlaunchlink', 'tincanlaunch')."</a>"
+            "<a tabindex=\"0\" id='tincanrelaunch_attempt'
+            onkeyup=\"key_test('".$key."')\" onclick=\"mod_tincanlaunch_launchexperience('".$key."')\" style='cursor: pointer;'>"
+            . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
         );
         $registrationdatafromlrs[$key]['created'] = date_format(
             date_create($registrationdatafromlrs[$key]['created']),
@@ -145,6 +147,7 @@ if ($lrsrespond == 200) {
     }
     $table = new html_table();
     $table->id = 'tincanlaunch_attempttable';
+    $table->caption = get_string('modulenameplural', 'tincanlaunch');
     $table->head = array(
         get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
         get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
@@ -152,21 +155,32 @@ if ($lrsrespond == 200) {
     );
     $table->data = $registrationdatafromlrs;
     echo html_writer::table($table);
+    // Needs to come after previous attempts so a non-sighted user can hear launch options.
+    if ($tincanlaunch->tincanmultipleregs) {
+        echo "<p id='tincanlaunch_newattempt'><a tabindex=\"0\"
+        onkeyup=\"key_test('".$registrationid."')\" onclick=\"mod_tincanlaunch_launchexperience('"
+            . $registrationid
+            . "')\" style=\"cursor: pointer;\">"
+            . get_string('tincanlaunch_attempt', 'tincanlaunch')
+            . "</a></p>";
+    }
 } else {
-    echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
-        .$registrationid
-        ."')\" style=\"cursor: pointer;\">"
-        .get_string('tincanlaunch_attempt', 'tincanlaunch')
-        ."</a></p>";
+    echo "<p tabindex=\"0\"
+        onkeyup=\"key_test('".$registrationid."')\"
+        id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+        . $registrationid
+        . "')\" style=\"cursor: pointer;\">"
+        . get_string('tincanlaunch_attempt', 'tincanlaunch')
+        . "</a></p>";
 }
 
 // Add a form to be posted based on the attempt selected.
 ?>
-<form id="launchform" action="launch.php" method="get" target="_blank">
-    <input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
-    <input id="id" name="id" type="hidden" value="<?php echo $id ?>">
-    <input id="n" name="n" type="hidden" value="<?php echo $n ?>">
-</form>
+    <form id="launchform" action="launch.php" method="get" target="_blank">
+        <input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
+        <input id="id" name="id" type="hidden" value="<?php echo $id ?>">
+        <input id="n" name="n" type="hidden" value="<?php echo $n ?>">
+    </form>
 <?php
 
 echo $OUTPUT->footer();

@@ -7,11 +7,4 @@
         <license>Apache</license>
         <licenseversion>2</licenseversion>
     </library>
-    <library>
-        <location>WatershedPHP/</location>
-        <name>WatershedPHP</name>
-        <version>0.0</version>
-        <license>Apache</license>
-        <licenseversion>2</licenseversion>
-    </library>
 </libraries>
