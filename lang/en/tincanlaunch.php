@@ -123,6 +123,7 @@ $string['tincanlaunchviewfirstlaunched'] = 'First launched';
 $string['tincanlaunchviewlastlaunched'] = 'Last launched';
 $string['tincanlaunchviewlaunchlinkheader'] = 'Launch link';
 $string['tincanlaunchviewlaunchlink'] = 'launch';
+$string['tincanlaunch:view'] = 'View Tin Can (xAPI) activity';
 
 $string['tincanlaunch_completed'] = 'Experience complete!';
 $string['tincanlaunch_progress'] = 'Attempt in progress.';
