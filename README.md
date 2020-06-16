@@ -1,76 +1,67 @@
 tincanlaunch
 ============
 
-A plug in for Moodle that allows the launch of Tin Can content which is then tracked to a separate LRS. 
+A Moodle plug-in that allows the launch of xAPI content using a separate LRS. 
 
 ## Background
-The [Tin Can API specification](https://www.tincanapi.co.uk) was released in April 2013 as a replacement for SCORM. 
-Tin Can allows for tracking of any learning experience. Tin Can was designed on the premise of a distributed system
-communicating via API calls over the internet. This means that whilst it is possible to include a Learner Record 
-Store (LRS) and reporting tools inside an LMS like Moodle, it is equally possible for the LRS and reporting tools
-to exist as seprate entities outside of the LMS.
+The [xAPI Specification](https://github.com/adlnet/xAPI-Spec) was released in 2013 and allows for tracking 
+of learning experiences. xAPI was designed on the premise of a distributed system communicating via 
+API calls over the internet. This means that whilst it is possible to include a Learner Record Store (LRS) and 
+reporting tools inside an LMS like Moodle, it is equally possible for the LRS and reporting tools to exist as 
+seprate entities outside of the LMS.
 
-This is the first of a series of small bite-sized projects to add Tin Can capability to Moodle. These projects will 
-assume that a seprate LRS and reporting tools will be used. This will allow us to take advantage of open source 
-Tin Can LRS and reporting tool projects outside of the Moodle community. This first project will deal with 
-launching Tin Can e-learning from Moodle.
+This projects will assume that a separate LRS and reporting tool are used. This will allow us to take 
+advantage of an open-source LRS and reporting tool projects outside of the Moodle community.
 
-One of the key issues in Tin Can is launching e-learning activities in such a way that the activity provider knows:
+One of the key issues in xAPI is launching content in such a way that the activity provider knows:
 * the LRS endpoint
 * authorisation credentials
-* user information. 
+* user information
 
-Currently, the main launch method in use is the [Rustici Software method](https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md). 
-Another method which is likely to gain adoption is the CMI5 method, however this has not yet been finalised. This
-plugin uses the Rustici method. 
+
+This project will utilize the most common launch method:
+* [Rustici Launch Method](https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md)
+
+A second method will be considered as development continues, [cmi5](http://aicc.github.io/CMI-5_Spec_Current/). 
+ 
 
 ## What you will need
 To use this plugin you will need the following:
+* A working instance of a [supported Moodle version](https://docs.moodle.org/dev/Releases) 3.5, 3.7, or 3.8+
+* A [supported PHP version](https://www.php.net/supported-versions.php) (as of this writing the supported versions of PHP are 7.2-7.4)
+* Moodle administrative access
+* Web accessible xAPI-compliant content that implements the launch mechanism outlined above (Articulate Storyline/ Adobe Captivate)
+* An xAPI-compliant LRS (LearningLocker, Watershed, SCORM Cloud)
 
-* Moodle >2.5 fully set up and running on a server that you have ftp access to
-* Login details for the admin account
-* A Moodle course setup where you would like to add the activity
-* A piece of Tin Can compliant e-learning that also implements the launch mechanism outlined HERE, for 
-example e-learning produced using Articulate Storyline or Adobe Captivate. This should be put on the internet 
-somewhere, perhaps on your Moodle server.
-* A Tin Can compliant LRS (this plugin has been tested with Wax and SCORM Cloud)
-* A Tin Can compliant reporting tool
-* A copy of this plugin
 
-## Installation
+## Installation (Recommended)
 It is recommended to get this plugin from the Moodle Plugins Database (https://moodle.org/plugins/mod_tincanlaunch)
 
-This plugin is installed in the same way as any activity plugin. Simply drop the tincanlaunch folder into your 
-mod folder on your moodle and then install via system administration as normal.
+This plugin is installed in the same way as any activity plugin. Download the zip file and navigate to Moodle
+System administration > Plugins > Install plugins.
 
-It's a known issue that the upgrade script for this plugin needs some attention. If you have any trouble upgrading
-from a previous version of this plugin, and you don't know how to fix the upgrade code, please delete the plugin 
-from the mod directory on your server and uninstall the plugin from system administration before trying again. 
-Note that this workaround will delete any instances of the plugin that you have set up in your courses.
-
-## Installation from Github
+## Installation from Github (Developer)
 
 This is recommended only for developers or if you need the very latest versions. 
 
-The plugin has two submodule dependencies and will not work directly from a clone. Go into the plugin folder
-and type the command...
+The plugin has one submodule dependencies and will NOT work directly from a clone. Go into the plugin folder
+and type the following command:
 
 ```git submodule update --init --recursive```
 
-...this should clone the outstanding dependencies. The plugin is now ready for use. 
+The plugin is now ready for use.
 
 ### Course set up
 This plugin can be added to a course like any other course activity. Simply add an activity and select Tin Can 
 Launch from the list.
 
 The settings for this module all have help text which can be accessed by clicking the ? icon next to that setting. 
-I don't intend to repeat that information here. If any of the help text is unclear, then please raise an issue here 
-and suggest an improvement.
 
 ## Using the plugin
-When the learner clicks the launch link, they are taken to a page listing all of their saved attempts for the 
-activity with the most recent attempt at the top and a new attempt button above that. Learners can choose to 
-launch a new attempt, or return to a previously saved attempt.
+When the learner clicks the launch link, they are taken to a page listing all of their prior attempts for that 
+activity. The most recent attempt is at the top and a new attempt button above that. Learners can choose to 
+launch a new attempt, or return to a previously saved attempt. This can also be disabled to only show the most
+recent attempt.
 
 Moodle will pass the e-learning a registration id in the form of a universal unique id representing the previous 
 attempt or a newly generated one for a new attempt. It's up to the e-learning what it does with that data, but 
@@ -82,30 +73,15 @@ elsewhere on the Moodle or even on another Moodle, the data will be shared so lo
 id are the same.
 
 ## FAQ
-So far nobody has asked any questions, but here's some I imagine people might ask:
 
 ### Where does the tracking data go?
-Tracking data from the learning activity is stored in your LRS and can be retrieved and viewed using any Tin 
-Can compliant reporting tool.
+Tracking data from the learning activity is stored in your LRS and can be retrieved and viewed using an xAPI-compliant reporting tool.
 
-It may be that a reporting tool plugin for Moodle is developed in future, or you could write your own.
 
-### On my Moodle, all/some of my users have the same dummy email address. The plugin is behaving oddly. 
-The plugin tells the e-learning to store data based on the learner's email address as stored in moodle. It's therefore 
-important that the Moodle email address is unique for each user, not just within the scope of the Moodle, but within 
-the scope of any system where the tracking data is used or will be used in the future. The safest best is to ensure 
-it's universally unique.
-
-With a little work, the plugin can be modified to use the Moodle account id instead.
-
-### Why doesn't the plugin do x y and z?
+### Why doesn't the plugin do x, y, or z?
 If you'd like the plugin to do something, please raise an issue and perhaps somebody will do it for you for free. 
 If you want to make sure it happens, or get it done quickly, I recommended you hire a developer or add the feature 
-yourself. Email [mrdownes@hotmail.com](mailto:mrdownes@hotmail.com) if you'd like to hire me.
-
-### I'm developing a piece of e-learning or authoring tool and want to make sure it will work with Moodle
-Great! Please get in touch if you have any questions or want to hire a Tin Can expert. 
-[mrdownes@hotmail.com](mailto:mrdownes@hotmail.com)
+yourself. Email [david.pesce@exputo.com](mailto:david.pesce@exputo.com) if you'd like to hire us.
 
 
 ## Other projects for reference
@@ -119,7 +95,7 @@ project if any of it fits.
 [Github](https://github.com/garemoko/Tin-launcher)
 
 ### SCORM Cloud Moodle Module
-The SCORM Cloud Moodle module is designed to intregrate SCORM Cloud into Moodle so that SCORM Cloud is used in
+The SCORM Cloud Moodle module is designed to integrate SCORM Cloud into Moodle so that SCORM Cloud is used in
 place of Moodle's SCORM player. This also allows the upload of Tin Can packages. In it's current form this module only
 works with SCORM Cloud LRS. 
 
@@ -139,10 +115,10 @@ activties to be tracked back inside Moodle instead of an external LRS.
 [Github](https://github.com/jgsmitty)
 
 ## Useful Links
-[The Moodle tracker item relating to Tin Can](https://tracker.moodle.org/browse/MDL-35433)
+[The Moodle tracker item relating to xAPI (TinCan)](https://tracker.moodle.org/browse/MDL-35433)
 
 ## Reporting issues
-Please report any issues with this plugin here: https://github.com/garemoko/moodle-mod_tincanlaunch/issues
+Please report any issues with this plugin here: https://github.com/davidpesce/moodle-mod_tincanlaunch/issues
 Please provide screenshots of your settings (both at plugin and instance level) and a link to your content. 
 
 The majority of issues are caused by incorrect settings. You can see previous closed issues here: https://github.com/garemoko/moodle-mod_tincanlaunch/issues?q=is%3Aissue+is%3Aclosed

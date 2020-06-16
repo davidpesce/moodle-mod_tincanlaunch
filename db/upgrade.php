@@ -145,6 +145,8 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+
+        upgrade_mod_savepoint(true, 2016121200, 'tincanlaunch');
     }
 
     if ($oldversion < 2018103000) {

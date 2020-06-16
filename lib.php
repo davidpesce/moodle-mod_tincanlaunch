@@ -70,13 +70,13 @@ function tincanlaunch_supports($feature) {
  * (defined by the form in mod_form.php) this function
  * will create a new instance and return the id number
  * of the new instance.
- *
  * @param object $tincanlaunch An object from the form in mod_form.php
  * @param mod_tincanlaunch_mod_form $mform
+ * @global moodle_database $DB
  * @return int The id of the newly inserted tincanlaunch record
  */
 function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null) {
-    global $DB, $CFG;
+    global $DB;
 
     $tincanlaunch->timecreated = time();
 
@@ -115,7 +115,7 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_
  * @return boolean Success/Fail
  */
 function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_mod_form $mform = null) {
-    global $DB, $CFG;
+    global $DB;
 
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
@@ -158,7 +158,6 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch, mod_tincanlaunch_m
 }
 
 function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
-    global $DB, $CFG;
 
     // Data for tincanlaunch_lrs table.
     $tincanlaunchlrs = new stdClass();
@@ -371,7 +370,6 @@ function tincanlaunch_get_file_info($browser, $areas, $course, $cm, $context, $f
  * @return bool false if file not found, does not return if found - just send the file
  */
 function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
-    global $CFG, $DB;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
@@ -415,7 +413,6 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
  * @return array array of file content
  */
 function tincanlaunch_export_contents($cm, $baseurl) {
-    global $CFG;
     $contents = array();
     $context = context_module::instance($cm->id);
 
@@ -428,8 +425,9 @@ function tincanlaunch_export_contents($cm, $baseurl) {
         $file['filename']     = $fileinfo->get_filename();
         $file['filepath']     = $fileinfo->get_filepath();
         $file['filesize']     = $fileinfo->get_filesize();
-        $file['fileurl']      = file_encode_url("$CFG->wwwroot/" . $baseurl, '/'.$context->id.'/mod_tincanlaunch/package'.
-            $fileinfo->get_filepath().$fileinfo->get_filename(), true);
+        $fileurl = new moodle_url(
+            $baseurl . '/'.$context->id.'/mod_tincanlaunch/package'. $fileinfo->get_filepath().$fileinfo->get_filename());
+        $file['fileurl']      = $fileurl;
         $file['timecreated']  = $fileinfo->get_timecreated();
         $file['timemodified'] = $fileinfo->get_timemodified();
         $file['sortorder']    = $fileinfo->get_sortorder();
@@ -471,7 +469,7 @@ function tincanlaunch_extend_settings_navigation(settings_navigation $settingsna
 
 // Called by Moodle core.
 function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
-    global $CFG, $DB;
+    global $DB;
     $result = $type; // Default return value.
 
      // Get tincanlaunch.
@@ -753,19 +751,17 @@ function tincanlaunch_getactor($instance) {
  * @return array LRS settings to use
  */
 function tincanlaunch_settings($instance) {
-    global $DB, $CFG, $tincanlaunchsettings;
+    global $DB, $tincanlaunchsettings;
 
     if (!is_null($tincanlaunchsettings)) {
         return $tincanlaunchsettings;
     }
 
     $expresult = array();
-    $activitysettings = $DB->get_record(
-        'tincanlaunch_lrs',
-        array('tincanlaunchid' => $instance),
-        $fields = '*',
-        $strictness = IGNORE_MISSING
-    );
+    $conditions = array('tincanlaunchid' => $instance);
+    $fields = '*';
+    $strictness = 'IGNORE_MISSING';
+    $activitysettings = $DB->get_record('tincanlaunch_lrs', $conditions, $fields, $strictness);
 
     // If global settings are not used, retrieve activity settings.
     if (!use_global_lrs_settings($instance)) {

@@ -1,41 +1,46 @@
 language: php
 
-sudo: false
+sudo: true
+
+services:
+  - mysql
+  - postgresql
 
 cache:
   directories:
     - $HOME/.composer/cache
 
 php:
- - 5.4
- - 5.5
- - 5.6
- - 7.0
+ - 7.2
+ - 7.3
+ - 7.4
 
 env:
  global:
-  - MOODLE_BRANCH=MOODLE_30_STABLE
+  - MOODLE_BRANCH=MOODLE_38_STABLE
  matrix:
   - DB=pgsql
   - DB=mysqli
 
 before_install:
   - phpenv config-rm xdebug.ini
+  - nvm install 14
+  - nvm use 14
   - cd ../..
   - composer selfupdate
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
   - moodle-plugin-ci install
 
 script:
-  - moodle-plugin-ci phplint
-  - moodle-plugin-ci phpcpd
-  - moodle-plugin-ci codechecker
-  - moodle-plugin-ci csslint
-  - moodle-plugin-ci shifter
-  - moodle-plugin-ci jshint
-  - moodle-plugin-ci validate
-  - moodle-plugin-ci phpunit
-  - moodle-plugin-ci behat
+- moodle-plugin-ci phplint
+- moodle-plugin-ci phpcpd
+- moodle-plugin-ci phpmd
+- moodle-plugin-ci codechecker
+- moodle-plugin-ci validate
+- moodle-plugin-ci savepoints
+- moodle-plugin-ci mustache
+- moodle-plugin-ci grunt
+- moodle-plugin-ci behat
