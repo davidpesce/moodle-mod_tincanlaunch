@@ -23,6 +23,7 @@
  */
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require('header.php');
+require_login();
 
 // Trigger module viewed event.
 $event = \mod_tincanlaunch\event\course_module_viewed::create(array(

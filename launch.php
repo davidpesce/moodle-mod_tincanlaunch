@@ -24,6 +24,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('header.php');
+require_login();
 
 // Trigger Activity launched event.
 $event = \mod_tincanlaunch\event\activity_launched::create(array(

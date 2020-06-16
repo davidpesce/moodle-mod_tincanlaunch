@@ -125,7 +125,7 @@ function tincan_launched_statement($registrationid) {
  * @return string launch link including querystring.
  */
 function tincanlaunch_get_launch_url($registrationuuid) {
-    global $tincanlaunch, $CFG;
+    global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     $expiry = new DateTime('NOW');
     $xapiduration = $tincanlaunchsettings['tincanlaunchlrsduration'];
@@ -415,7 +415,6 @@ function tincanlaunch_get_moodle_langauge() {
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
 function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
-    global $CFG, $DB;
 
     // Process input parameters.
     $auth = 'Basic '.base64_encode($login.':'.$pass);
@@ -425,7 +424,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
     $orgid = $explodedendpoint[5];
 
     // Create a session.
-    $createsessionresponse = tincanlaunch_send_api_request(
+    $sessionresponse = tincanlaunch_send_api_request(
         $auth,
         "POST",
         $wsserver . "/api/organizations/" . $orgid . "/activity-providers/self/sessions",
@@ -437,14 +436,14 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
         ]
     );
 
-    if ($createsessionresponse["status"] === 200) {
+    if ($sessionresponse["status"] === 200) {
         return [
-            "key" => $createsessionresponse["content"]->key,
-            "secret" => $createsessionresponse["content"]->secret
+            "key" => $sessionresponse["content"]->key,
+            "secret" => $sessionresponse["content"]->secret
         ];
     } else {
         $reason = get_string('apCreationFailed', 'tincanlaunch')
-        ." Status: ". $createsessionresponse["status"].". Response: ".$createsessionresponse["content"]->message;
+        ." Status: ". $sessionresponse["status"].". Response: ".$sessionresponse["content"]->message;
         throw new moodle_exception($reason, 'tincanlaunch', '');
     }
 }
