@@ -248,8 +248,7 @@ function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $e
 
     $stream = fopen(trim($url) . 'Basic/request'.'?'.http_build_query($streamparams, '', '&'), 'rb', false, $context);
 
-    $header = $http_response_header[0];
-    $returncode = explode(' ', $header);
+    $returncode = explode(' ', $http_response_header[0]);
     $returncode = (int)$returncode[1];
 
     switch($returncode){
