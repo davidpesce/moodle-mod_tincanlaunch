@@ -449,17 +449,17 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
 }
 
 /**
-* Sends a request to the API.
-*
-* @param {String} [$auth] Auth string
-* @param {String} [$method] Method of the request e.g. POST.
-* @param {String} [$url] URL to request
-* @param {Array} [$options] Array of optional properties.
-* @param {String} [content] Content of the request (should be JSON).
-* @return {Array} Details of the response
-* @return {String} [metadata] Raw metadata of the response
-* @return {String} [content] Raw content of the response
-* @return {Integer} [status] HTTP status code of the response e.g. 201
+ * Sends a request to the API.
+ *
+ * @param {String} [$auth] Auth string
+ * @param {String} [$method] Method of the request e.g. POST.
+ * @param {String} [$url] URL to request
+ * @param {Array} [$options] Array of optional properties.
+ * @param {String} [content] Content of the request (should be JSON).
+ * @return {Array} Details of the response
+ * @return {String} [metadata] Raw metadata of the response
+ * @return {String} [content] Raw content of the response
+ * @return {Integer} [status] HTTP status code of the response e.g. 201
  */
 
 function tincanlaunch_send_api_request($auth, $method, $url) {
