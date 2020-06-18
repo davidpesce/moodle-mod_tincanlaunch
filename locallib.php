@@ -384,7 +384,7 @@ function tincanlaunch_get_global_parameters_and_get_state($key) {
 
 
 /**
- * Get the current lanaguage of the current user and return it as an RFC 5646 language tag
+ * Get the current language of the current user and return it as an RFC 5646 language tag
  *
  * @package  mod_tincanlaunch
  * @category tincan
@@ -448,18 +448,20 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
     }
 }
 
-/*
-@method sendAPIRequest Sends a request to the API.
-@param {String} [$auth] Auth string
-@param {String} [$method] Method of the request e.g. POST.
-@param {String} [$url] URL to request
-@param {Array} [$options] Array of optional properties.
-    @param {String} [content] Content of the request (should be JSON).
-@return {Array} Details of the response
-    @return {String} [metadata] Raw metadata of the response
-    @return {String} [content] Raw content of the response
-    @return {Integer} [status] HTTP status code of the response e.g. 201
-*/
+/**
+ * Sends a request to the API.
+ *
+ * @param {String} [$auth] Auth string
+ * @param {String} [$method] Method of the request e.g. POST.
+ * @param {String} [$url] URL to request
+ * @param {Array} [$options] Array of optional properties.
+ * @param {String} [content] Content of the request (should be JSON).
+ * @return {Array} Details of the response
+ * @return {String} [metadata] Raw metadata of the response
+ * @return {String} [content] Raw content of the response
+ * @return {Integer} [status] HTTP status code of the response e.g. 201
+ */
+
 function tincanlaunch_send_api_request($auth, $method, $url) {
     $options = func_num_args() === 4 ? func_get_arg(3) : array();
 
@@ -492,7 +494,7 @@ function tincanlaunch_send_api_request($auth, $method, $url) {
     if (! $fp) {
         return array (
             "metadata" => null,
-            "content" => $content,
+            "content" => null,
             "status" => 0
         );
     }
