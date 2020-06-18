@@ -83,7 +83,6 @@ $registrationdataforthisattempt = array(
 // If registrationdata is null or error is 404 create a new registration data array.
 if (is_null($registrationdata) || $registrationdata->httpResponse['status'] = 404) {
     $registrationdata = $registrationdataforthisattempt;
-    
 } else if (array_key_exists($registrationid, $registrationdata)) {
     // Else if the regsitration exists update the lastlaunched date.
     $registrationdata[$registrationid]["lastlaunched"] = $datenow;
