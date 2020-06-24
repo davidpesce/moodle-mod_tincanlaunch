@@ -47,7 +47,6 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid();
 
         $newitemid = $DB->insert_record('tincanlaunch', $data);
@@ -55,8 +54,6 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
     }
 
     protected function after_execute() {
-        global $DB;
-
         // Add tincanlaunch related files.
         $this->add_related_files('mod_tincanlaunch', 'intro', null);
     }
