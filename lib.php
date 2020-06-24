@@ -189,7 +189,8 @@ function tincanlaunch_delete_instance($id) {
     }
 
     // Determine if there is a record of this (ever) in the tincanlaunch_lrs table.
-    $tincanlaunchlrsid = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid' => $id), $strictness = IGNORE_MISSING);
+    $strictness = IGNORE_MISSING;
+    $tincanlaunchlrsid = $DB->get_field('tincanlaunch_lrs', 'id', array('tincanlaunchid' => $id), $strictness);
     if ($tincanlaunchlrsid) {
         // If there is, delete it.
         $DB->delete_records('tincanlaunch_lrs', array('id' => $tincanlaunchlrsid));
@@ -500,9 +501,6 @@ function tincanlaunch_process_new_package($tincanlaunch) {
     // This is unlikely as it should have been checked when the file was validated.
     if ($manifestfile = $fs->get_file($context->id, 'mod_tincanlaunch', 'content', 0, '/', 'tincan.xml')) {
         $xmltext = $manifestfile->get_content();
-
-        $defaultorgid = 0;
-        $firstinorg = 0;
 
         $pattern = '/&(?!\w{2,6};)/';
         $replacement = '&amp;';
