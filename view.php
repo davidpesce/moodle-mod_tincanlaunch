@@ -113,12 +113,8 @@ if ($lrsrespond != 200 && $lrsrespond != 404) {
     // On clicking new attempt, save the registration details to the LRS State and launch a new attempt.
     echo "<div class='alert alert-error'>" . get_string('tincanlaunch_notavailable', 'tincanlaunch') . "</div>";
 
-    if ($CFG->debug == 32767) {
-        echo "<p>Error attempting to get registration data from State API.</p>";
-        echo "<pre>";
-        var_dump($getregistrationdatafromlrsstate);
-        echo "</pre>";
-    }
+    debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
+        var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
     die();
 }
 
