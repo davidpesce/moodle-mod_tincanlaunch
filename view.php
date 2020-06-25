@@ -111,8 +111,7 @@ $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
 if ($lrsrespond != 200 && $lrsrespond != 404) {
     // On clicking new attempt, save the registration details to the LRS State and launch a new attempt.
-    echo "<div class='alert alert-error'>" . get_string('tincanlaunch_notavailable', 'tincanlaunch') . "</div>";
-
+    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
         var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
     die();

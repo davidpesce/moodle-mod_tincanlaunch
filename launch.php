@@ -39,7 +39,7 @@ $event->trigger();
 $registrationid = required_param('launchform_registration', PARAM_TEXT);
 
 if (empty($registrationid)) {
-    echo "<div class='alert alert-error'>".get_string('tincanlaunch_regidempty', 'tincanlaunch')."</div>";
+    echo $OUTPUT->notification(get_string('tincanlaunch_regidempty', 'tincanlaunch'), 'error');
     debugging("Error attempting to get registration id querystring parameter.", DEBUG_DEVELOPER);
     die();
 }
@@ -49,11 +49,10 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
     "http://tincanapi.co.uk/stateapikeys/registrations"
 );
 
-$errorhtml = "<div class='alert alert-error'>".get_string('tincanlaunch_notavailable', 'tincanlaunch')."</div>";
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 // Failed to connect to LRS.
 if ($lrsrespond != 200 && $lrsrespond != 404) {
-    echo $errorhtml;
+    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
         var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
     die();
@@ -99,7 +98,7 @@ $saveresgistrationdata = tincanlaunch_get_global_parameters_and_save_state(
 $lrsrespond = $saveresgistrationdata->httpResponse['status'];
 // Failed to connect to LRS.
 if ($lrsrespond != 204) {
-    echo $errorhtml;
+    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to set registration data to State API.</p><pre>" .
         var_dump($saveresgistrationdata) . "</pre>", DEBUG_DEVELOPER);
     die();
@@ -114,7 +113,7 @@ $saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($la
 $lrsrespond = $saveagentprofile->httpResponse['status'];
 if ($lrsrespond != 204) {
     // Failed to connect to LRS.
-    echo $errorhtml;
+    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to set learner preferences to Agent Profile API.</p><pre>" .
         var_dump($saveagentprofile) . "</pre>", DEBUG_DEVELOPER);
     die();
@@ -125,7 +124,7 @@ $savelaunchedstatement = tincan_launched_statement($registrationid);
 $lrsrespond = $savelaunchedstatement->httpResponse['status'];
 if ($lrsrespond != 204) {
     // Failed to connect to LRS.
-    echo $errorhtml;
+    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to send 'launched' statement.</p><pre>" .
         var_dump($savelaunchedstatement) . "</pre>", DEBUG_DEVELOPER);
     die();
