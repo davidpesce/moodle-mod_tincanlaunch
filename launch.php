@@ -104,18 +104,18 @@ if ($lrsrespond != 204) {
     die();
 }
 
-// Compile user data to send to agent profile
+// Compile user data to send to agent profile.
 $agentprofiles['CMI5LearnerPreferences'] = ["languagePreference" => tincanlaunch_get_moodle_language()];
 
-// Check if there are any profile fields needing to be synced
-$profile_fields = explode(',', get_config('tincanlaunch', 'profilefields'));
-if (count($profile_fields) > 0) {
+// Check if there are any profile fields needing to be synced.
+$profilefields = explode(',', get_config('tincanlaunch', 'profilefields'));
+if (count($profilefields) > 0) {
     $agentprofiles['MoodleUserFields'] = [];
-    foreach ($profile_fields as $profile_field) {
-        // lookup profile field value
-        if (array_key_exists($profile_field, $USER->profile)) {
+    foreach ($profilefields as $profilefield) {
+        // Lookup profile field value.
+        if (array_key_exists($profilefield, $USER->profile)) {
             $agentprofiles['MoodleUserFields'] = $agentprofiles['MoodleUserFields'] +
-                [$profile_field => $USER->profile[$profile_field]];
+                [$profilefield => $USER->profile[$profilefield]];
         }
     }
 }
@@ -134,7 +134,7 @@ foreach ($agentprofiles as $key => $value) {
 
 }
 
-// Send launched statement
+// Send launched statement.
 $savelaunchedstatement = tincan_launched_statement($registrationid);
 
 $lrsrespond = $savelaunchedstatement->httpResponse['status'];

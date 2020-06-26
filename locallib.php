@@ -37,8 +37,7 @@ require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
  * @param string/UUID $registrationid The Tin Can Registration UUID associated with the launch.
  * @return TinCan LRS Response
  */
-function tincan_launched_statement($registrationid)
-{
+function tincan_launched_statement($registrationid){
     global $tincanlaunch, $course, $CFG;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
 
@@ -125,8 +124,7 @@ function tincan_launched_statement($registrationid)
  * @param string/UUID $registrationid The Tin Can Registration UUID associated with the launch.
  * @return string launch link including querystring.
  */
-function tincanlaunch_get_launch_url($registrationuuid)
-{
+function tincanlaunch_get_launch_url($registrationuuid){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     $expiry = new DateTime('NOW');
@@ -201,8 +199,7 @@ function tincanlaunch_get_launch_url($registrationuuid)
  * @param string $url LRS endpoint URL
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
-function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $expiry, $registrationuuid)
-{
+function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $expiry, $registrationuuid){
     global $tincanlaunch;
     $actor = tincanlaunch_getactor($tincanlaunch->id);
     $data = array(
@@ -285,8 +282,7 @@ function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $e
  * @param object or array $obj object or array encode to JSON
  * @return string/JSON JSON encoded object or array
  */
-function tincanlaunch_myjson_encode($obj)
-{
+function tincanlaunch_myjson_encode($obj){
     return str_replace('\\/', '/', json_encode($obj));
 }
 
@@ -300,8 +296,7 @@ function tincanlaunch_myjson_encode($obj)
  * @param string $etag etag associated with the document last time it was fetched (may be Null if document is new)
  * @return TinCan LRS Response
  */
-function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag)
-{
+function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
     $lrs = new \TinCan\RemoteLRS(
@@ -334,8 +329,7 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag)
  * @param string $key id to store the document against
  * @return TinCan LRS Response
  */
-function tincanlaunch_get_global_parameters_and_save_agentprofile($key, $data)
-{
+function tincanlaunch_get_global_parameters_and_save_agentprofile($key, $data){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
 
@@ -366,8 +360,7 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($key, $data)
  * @param string $key id to store the document against
  * @return TinCan LRS Response containing the response code and data or error message
  */
-function tincanlaunch_get_global_parameters_and_get_state($key)
-{
+function tincanlaunch_get_global_parameters_and_get_state($key){
     global $tincanlaunch;
     $tincanlaunchsettings = tincanlaunch_settings($tincanlaunch->id);
 
@@ -394,8 +387,7 @@ function tincanlaunch_get_global_parameters_and_get_state($key)
  * @return string RFC 5646 language tag
  */
 
-function tincanlaunch_get_moodle_language()
-{
+function tincanlaunch_get_moodle_language(){
     $lang = current_language();
     $langarr = explode('_', $lang);
     if (count($langarr) == 2) {
@@ -418,8 +410,7 @@ function tincanlaunch_get_moodle_language()
  * @param int $expiry number of seconds the credentials are required for
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
-function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry)
-{
+function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry){
 
     // Process input parameters.
     $auth = 'Basic ' . base64_encode($login . ':' . $pass);
@@ -467,8 +458,7 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry)
  * @return {Integer} [status] HTTP status code of the response e.g. 201
  */
 
-function tincanlaunch_send_api_request($auth, $method, $url)
-{
+function tincanlaunch_send_api_request($auth, $method, $url){
     $options = func_num_args() === 4 ? func_get_arg(3) : array();
 
     if (!isset($options['contentType'])) {
