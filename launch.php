@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once('header.php');
 require_login();
 
@@ -73,8 +73,8 @@ $registrationdataforthisattempt = array(
     )
 );
 
-// If registrationdata is null or error is 404 create a new registration data array.
-if (is_null($registrationdata) || $registrationdata->httpResponse['status'] = 404) {
+// If registrationdata is null (could be from 404 above) create a new registration data array.
+if (is_null($registrationdata)) {
     $registrationdata = $registrationdataforthisattempt;
 } else if (array_key_exists($registrationid, $registrationdata)) {
     // Else if the registration exists update the lastlaunched date.
@@ -84,7 +84,7 @@ if (is_null($registrationdata) || $registrationdata->httpResponse['status'] = 40
 }
 
 // Sort the registration data by last launched (most recent first).
-uasort($registrationdata, function($a, $b) {
+uasort($registrationdata, function ($a, $b) {
     return strtotime($b['lastlaunched']) - strtotime($a['lastlaunched']);
 });
 
@@ -104,21 +104,37 @@ if ($lrsrespond != 204) {
     die();
 }
 
-$langpreference = array(
-    "languagePreference" => tincanlaunch_get_moodle_langauge()
-);
+// Compile user data to send to agent profile
+$agentprofiles['CMI5LearnerPreferences'] = ["languagePreference" => tincanlaunch_get_moodle_language()];
 
-$saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($langpreference, "CMI5LearnerPreferences");
-
-$lrsrespond = $saveagentprofile->httpResponse['status'];
-if ($lrsrespond != 204) {
-    // Failed to connect to LRS.
-    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
-    debugging("<p>Error attempting to set learner preferences to Agent Profile API.</p><pre>" .
-        var_dump($saveagentprofile) . "</pre>", DEBUG_DEVELOPER);
-    die();
+// Check if there are any profile fields needing to be synced
+$profile_fields = explode(',', get_config('tincanlaunch', 'profilefields'));
+if (count($profile_fields) > 0) {
+    $agentprofiles['MoodleUserFields'] = [];
+    foreach ($profile_fields as $profile_field) {
+        // lookup profile field value
+        if (array_key_exists($profile_field, $USER->profile)) {
+            $agentprofiles['MoodleUserFields'] = $agentprofiles['MoodleUserFields'] +
+                [$profile_field => $USER->profile[$profile_field]];
+        }
+    }
 }
 
+foreach ($agentprofiles as $key => $value) {
+    $saveagentprofile = tincanlaunch_get_global_parameters_and_save_agentprofile($key, $value);
+
+    $lrsrespond = $saveagentprofile->httpResponse['status'];
+    if ($lrsrespond != 204) {
+        // Failed to connect to LRS.
+        echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
+        debugging("<p>Error attempting to set learner preferences (" . key($agentprofile) .
+            ") to Agent Profile API.</p><pre>" . var_dump($saveagentprofile) . "</pre>", DEBUG_DEVELOPER);
+        die();
+    }
+
+}
+
+// Send launched statement
 $savelaunchedstatement = tincan_launched_statement($registrationid);
 
 $lrsrespond = $savelaunchedstatement->httpResponse['status'];
@@ -134,6 +150,6 @@ $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 // Launch the experience.
-header("Location: ". tincanlaunch_get_launch_url($registrationid));
+header("Location: " . tincanlaunch_get_launch_url($registrationid));
 
 exit;
