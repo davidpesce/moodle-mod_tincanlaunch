@@ -110,11 +110,11 @@ $agentprofiles['CMI5LearnerPreferences'] = ["languagePreference" => tincanlaunch
 // Check if there are any profile fields needing to be synced.
 $profilefields = explode(',', get_config('tincanlaunch', 'profilefields'));
 if (count($profilefields) > 0) {
-    $agentprofiles['MoodleUserFields'] = [];
+    $agentprofiles['LMSUserFields'] = [];
     foreach ($profilefields as $profilefield) {
         // Lookup profile field value.
         if (array_key_exists($profilefield, $USER->profile)) {
-            $agentprofiles['MoodleUserFields'] = $agentprofiles['MoodleUserFields'] +
+            $agentprofiles['LMSUserFields'] = $agentprofiles['LMSUserFields'] +
                 [$profilefield => $USER->profile[$profilefield]];
         }
     }
