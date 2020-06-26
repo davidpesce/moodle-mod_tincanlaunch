@@ -139,3 +139,7 @@ $string['tincanlaunch:addinstance'] = 'Add a new xAPI activity to a course';
 
 $string['expirecredentials'] = 'Expire credentials';
 $string['checkcompletion'] = 'Check Completion';
+
+// User profile fields
+$string['profilefields'] = 'User profile fields to sync to Agent Profile';
+$string['profilefields_desc'] ='If selected, the Moodle user profile fields will be sent to the LRS under the actors agent profile.';
