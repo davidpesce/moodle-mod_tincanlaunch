@@ -100,6 +100,18 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     </script>
 <?php
 
+// Placeholder.
+function lrs_guest_attempt($registrationid){
+	echo "Please provide your email: <input id=\"alt_email\" name=\"alt_email\" " 
+		."type=\"email\" placeholder=\"anonymous@localhost.com\"size=\"30\" />";
+
+    echo "<p id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+        .$registrationid
+        ."')\" style=\"cursor: pointer;\">Guest "
+        .get_string('tincanlaunch_attempt', 'tincanlaunch')
+        ."</a></p>";
+}
+
 // Generate a registration id for any new attempt.
 $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
@@ -174,6 +186,7 @@ if ($lrsrespond == 200) {
 ?>
     <form id="launchform" action="launch.php" method="get" target="_blank">
         <input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
+        <input id="guest_email" name="guest_name" type="hidden" value="default">
         <input id="id" name="id" type="hidden" value="<?php echo $id ?>">
         <input id="n" name="n" type="hidden" value="<?php echo $n ?>">
     </form>

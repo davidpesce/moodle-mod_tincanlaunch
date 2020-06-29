@@ -637,31 +637,47 @@ function tincanlaunch_getactor($instance) {
 
     $settings = tincanlaunch_settings($instance);
 
-    if ($USER->idnumber && $settings['tincanlaunchcustomacchp']) {
-        $agent = array(
-            "name" => fullname($USER),
-            "account" => array(
-                "homePage" => $settings['tincanlaunchcustomacchp'],
-                "name" => $USER->idnumber
-            ),
-            "objectType" => "Agent"
-        );
-    } else if ($USER->email && $settings['tincanlaunchuseactoremail']) {
-        $agent = array(
-            "name" => fullname($USER),
-            "mbox" => "mailto:".$USER->email,
-            "objectType" => "Agent"
-        );
-    } else {
-        $agent = array(
-            "name" => fullname($USER),
+    // Handle guest user.
+    if (isguestuser($USER)) {
+		// Retrieve a unique guest, prevent same guest info for all guests
+		$agent = array(
+            "name" => $USER->guest_id,
+            "mbox" => "mailto:".$USER->guest_email,
             "account" => array(
                 "homePage" => $CFG->wwwroot,
                 "name" => $USER->username
             ),
             "objectType" => "Agent"
-        );
+       );
+	} else {
+        if ($USER->idnumber && $settings['tincanlaunchcustomacchp']) {
+            $agent = array(
+                "name" => fullname($USER),
+                "account" => array(
+                    "homePage" => $settings['tincanlaunchcustomacchp'],
+                    "name" => $USER->idnumber
+                ),
+                "objectType" => "Agent"
+            );
+        } else if ($USER->email && $settings['tincanlaunchuseactoremail']) {
+            $agent = array(
+                "name" => fullname($USER),
+                "mbox" => "mailto:".$USER->email,
+                "objectType" => "Agent"
+            );
+        } else {
+            $agent = array(
+                "name" => fullname($USER),
+                "account" => array(
+                    "homePage" => $CFG->wwwroot,
+                    "name" => $USER->username
+                ),
+                "objectType" => "Agent"
+            );
+        }
     }
+
+    
 
     return new \TinCan\Agent($agent);
 }

@@ -38,6 +38,13 @@ $event->trigger();
 // Get the registration id.
 $registrationid = required_param('launchform_registration', PARAM_TEXT);
 
+// Handle guest user lacking stored email.
+if (isguestuser($USER)) {
+    $guest_email    = optional_param('guest_email', null, PARAM_TEXT);
+	$USER->guest_id	   = $registrationid;
+	$USER->guest_email = $guest_email;
+}
+
 if (empty($registrationid)) {
     echo $OUTPUT->notification(get_string('tincanlaunch_regidempty', 'tincanlaunch'), 'error');
     debugging("Error attempting to get registration id querystring parameter.", DEBUG_DEVELOPER);
