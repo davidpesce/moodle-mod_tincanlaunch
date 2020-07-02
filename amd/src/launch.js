@@ -39,7 +39,7 @@ define(['jquery', 'core/str'], function($, Str) {
         NEW_ATTEMPT_LINK: '[id^=tincanlaunch_newattemptlink-]',
         REATTEMPT: '[id^=tincanrelaunch_attempt-]',
         REGISTRATION: '#launchform_registration',
-        STATUS: '#tincanlaunch_status',
+        STATUSDIV: '#tincanlaunch_status',
         STATUSPARA: '#tincanlaunch_status_para'
     };
 
@@ -84,6 +84,13 @@ define(['jquery', 'core/str'], function($, Str) {
                 self.keyTest(e.keyCode, newregistrationid);
             });
 
+            // Add status para.
+            var statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
+
+            // Add completion span.
+            var completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
+            $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
+
             // Periodically check completion
             // TODO: Fix this.
             setInterval(function() {
@@ -115,12 +122,16 @@ define(['jquery', 'core/str'], function($, Str) {
 
             Str.get_strings(stringsToRetrieve)
                 .done(function(s) {
+                    // Attempt in progress.
                     $(SELECTORS.STATUSPARA).text(s[0]);
 
-                    var exitpara = $("<p>").attr("id", SELECTORS.EXIT);
+                    // Return to course.
+                    var exitpara = $("<p></p>").attr("id", SELECTORS.EXIT);
                     exitpara.html("<a href='complete.php?id=" + self.id + "&n=" + self.n + "'>" + s[1] + "</a>");
                     $(SELECTORS.STATUSPARA).after(exitpara);
-                });
+            });
+
+            $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
         }
 
     };

@@ -416,7 +416,10 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
     }
 
     if (!empty($tincanlaunch->tincanverbid)) {
-        // Try to get a statement matching actor, verb and object specified in module settings.
+        /*
+         * Retrieve statements from LRS matching actor, object, and
+         * completion verb (specificed in activity completion settings).
+         */
         $user = $DB->get_record('user', array ('id' => $userid));
         $statementquery = tincanlaunch_get_statements(
             $tincanlaunchsettings['tincanlaunchlrsendpoint'],
