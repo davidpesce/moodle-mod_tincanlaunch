@@ -396,7 +396,7 @@ function tincanlaunch_export_contents($cm, $baseurl) {
 }
 
 // Called by Moodle core.
-function tincanlaunch_get_completion_state($cm, $type) {
+function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
     global $DB;
     $result = $type; // Default return value.
 
@@ -417,13 +417,14 @@ function tincanlaunch_get_completion_state($cm, $type) {
 
     if (!empty($tincanlaunch->tincanverbid)) {
         // Try to get a statement matching actor, verb and object specified in module settings.
+        $user = $DB->get_record('user', array ('id' => $userid));
         $statementquery = tincanlaunch_get_statements(
             $tincanlaunchsettings['tincanlaunchlrsendpoint'],
             $tincanlaunchsettings['tincanlaunchlrslogin'],
             $tincanlaunchsettings['tincanlaunchlrspass'],
             $tincanlaunchsettings['tincanlaunchlrsversion'],
             $tincanlaunch->tincanactivityid,
-            tincanlaunch_getactor($cm->instance),
+            tincanlaunch_getactor($cm->instance, $user),
             $tincanlaunch->tincanverbid,
             $expirydate
         );
@@ -632,32 +633,37 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
  * @category tincan
  * @return TinCan Agent $agent Agent
  */
-function tincanlaunch_getactor($instance) {
+function tincanlaunch_getactor($instance, $user = false) {
     global $USER, $CFG;
+
+    // If Moodle cron didn't initiate this, user global $USER.
+    if ($user == false) {
+        $user = $USER;
+    }
 
     $settings = tincanlaunch_settings($instance);
 
-    if ($USER->idnumber && $settings['tincanlaunchcustomacchp']) {
+    if ($user->idnumber && $settings['tincanlaunchcustomacchp']) {
         $agent = array(
-            "name" => fullname($USER),
+            "name" => fullname($user),
             "account" => array(
                 "homePage" => $settings['tincanlaunchcustomacchp'],
-                "name" => $USER->idnumber
+                "name" => $user->idnumber
             ),
             "objectType" => "Agent"
         );
-    } else if ($USER->email && $settings['tincanlaunchuseactoremail']) {
+    } else if ($user->email && $settings['tincanlaunchuseactoremail']) {
         $agent = array(
-            "name" => fullname($USER),
-            "mbox" => "mailto:".$USER->email,
+            "name" => fullname($user),
+            "mbox" => "mailto:".$user->email,
             "objectType" => "Agent"
         );
     } else {
         $agent = array(
-            "name" => fullname($USER),
+            "name" => fullname($user),
             "account" => array(
                 "homePage" => $CFG->wwwroot,
-                "name" => $USER->username
+                "name" => $user->username
             ),
             "objectType" => "Agent"
         );
