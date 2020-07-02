@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of tincanlaunch
+ * Displays an instance of tincanlaunch.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -36,15 +36,10 @@ $event->add_record_snapshot('course_modules', $cm);
 $event->trigger();
 
 // Print the page header.
-
 $PAGE->set_url('/mod/tincanlaunch/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($tincanlaunch->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
-
-$PAGE->requires->jquery();
-
-// Output starts here.
 echo $OUTPUT->header();
 
 if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever.
@@ -55,69 +50,22 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     );
 }
 
-// TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file.
-?>
-    <script>
-        // Function to test for key press and call launch function if space or enter is hit.
-        function key_test(registration) {
-            if (event.keyCode === 13 || event.keyCode === 32) {
-                mod_tincanlaunch_launchexperience(registration);
-            }
-        }
-        // Function to run when the experience is launched.
-        function mod_tincanlaunch_launchexperience(registration) {
-            // Set the form paramters.
-            $('#launchform_registration').val(registration);
-            // Post it.
-            $('#launchform').submit();
-            // Remove the launch links.
-            $('#tincanlaunch_newattempt').remove();
-            $('#tincanlaunch_attempttable').remove();
-            //Add some new content.
-            if (!$('#tincanlaunch_status').length) {
-                var message = "<?php echo get_string('tincanlaunch_progress', 'tincanlaunch'); ?>";
-                $('#region-main .card-body').append('\
-                <div id="tincanlaunch_status"> \
-                    <span id="tincanlaunch_completioncheck"></span> \
-                    <p id="tincanlaunch_attemptprogress">' + message + '</p> \
-                    <p id="tincanlaunch_exit"> \
-                        <a href="complete.php?id=<?php echo $id ?>&n=<?php echo $n ?>" title="Return to course"> \
-                            Return to course \
-                        </a> \
-                    </p> \
-                </div>\
-            ');
-            }
-            $('#tincanlaunch_completioncheck').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
-        }
-
-        // TODO: there may be a better way to check completion. Out of scope for current project.
-        $(document).ready(function() {
-            setInterval(function() {
-                $('#tincanlaunch_completioncheck').load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
-            }, 30000); // TODO: make this interval a configuration setting.
-        });
-    </script>
-<?php
-
-// Generate a registration id for any new attempt.
-$tincanphputil = new \TinCan\Util();
-$registrationid = $tincanphputil->getUUID();
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
     "http://tincanapi.co.uk/stateapikeys/registrations"
 );
-$lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 
+$statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
 
-if ($lrsrespond != 200 && $lrsrespond != 404) {
-    // On clicking new attempt, save the registration details to the LRS State and launch a new attempt.
+// Some sort of failure occured. 
+if ($statuscode != 200 && $statuscode != 404) {
     echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
         var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
     die();
 }
 
-if ($lrsrespond == 200) {
+// Success from LRS request.
+if ($statuscode == 200) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
 
     foreach ($registrationdatafromlrs as $key => $item) {
@@ -128,8 +76,7 @@ if ($lrsrespond == 200) {
         }
         array_push(
             $registrationdatafromlrs[$key],
-            "<a tabindex=\"0\" id='tincanrelaunch_attempt'
-            onkeyup=\"key_test('".$key."')\" onclick=\"mod_tincanlaunch_launchexperience('".$key."')\" style='cursor: pointer;'>"
+            "<a id='tincanrelaunch_attempt-".$key."'>"
             . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
         );
         $registrationdatafromlrs[$key]['created'] = date_format(
@@ -151,24 +98,20 @@ if ($lrsrespond == 200) {
     );
     $table->data = $registrationdatafromlrs;
     echo html_writer::table($table);
-    // Needs to come after previous attempts so a non-sighted user can hear launch options.
-    if ($tincanlaunch->tincanmultipleregs) {
-        echo "<p id='tincanlaunch_newattempt'><a tabindex=\"0\"
-        onkeyup=\"key_test('".$registrationid."')\" onclick=\"mod_tincanlaunch_launchexperience('"
-            . $registrationid
-            . "')\" style=\"cursor: pointer;\">"
-            . get_string('tincanlaunch_attempt', 'tincanlaunch')
-            . "</a></p>";
-    }
-} else {
-    echo "<p tabindex=\"0\"
-        onkeyup=\"key_test('".$registrationid."')\"
-        id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
-        . $registrationid
-        . "')\" style=\"cursor: pointer;\">"
-        . get_string('tincanlaunch_attempt', 'tincanlaunch')
-        . "</a></p>";
 }
+
+// Generate a registration id for any new attempt.
+$tincanphputil = new \TinCan\Util();
+$registrationid = $tincanphputil->getUUID();
+
+// Display new registration attempt link.
+echo "<p id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">". get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></p>";
+
+// Add status placeholder.
+echo "<p id=tincanlaunch_status_para></p>";
+
+// New AMD module.
+$PAGE->requires->js_call_amd('mod_tincanlaunch/launch', 'init');
 
 // Add a form to be posted based on the attempt selected.
 ?>
