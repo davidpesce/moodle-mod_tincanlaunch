@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * launches the experience with the requested registration
+ * This launches the experience with the requested registration.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -44,7 +44,7 @@ if (empty($registrationid)) {
     die();
 }
 
-// Save a record of this registration to the LRS state API.
+// Get record(s) of registration(s) from the LRS state API.
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
     "http://tincanapi.co.uk/stateapikeys/registrations"
 );
