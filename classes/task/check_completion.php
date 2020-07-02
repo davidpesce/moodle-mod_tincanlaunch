@@ -27,7 +27,7 @@ require_once($CFG->dirroot.'/lib/completionlib.php');
 
 class check_completion extends \core\task\scheduled_task {
     public function get_name() {
-        return get_string('checkcompletion', 'mod_tincanlaunch');
+        return get_string('checkcompletion', 'tincanlaunch');
     }
 
     public function execute() {
