@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO: Add a description here.
+ * Handles display of the launch attempt table (registrations).
  *
  * @package   mod_tincanlaunch
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

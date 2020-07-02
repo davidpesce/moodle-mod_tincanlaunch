@@ -56,7 +56,7 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
 
 $statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
 
-// Some sort of failure occured. 
+// Some sort of failure occured.
 if ($statuscode != 200 && $statuscode != 404) {
     echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
@@ -105,7 +105,8 @@ $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
 
 // Display new registration attempt link.
-echo "<p id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">". get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></p>";
+echo "<p id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">". 
+    get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></p>";
 
 // Add status placeholder.
 echo "<p id=tincanlaunch_status_para></p>";
