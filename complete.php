@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * launches the experience with the requested registration
+ * Executes the completion_check and returns the user to the course.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
