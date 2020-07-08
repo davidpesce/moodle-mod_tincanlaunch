@@ -435,6 +435,12 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
         // If the statement exists, return true else return false.
         if (!empty($statementquery->content) && $statementquery->success) {
             $result = true;
+            // Check to see if the actual timestamp is within expiry.
+            foreach($statementquery->content as $statement){
+                if($expirydate > $statement->statement->timestamp){
+                    $result = false;
+                }
+            }
         } else {
             $result = false;
         }

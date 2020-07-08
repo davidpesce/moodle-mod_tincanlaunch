@@ -49,8 +49,8 @@ define(['jquery', 'core/str'], function($, Str) {
 
             // Retrieve id and n URL parameters
             var urlparams = new URLSearchParams(window.location.search);
-            self.id = urlparams.get('id');
-            self.n = urlparams.get('n');
+            id = urlparams.get('id');
+            n = urlparams.get('n');
 
             // Iterate over table registrations and add necessary values.
             $(SELECTORS.REATTEMPT).each(function() {
@@ -104,7 +104,6 @@ define(['jquery', 'core/str'], function($, Str) {
             }
         },
         launchExperience: function(registrationid) {
-            var self = this;
             var stringsToRetrieve = [
                 {
                     key: 'tincanlaunch_progress',
@@ -127,7 +126,7 @@ define(['jquery', 'core/str'], function($, Str) {
 
                     // Return to course.
                     var exitpara = $("<p></p>").attr("id", SELECTORS.EXIT);
-                    exitpara.html("<a href='complete.php?id=" + self.id + "&n=" + self.n + "'>" + s[1] + "</a>");
+                    exitpara.html("<a href='complete.php?id=" + id + "&n=" + n + "'>" + s[1] + "</a>");
                     $(SELECTORS.STATUSPARA).after(exitpara);
             });
         }
