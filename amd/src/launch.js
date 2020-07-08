@@ -130,8 +130,6 @@ define(['jquery', 'core/str'], function($, Str) {
                     exitpara.html("<a href='complete.php?id=" + self.id + "&n=" + self.n + "'>" + s[1] + "</a>");
                     $(SELECTORS.STATUSPARA).after(exitpara);
             });
-
-            $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=<?php echo $id ?>&n=<?php echo $n ?>');
         }
 
     };
