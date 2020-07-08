@@ -92,7 +92,6 @@ define(['jquery', 'core/str'], function($, Str) {
             $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
 
             // Periodically check completion
-            // TODO: Fix this.
             setInterval(function() {
                 $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id + '&n=' + n);
             }, 30000); // TODO: make this interval a configuration setting.
