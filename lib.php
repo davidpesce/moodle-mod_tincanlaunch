@@ -433,11 +433,12 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
         );
 
         // If the statement exists, return true else return false.
-        if (!empty($statementquery->content) && $statementquery->success) {
+        if (!empty($statementquery)) {
             $result = true;
             // Check to see if the actual timestamp is within expiry.
-            foreach ($statementquery->content as $statement) {
-                $statementtimestamp = $statement->statement->timestamp;
+            foreach ($statementquery as $statement) {
+
+                $statementtimestamp = $statement->getTimestamp();
                 if ($expirydate > $statementtimestamp) {
                     $result = false;
                 }
@@ -629,11 +630,7 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
         }
     }
 
-    return new \TinCan\LRSResponse(
-        $statementsresponse->success,
-        $allthestatements,
-        $statementsresponse->httpResponse
-    );
+    return $allthestatements;
 }
 
 /**
