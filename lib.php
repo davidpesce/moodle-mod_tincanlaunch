@@ -437,7 +437,6 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
             $result = true;
             // Check to see if the actual timestamp is within expiry.
             foreach ($statementquery as $statement) {
-
                 $statementtimestamp = $statement->getTimestamp();
                 if ($expirydate > $statementtimestamp) {
                     $result = false;
