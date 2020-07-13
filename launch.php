@@ -112,6 +112,7 @@ $profilefields = explode(',', get_config('tincanlaunch', 'profilefields'));
 if (count($profilefields) > 0) {
     $agentprofiles['LMSUserFields'] = [];
     foreach ($profilefields as $profilefield) {
+        $profilefield = strtolower($profilefield);
         // Lookup profile field value.
         if (array_key_exists($profilefield, $USER->profile)) {
             $agentprofiles['LMSUserFields'] = $agentprofiles['LMSUserFields'] +
