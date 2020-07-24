@@ -39,7 +39,7 @@ define(['jquery', 'core/str'], function($, Str) {
         NEW_ATTEMPT_LINK: '[id^=tincanlaunch_newattemptlink-]',
         REATTEMPT: '[id^=tincanrelaunch_attempt-]',
         REGISTRATION: '#launchform_registration',
-        STATUS: '#tincanlaunch_status',
+        STATUSDIV: '#tincanlaunch_status',
         STATUSPARA: '#tincanlaunch_status_para'
     };
 
@@ -49,8 +49,8 @@ define(['jquery', 'core/str'], function($, Str) {
 
             // Retrieve id and n URL parameters
             var urlparams = new URLSearchParams(window.location.search);
-            self.id = urlparams.get('id');
-            self.n = urlparams.get('n');
+            id = urlparams.get('id');
+            n = urlparams.get('n');
 
             // Iterate over table registrations and add necessary values.
             $(SELECTORS.REATTEMPT).each(function() {
@@ -84,8 +84,14 @@ define(['jquery', 'core/str'], function($, Str) {
                 self.keyTest(e.keyCode, newregistrationid);
             });
 
+            // Add status para.
+            var statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
+
+            // Add completion span.
+            var completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
+            $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
+
             // Periodically check completion
-            // TODO: Fix this.
             setInterval(function() {
                 $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id + '&n=' + n);
             }, 30000); // TODO: make this interval a configuration setting.
@@ -97,7 +103,6 @@ define(['jquery', 'core/str'], function($, Str) {
             }
         },
         launchExperience: function(registrationid) {
-            var self = this;
             var stringsToRetrieve = [
                 {
                     key: 'tincanlaunch_progress',
@@ -115,12 +120,14 @@ define(['jquery', 'core/str'], function($, Str) {
 
             Str.get_strings(stringsToRetrieve)
                 .done(function(s) {
+                    // Attempt in progress.
                     $(SELECTORS.STATUSPARA).text(s[0]);
 
-                    var exitpara = $("<p>").attr("id", SELECTORS.EXIT);
-                    exitpara.html("<a href='complete.php?id=" + self.id + "&n=" + self.n + "'>" + s[1] + "</a>");
+                    // Return to course.
+                    var exitpara = $("<p></p>").attr("id", SELECTORS.EXIT);
+                    exitpara.html("<a href='complete.php?id=" + id + "&n=" + n + "'>" + s[1] + "</a>");
                     $(SELECTORS.STATUSPARA).after(exitpara);
-                });
+            });
         }
 
     };

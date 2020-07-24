@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * launches the experience with the requested registration
+ * Checks a users completion for a specific activity.
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -27,15 +27,21 @@ require_login();
 
 $completion = new completion_info($course);
 
-$possibleresult = COMPLETION_COMPLETE;
-
+// Determine if the activity has a completion expiration set.
 if ($tincanlaunch->tincanexpiry > 0) {
     $possibleresult = COMPLETION_UNKNOWN;
+} else {
+    $possibleresult = COMPLETION_COMPLETE;
 }
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
+    // Query the Moodle DB to determine current completion state.
     $oldstate = $completion->get_data($cm, false, 0);
+
+    // Execute plugins 'tincanlaunch_get_completion_state' to determine if complete.
     $completion->update_state($cm, $possibleresult);
+
+    // Query the Moodle DB again to determine a change in completion state.
     $newstate = $completion->get_data($cm, false, 0);
 
     if ($oldstate->completionstate !== $newstate->completionstate) {

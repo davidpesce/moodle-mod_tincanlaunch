@@ -416,7 +416,10 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
     }
 
     if (!empty($tincanlaunch->tincanverbid)) {
-        // Try to get a statement matching actor, verb and object specified in module settings.
+        /*
+         * Retrieve statements from LRS matching actor, object, and
+         * completion verb (specificed in activity completion settings).
+         */
         $user = $DB->get_record('user', array ('id' => $userid));
         $statementquery = tincanlaunch_get_statements(
             $tincanlaunchsettings['tincanlaunchlrsendpoint'],
@@ -432,6 +435,13 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
         // If the statement exists, return true else return false.
         if (!empty($statementquery->content) && $statementquery->success) {
             $result = true;
+            // Check to see if the actual timestamp is within expiry.
+            foreach ($statementquery->content as $statement) {
+                $statementtimestamp = $statement->getTimestamp();
+                if ($expirydate > $statementtimestamp) {
+                    $result = false;
+                }
+            }
         } else {
             $result = false;
         }

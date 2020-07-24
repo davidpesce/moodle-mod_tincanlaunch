@@ -105,11 +105,11 @@ $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
 
 // Display new registration attempt link.
-echo "<p id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
-    get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></p>";
+echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
+    get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></div>";
 
 // Add status placeholder.
-echo "<p id=tincanlaunch_status_para></p>";
+echo "<div id='tincanlaunch_status'></div>";
 
 // New AMD module.
 $PAGE->requires->js_call_amd('mod_tincanlaunch/launch', 'init');
