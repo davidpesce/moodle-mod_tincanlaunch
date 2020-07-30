@@ -322,10 +322,11 @@ function tincanlaunch_get_file_info($browser, $areas, $context, $filearea, $file
  * @param stdClass $context context object
  * @param string $filearea file area
  * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, array $options = array()) {
+function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
