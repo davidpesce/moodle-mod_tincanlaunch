@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Displays an instance of tincanlaunch.
+ * Prints a particular instance of tincanlaunch
  *
  * @package mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -23,7 +23,6 @@
  */
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require('header.php');
-require_login();
 
 // Trigger module viewed event.
 $event = \mod_tincanlaunch\event\course_module_viewed::create(array(
@@ -36,10 +35,15 @@ $event->add_record_snapshot('course_modules', $cm);
 $event->trigger();
 
 // Print the page header.
+
 $PAGE->set_url('/mod/tincanlaunch/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($tincanlaunch->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+
+$PAGE->requires->jquery();
+
+// Output starts here.
 echo $OUTPUT->header();
 
 if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever.
@@ -50,77 +54,119 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
     );
 }
 
-$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
-    "http://tincanapi.co.uk/stateapikeys/registrations"
-);
+// TODO: Put all the php inserted data as parameters on the functions and put the functions in a separate JS file.
+?>
+    <script>
 
-$statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
-
-// Some sort of failure occured.
-if ($statuscode != 200 && $statuscode != 404) {
-    echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
-    debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
-        var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
-    die();
-}
-
-// Success from LRS request.
-if ($statuscode == 200) {
-    $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
-
-    foreach ($registrationdatafromlrs as $key => $item) {
-
-        if (!is_array($registrationdatafromlrs[$key])) {
-            $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
-            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
+        // Function to test for key press and call launch function if space or enter is hit.
+        function key_test(registration) {
+            if (event.keyCode === 13 || event.keyCode === 32) {
+                mod_tincanlaunch_launchexperience(registration);
+            }
         }
-        array_push(
-            $registrationdatafromlrs[$key],
-            "<a id='tincanrelaunch_attempt-".$key."'>"
-            . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
-        );
-        $registrationdatafromlrs[$key]['created'] = date_format(
-            date_create($registrationdatafromlrs[$key]['created']),
-            'D, d M Y H:i:s'
-        );
-        $registrationdatafromlrs[$key]['lastlaunched'] = date_format(
-            date_create($registrationdatafromlrs[$key]['lastlaunched']),
-            'D, d M Y H:i:s'
-        );
-    }
-    $table = new html_table();
-    $table->id = 'tincanlaunch_attempttable';
-    $table->caption = get_string('modulenameplural', 'tincanlaunch');
-    $table->head = array(
-        get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
-    );
-    $table->data = $registrationdatafromlrs;
-    echo html_writer::table($table);
-}
+
+        // Function to run when the experience is launched.
+        function mod_tincanlaunch_launchexperience(registration, id, n, course_url) {
+
+            var form = document.createElement("form");
+            document.body.appendChild(form);
+            form.method = "GET";
+            form.action = "launch.php";
+            form.target = "_blank";
+
+            var element1 = document.createElement("INPUT");
+            element1.name="launchform_registration"
+            element1.id="launchform_registration"
+            element1.value = registration;
+            element1.type = 'hidden'
+            form.appendChild(element1);
+
+            var element2 = document.createElement("INPUT");
+            element2.name="id"
+            element2.id="id"
+            element2.value = id;
+            element2.type = 'hidden'
+            form.appendChild(element2);
+
+            var element3 = document.createElement("INPUT");
+            element3.name="n"
+            element3.id="n"
+            element3.value = n;
+            element3.type = 'hidden'
+            form.appendChild(element3);
+
+
+            form.submit();
+            console.log("got here!");
+
+            location.href = course_url;
+            console.log("got here! 2");
+
+        }
+
+
+    </script>
+<?php
 
 // Generate a registration id for any new attempt.
 $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
+$getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
+    "http://tincanapi.co.uk/stateapikeys/registrations"
+);
+$lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
+console_log($getregistrationdatafromlrsstate);
 
-// Display new registration attempt link.
-echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
-    get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></div>";
 
-// Add status placeholder.
-echo "<div id='tincanlaunch_status'></div>";
+if ($lrsrespond != 200 && $lrsrespond != 404) {
+    // On clicking new attempt, save the registration details to the LRS State and launch a new attempt.
+    echo "<div class='alert alert-error'>" . get_string('tincanlaunch_notavailable', 'tincanlaunch') . "</div>";
 
-// New AMD module.
-$PAGE->requires->js_call_amd('mod_tincanlaunch/launch', 'init');
+    if ($CFG->debug == 32767) {
+        echo "<p>Error attempting to get registration data from State API.</p>";
+        echo "<pre>";
+        var_dump($getregistrationdatafromlrsstate);
+        echo "</pre>";
+    }
+    die();
+}
 
-// Add a form to be posted based on the attempt selected.
-?>
-    <form id="launchform" action="launch.php" method="get" target="_blank">
-        <input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
-        <input id="id" name="id" type="hidden" value="<?php echo $id ?>">
-        <input id="n" name="n" type="hidden" value="<?php echo $n ?>">
-    </form>
-<?php
+console_log($id);
+console_log($PAGE->course->id);
+$cid = $PAGE->course->id;
+
+
+
+if ($lrsrespond == 200) {
+    $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+    //console_log($id);
+
+    console_log($registrationdatafromlrs);
+    $keys = array_keys($registrationdatafromlrs);
+    $index = count($keys) - 1;
+    $key = $keys[$index];
+    //$cid = $PAGE->course->id
+    //console_log($key);
+    //console_log($registrationid);
+    $course_url = $CFG->wwwroot .'/course/view.php?id=' . $cid;
+    echo '<script type="text/javascript">mod_tincanlaunch_launchexperience(' . json_encode( $key ) . ', ' . json_encode( $id ) . ',  ' . json_encode( $n ) . ', ' . json_encode( $course_url ) . ' )</script>';
+
+
+} else {
+    echo "<p tabindex=\"0\"
+        onkeyup=\"key_test('".$registrationid."')\"
+        id='tincanlaunch_newattempt'><a onclick=\"mod_tincanlaunch_launchexperience('"
+        . $registrationid
+        . "')\" style=\"cursor: pointer;\">"
+        . get_string('tincanlaunch_attempt', 'tincanlaunch')
+        . "</a></p>";
+}
+
+function console_log( $data ){
+    echo '<script>';
+    echo 'console.log('. json_encode( $data ) .')';
+    echo '</script>';
+}
 
 echo $OUTPUT->footer();
+
