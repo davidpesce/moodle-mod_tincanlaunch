@@ -93,6 +93,10 @@ $string['behaviorheading'] = 'Comportamento do módulo';
 
 $string['tincanmultipleregs'] = 'Permitir multiplos registros';
 $string['tincanmultipleregs_help'] = 'Se for selecionada, permite o aluno iniciar mais de um registro para atividade. Os alunos podem sempre voltar para os registros que já tenham sido iniciados, mesmo se esta configuração estiver desmarcada.';
+
+$string['tincansimplelaunchnav'] = 'Navegação de lançamento simplificada';
+$string['tincansimplelaunchnav_help'] = 'Se selecionado, apresente uma interface de usuário de navegação de lançamento simplificada';
+
 $string['apCreationFailed'] = 'Falha ao criar Watershed Activity Provider.';
 
 // Zip erros.

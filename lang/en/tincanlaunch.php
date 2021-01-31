@@ -94,6 +94,9 @@ $string['behaviorheading'] = 'Module behavior';
 $string['tincanmultipleregs'] = 'Allow multiple registrations.';
 $string['tincanmultipleregs_help'] = 'If selected, allow the learner to start more than one registration for the activity. Learners can always return to any registrations they have started, even if this setting is unchecked.';
 
+$string['tincansimplelaunchnav'] = 'Simplified launch navigation.';
+$string['tincansimplelaunchnav_help'] = 'If selected, present a simplified launch navigation user interface.';
+
 $string['apCreationFailed'] = 'Failed to create Watershed Activity Provider.';
 
 // Zip errors.

@@ -177,6 +177,11 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addHelpButton('tincanmultipleregs', 'tincanmultipleregs', 'tincanlaunch');
         $mform->setDefault('tincanmultipleregs', 1);
 
+        // Activate the simplified launch navigation.
+        $mform->addElement('advcheckbox', 'tincansimplelaunchnav', get_string('tincansimplelaunchnav', 'tincanlaunch'));
+        $mform->addHelpButton('tincansimplelaunchnav', 'tincansimplelaunchnav', 'tincanlaunch');
+        $mform->setDefault('tincansimplelaunchnav', 1);
+
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
         // Add standard buttons, common to all modules.

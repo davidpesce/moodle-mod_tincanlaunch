@@ -56,7 +56,7 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
 
 $statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
 
-// Some sort of failure occured.
+// Some sort of failure occured. 404 usually means the State information was not found (ie, there is no registration data)
 if ($statuscode != 200 && $statuscode != 404) {
     echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
@@ -64,8 +64,11 @@ if ($statuscode != 200 && $statuscode != 404) {
     die();
 }
 
-// Success from LRS request.
-if ($statuscode == 200) {
+$lrshasregistrationdata = ($statuscode == 200);
+$tincansimplelaunchnav = "1"; // FIXME use $tincanlaunch->tincansimplelaunchnav when defined (after plugin install)
+
+// Success from LRS request for registration data.
+if ($lrshasregistrationdata == true) {
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
 
     foreach ($registrationdatafromlrs as $key => $item) {
@@ -74,39 +77,70 @@ if ($statuscode == 200) {
             $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
             throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
-        array_push(
-            $registrationdatafromlrs[$key],
-            "<a id='tincanrelaunch_attempt-".$key."'>"
-            . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
-        );
-        $registrationdatafromlrs[$key]['created'] = date_format(
-            date_create($registrationdatafromlrs[$key]['created']),
-            'D, d M Y H:i:s'
-        );
-        $registrationdatafromlrs[$key]['lastlaunched'] = date_format(
-            date_create($registrationdatafromlrs[$key]['lastlaunched']),
-            'D, d M Y H:i:s'
-        );
+
+        // generate simple or classic launch navigation
+        if ($tincansimplelaunchnav == 1) {
+            echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $key .">".
+                "<b>". get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</b>" ."</a></div>";
+
+        } else {
+            array_push(
+                $registrationdatafromlrs[$key],
+                "<a id='tincanrelaunch_attempt-".$key."'>"
+                . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
+            );
+
+            $registrationdatafromlrs[$key]['created'] = date_format(
+                date_create($registrationdatafromlrs[$key]['created']),
+                'D, d M Y H:i:s'
+            );
+            $registrationdatafromlrs[$key]['lastlaunched'] = date_format(
+                date_create($registrationdatafromlrs[$key]['lastlaunched']),
+                'D, d M Y H:i:s'
+            );
+        }
+
+        // For single registration, stop after the first iteration
+        // Assumption that registations are ordered with the most recent first (use case: configuration changed from multiple to single registration)
+        if ($tincanlaunch->tincanmultipleregs == 0) {
+            break;
+        }
     }
-    $table = new html_table();
-    $table->id = 'tincanlaunch_attempttable';
-    $table->caption = get_string('modulenameplural', 'tincanlaunch');
-    $table->head = array(
-        get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
-    );
-    $table->data = $registrationdatafromlrs;
-    echo html_writer::table($table);
+
+    // classic launch navigation
+    if ($tincansimplelaunchnav == 0) {
+        $table = new html_table();
+        $table->id = 'tincanlaunch_attempttable';
+
+        $table->caption = get_string('modulenameplural', 'tincanlaunch');
+        $table->head = array(
+            get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
+            get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
+            get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
+        );
+
+        $table->data = $registrationdatafromlrs;
+        echo html_writer::table($table);
+    }
 }
 
 // Generate a registration id for any new attempt.
 $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
 
-// Display new registration attempt link.
-echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
-    get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></div>";
+if ($tincansimplelaunchnav == 1) {
+    // Initial registration for simple launch navigation
+    if ($lrshasregistrationdata == false) {
+        echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
+            "<b>" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') ."</b>" . "</a></div>";
+    }
+} else {
+    // Multiple registrations for standard launch navigation - Display new registration attempt link.
+    if ($tincanlaunch->tincanmultipleregs == 1) {
+        echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
+            get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></div>";
+    }
+}
 
 // Add status placeholder.
 echo "<div id='tincanlaunch_status'></div>";
