@@ -65,7 +65,6 @@ if ($statuscode != 200 && $statuscode != 404) {
 }
 
 $lrshasregistrationdata = ($statuscode == 200);
-$tincansimplelaunchnav = "1"; // FIXME use $tincanlaunch->tincansimplelaunchnav when defined (after plugin install)
 
 // Success from LRS request for registration data.
 if ($lrshasregistrationdata == true) {
@@ -79,9 +78,9 @@ if ($lrshasregistrationdata == true) {
         }
 
         // generate simple or classic launch navigation
-        if ($tincansimplelaunchnav == 1) {
-            echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $key .">".
-                "<b>". get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</b>" ."</a></div>";
+        if ($tincanlaunch->tincansimplelaunchnav == 1) {
+            echo "<div id=tincanlaunch_newattempt> <a id=tincanlaunch_newattemptlink-". $key . ">".
+            "<b>" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</b></a></div>";
 
         } else {
             array_push(
@@ -108,7 +107,7 @@ if ($lrshasregistrationdata == true) {
     }
 
     // classic launch navigation
-    if ($tincansimplelaunchnav == 0) {
+    if ($tincanlaunch->tincansimplelaunchnav == 0) {
         $table = new html_table();
         $table->id = 'tincanlaunch_attempttable';
 
@@ -128,11 +127,11 @@ if ($lrshasregistrationdata == true) {
 $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
 
-if ($tincansimplelaunchnav == 1) {
+if ($tincanlaunch->tincansimplelaunchnav == 1) {
     // Initial registration for simple launch navigation
     if ($lrshasregistrationdata == false) {
         echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
-            "<b>" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') ."</b>" . "</a></div>";
+            "<b>" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</b></a></div>";
     }
 } else {
     // Multiple registrations for standard launch navigation - Display new registration attempt link.
