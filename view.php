@@ -56,7 +56,7 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
 
 $statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
 
-// Some sort of failure occured. 404 usually means the State information was not found (ie, there is no registration data)
+// Some sort of failure occured; 404 means no registration data.
 if ($statuscode != 200 && $statuscode != 404) {
     echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
@@ -77,7 +77,7 @@ if ($lrshasregistrationdata == true) {
             throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
 
-        // generate simple or classic launch navigation
+        // Generate simple or classic launch navigation.
         if ($tincanlaunch->tincansimplelaunchnav == 1) {
             echo "<div id=tincanlaunch_newattempt> <a id=tincanlaunch_newattemptlink-". $key . ">".
             "<b>" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</b></a></div>";
@@ -99,14 +99,13 @@ if ($lrshasregistrationdata == true) {
             );
         }
 
-        // For single registration, stop after the first iteration
-        // Assumption that registations are ordered with the most recent first (use case: configuration changed from multiple to single registration)
+        // For single registration, select the first one (the most recent).
         if ($tincanlaunch->tincanmultipleregs == 0) {
             break;
         }
     }
 
-    // classic launch navigation
+    // Classic launch navigation.
     if ($tincanlaunch->tincansimplelaunchnav == 0) {
         $table = new html_table();
         $table->id = 'tincanlaunch_attempttable';
@@ -128,7 +127,7 @@ $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
 
 if ($tincanlaunch->tincansimplelaunchnav == 1) {
-    // Initial registration for simple launch navigation
+    // Initial registration for simple launch navigation.
     if ($lrshasregistrationdata == false) {
         echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
             "<b>" . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</b></a></div>";
