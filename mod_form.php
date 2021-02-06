@@ -180,7 +180,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         // Activate the simplified launch navigation.
         $mform->addElement('advcheckbox', 'tincansimplelaunchnav', get_string('tincansimplelaunchnav', 'tincanlaunch'));
         $mform->addHelpButton('tincansimplelaunchnav', 'tincansimplelaunchnav', 'tincanlaunch');
-        $mform->setDefault('tincansimplelaunchnav', 1);
+        $mform->setDefault('tincansimplelaunchnav', 0);
 
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
