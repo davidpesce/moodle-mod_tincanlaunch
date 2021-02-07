@@ -441,9 +441,9 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
                 if ($expirydate <= $statementtimestamp) {
                     // Check if the statement activity id matches the launched activity URI.
                     $target = $statement->getTarget();
-                    $targetId = $target->getId();
-                    $targetObjectType = $target->getObjectType();
-                    if ($targetObjectType == "Activity" && $tincanlaunch->tincanactivityid == $targetId) {
+                    $objectid = $target->getId();
+                    $objecttype = $target->getObjectType();
+                    if ($objecttype == "Activity" && $tincanlaunch->tincanactivityid == $objectid) {
                         $result = true; // Completion conditions are met.
                         break;
                     }
