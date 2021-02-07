@@ -415,6 +415,7 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
         $expirydate = $expirydatetime->format('c');
     }
 
+    $result = false;
     if (!empty($tincanlaunch->tincanverbid)) {
         /*
          * Retrieve statements from LRS matching actor, object, and
@@ -434,16 +435,20 @@ function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
 
         // If the statement exists, return true else return false.
         if (!empty($statementquery->content) && $statementquery->success) {
-            $result = true;
-            // Check to see if the actual timestamp is within expiry.
             foreach ($statementquery->content as $statement) {
+                // Check to see if the actual timestamp is within expiry.
                 $statementtimestamp = $statement->getTimestamp();
-                if ($expirydate > $statementtimestamp) {
-                    $result = false;
+                if ($expirydate <= $statementtimestamp) {
+                    // Check if the statement activity id matches the launched activity URI.
+                    $target = $statement->getTarget();
+                    $targetId = $target->getId();
+                    $targetObjectType = $target->getObjectType();
+                    if ($targetObjectType == "Activity" && $tincanlaunch->tincanactivityid == $targetId) {
+                        $result = true; // Completion conditions are met.
+                        break;
+                    }
                 }
             }
-        } else {
-            $result = false;
         }
     }
 
