@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 class admin_setting_configtext_mod_tincanlaunch extends admin_setting_configtext {
     /**
      * Saves the setting(s) provided in $data
@@ -32,7 +30,7 @@ class admin_setting_configtext_mod_tincanlaunch extends admin_setting_configtext
      * @return mixed empty string on useless data or success, error string if failed
      */
     public function write_setting($data) {
-        if ($this->paramtype === PARAM_INT and $data === '') {
+        if ($this->paramtype === PARAM_INT && $data === '') {
             // Do not complain if '' used instead of 0.
             $data = 0;
         }

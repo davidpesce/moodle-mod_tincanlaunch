@@ -37,4 +37,3 @@ $string['tincanlaunch_completed'] = 'Deneyim tamamlandı!';
 $string['tincanlaunch_progress'] = 'Devam Denemesi';
 $string['tincanlaunch_attempt'] = 'Yeni girişim';
 $string['tincanlaunch_notavailable'] = 'Öğrenme Record Store mevcut değildir. Bir sistem yöneticisine başvurun.';
-

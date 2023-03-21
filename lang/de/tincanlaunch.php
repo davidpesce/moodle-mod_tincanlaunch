@@ -37,4 +37,3 @@ $string['tincanlaunch_completed'] = 'Erleben Sie komplett!';
 $string['tincanlaunch_progress'] = 'Versuch im Gange';
 $string['tincanlaunch_attempt'] = 'Neuer Versuch';
 $string['tincanlaunch_notavailable'] = 'Das Learning Record Store ist nicht verf&uuml;gbar. Bitte wenden Sie sich an den Systemadministrator.';
-

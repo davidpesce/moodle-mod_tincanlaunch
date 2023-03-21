@@ -74,7 +74,7 @@ foreach ($tincanlaunchs as $tincanlaunch) {
             format_string($tincanlaunch->name, true));
     }
 
-    if ($course->format == 'weeks' or $course->format == 'topics') {
+    if ($course->format == 'weeks' || $course->format == 'topics') {
         $table->data[] = array($tincanlaunch->section, $link);
     } else {
         $table->data[] = array($link);

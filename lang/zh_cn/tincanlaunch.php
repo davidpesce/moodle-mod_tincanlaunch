@@ -37,4 +37,3 @@ $string['tincanlaunch_completed'] = '體驗完整的！';
 $string['tincanlaunch_progress'] = '嘗試進行中';
 $string['tincanlaunch_attempt'] = '新的嘗試';
 $string['tincanlaunch_notavailable'] = '學習記錄存儲不可用。請與系統管理員聯繫。';
-

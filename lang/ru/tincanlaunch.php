@@ -37,4 +37,3 @@ $string['tincanlaunch_completed'] = 'Опыт завершена!';
 $string['tincanlaunch_progress'] = 'Попытка продолжается.';
 $string['tincanlaunch_attempt'] = 'Новый попытка';
 $string['tincanlaunch_notavailable'] = 'Обучение Запись магазин не доступен. Пожалуйста, свяжитесь с системным администратором.';
-

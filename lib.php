@@ -299,7 +299,7 @@ function tincanlaunch_get_file_info($browser, $areas, $context, $filearea, $file
 
         $urlbase = $CFG->wwwroot.'/pluginfile.php';
         if (!$storedfile = $fs->get_file($context->id, 'mod_tincanlaunch', 'package', 0, $filepath, $filename)) {
-            if ($filepath === '/' and $filename === '.') {
+            if ($filepath === '/' && $filename === '.') {
                 $storedfile = new virtual_root_file($context->id, 'mod_tincanlaunch', 'package', 0);
             } else {
                 // Not found.
@@ -348,7 +348,7 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
 
     if (
         !$file = $fs->get_file($context->id, 'mod_tincanlaunch', $filearea, 0, '/'.$filepath.'/', $filename)
-        or $file->is_directory()
+        || $file->is_directory()
     ) {
         if ($filearea === 'content') { // Return file not found straight away to improve performance.
             send_header_404();
