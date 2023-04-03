@@ -396,61 +396,6 @@ function tincanlaunch_export_contents($cm, $baseurl) {
     return $contents;
 }
 
-// Called by Moodle core.
-function tincanlaunch_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
-    $result = $type; // Default return value.
-
-     // Get tincanlaunch.
-    if (!$tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $cm->instance))) {
-        throw new Exception("Can't find activity {$cm->instance}"); // TODO: localise this.
-    }
-
-    $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
-
-    $expirydate = null;
-    $expirydays = $tincanlaunch->tincanexpiry;
-    if ($expirydays > 0) {
-        $expirydatetime = new DateTime();
-        $expirydatetime->sub(new DateInterval('P'.$expirydays.'D'));
-        $expirydate = $expirydatetime->format('c');
-    }
-
-    if (!empty($tincanlaunch->tincanverbid)) {
-        /*
-         * Retrieve statements from LRS matching actor, object, and
-         * completion verb (specificed in activity completion settings).
-         */
-        $user = $DB->get_record('user', array ('id' => $userid));
-        $statementquery = tincanlaunch_get_statements(
-            $tincanlaunchsettings['tincanlaunchlrsendpoint'],
-            $tincanlaunchsettings['tincanlaunchlrslogin'],
-            $tincanlaunchsettings['tincanlaunchlrspass'],
-            $tincanlaunchsettings['tincanlaunchlrsversion'],
-            $tincanlaunch->tincanactivityid,
-            tincanlaunch_getactor($cm->instance, $user),
-            $tincanlaunch->tincanverbid,
-            $expirydate
-        );
-
-        // If the statement exists, return true else return false.
-        if (!empty($statementquery->content) && $statementquery->success) {
-            $result = true;
-            // Check to see if the actual timestamp is within expiry.
-            foreach ($statementquery->content as $statement) {
-                $statementtimestamp = $statement->getTimestamp();
-                if ($expirydate > $statementtimestamp) {
-                    $result = false;
-                }
-            }
-        } else {
-            $result = false;
-        }
-    }
-
-    return $result;
-}
-
 // TinCanLaunch specific functions.
 
 /*

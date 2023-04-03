@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_tincanlaunch;
+
 /**
  * Displays an instance of tincanlaunch.
  *
@@ -72,7 +74,7 @@ if ($statuscode == 200) {
 
         if (!is_array($registrationdatafromlrs[$key])) {
             $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
-            throw new moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
+            throw new \moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
         array_push(
             $registrationdatafromlrs[$key],
@@ -88,7 +90,7 @@ if ($statuscode == 200) {
             'D, d M Y H:i:s'
         );
     }
-    $table = new html_table();
+    $table = new \html_table();
     $table->id = 'tincanlaunch_attempttable';
     $table->caption = get_string('modulenameplural', 'tincanlaunch');
     $table->head = array(
@@ -97,7 +99,7 @@ if ($statuscode == 200) {
         get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
     );
     $table->data = $registrationdatafromlrs;
-    echo html_writer::table($table);
+    echo \html_writer::table($table);
 }
 
 // Generate a registration id for any new attempt.

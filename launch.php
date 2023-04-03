@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_tincanlaunch;
+
 /**
  * This launches the experience with the requested registration.
  *
@@ -22,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require(__DIR__ . '/../../config.php');
 require_once('header.php');
 require_login();
 
@@ -147,7 +149,8 @@ if ($lrsrespond != 204) {
     die();
 }
 
-$completion = new completion_info($course);
+// Set completion for module_viewed
+$completion = new \completion_info($course);
 $completion->set_module_viewed($cm);
 
 // Launch the experience.
