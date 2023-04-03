@@ -37,4 +37,3 @@ $string['tincanlaunch_completed'] = '完全な体験！';
 $string['tincanlaunch_progress'] = '進行中の試み';
 $string['tincanlaunch_attempt'] = '新しい試み';
 $string['tincanlaunch_notavailable'] = '学習の記録Storeは利用できません。システム管理者に連絡してください。';
-

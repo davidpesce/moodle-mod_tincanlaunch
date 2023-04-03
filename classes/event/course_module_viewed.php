@@ -22,7 +22,6 @@
  */
 
 namespace mod_tincanlaunch\event;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * The mod_tincanlaunch course module viewed event class.
