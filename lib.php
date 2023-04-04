@@ -383,11 +383,9 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     }
 
     $fs = get_file_storage();
+    $storedfile = $fs->get_file($context->id, 'mod_tincanlaunch', $filearea, 0, '/'.$filepath.'/', $filename);
 
-    if (
-        !$file = $fs->get_file($context->id, 'mod_tincanlaunch', $filearea, 0, '/'.$filepath.'/', $filename)
-        || $file->is_directory()
-    ) {
+    if (!$storedfile || $storedfile->is_directory()) {
         if ($filearea === 'content') { // Return file not found straight away to improve performance.
             send_header_404();
             die;
@@ -396,7 +394,7 @@ function tincanlaunch_pluginfile($course, $cm, $context, $filearea, $args, $forc
     }
 
     // Finally send the file.
-    send_stored_file($file, $lifetime, 0, false, $options);
+    send_stored_file($storedfile, $lifetime, 0, false, $options);
 }
 
 /**
