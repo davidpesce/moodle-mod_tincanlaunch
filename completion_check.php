@@ -21,7 +21,8 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+
+require_once('../../config.php');
 require_once('header.php');
 require_login();
 
@@ -35,16 +36,17 @@ if ($tincanlaunch->tincanexpiry > 0) {
 }
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    // Query the Moodle DB to determine current completion state.
+    // Query to get the cached completion state (if available)
     $oldstate = $completion->get_data($cm, false, 0);
 
-    // Execute plugins 'tincanlaunch_get_completion_state' to determine if complete.
+    // Check to see if the activity has been completed.
     $completion->update_state($cm, $possibleresult);
 
-    // Query the Moodle DB again to determine a change in completion state.
+    // Query the cache again to determine if a change in completion state has occurred.
     $newstate = $completion->get_data($cm, false, 0);
 
     if ($oldstate->completionstate !== $newstate->completionstate) {
+
         // Trigger Activity completed event.
         $event = \mod_tincanlaunch\event\activity_completed::create(array(
             'objectid' => $tincanlaunch->id,

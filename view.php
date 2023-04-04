@@ -23,6 +23,7 @@ namespace mod_tincanlaunch;
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once("../../config.php");
 require('header.php');
 require_login();

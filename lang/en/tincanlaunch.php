@@ -63,7 +63,7 @@ $string['tincanlaunchlrsauthentication_option_2'] = 'Learning Locker 1';
 $string['tincanlaunchuseactoremail'] = 'Identify by email';
 $string['tincanlaunchuseactoremail_help'] = 'If selected, learners will be identified by their email address if they have one recorded in Moodle.';
 
-$string['tincanlaunchcustomacchp'] = 'Custom account homePage';
+$string['tincanlaunchcustomacchp'] = 'Custom account homepage';
 $string['tincanlaunchcustomacchp_help'] = 'If entered, Moodle will use this homePage in conjunction with the ID number user profile field to identify the learner. If the ID number is not entered for a learner, they will instead be identified by email or Moodle ID number. Note: If a learner\'s id changes, they will lose access to registrations associated with former ids and completion data may be reset. Reports in your LRS may also be affected.';
 $string['tincanlaunchcustomacchp_default'] = '';
 
@@ -72,16 +72,16 @@ $string['tincanlaunchname'] = 'Launch link name';
 $string['tincanlaunchname_help'] = 'The name of the launch link as it will appear to the user.';
 
 $string['tincanlaunchurl'] = 'Launch URL';
-$string['tincanlaunchurl_help'] = 'The base URL of the xAPI activity you want to launch (e.g. http://example.com/content/index.html).';
+$string['tincanlaunchurl_help'] = 'The full URL of the xAPI activity you want to launch.';
 
 $string['tincanactivityid'] = 'Activity ID';
-$string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched.';
+$string['tincanactivityid_help'] = 'The identifying IRI for the primary activity being launched. It <b>MUST</b> match the identifying IRI in the tincan.xml.';
 
 $string['tincanpackage'] = 'Zip package';
 $string['tincanpackage_help'] = 'If you have a packaged xAPI course, you can upload it here. If you upload a package, the Launch URL and Activity ID fields above will be automatically populated when you save using data from the tincan.xml file contained in the zip. You can edit these settings at any time, but should not change the Activity ID (either directly or by file upload) unless you understand the consequences.';
 
 $string['tincanpackagetitle'] = 'Launch settings';
-$string['tincanpackagetext'] = 'You can populate the Launch URL and Activity ID settings directly, or by uploading a zip package containing a tincan.xml file. The launch url defined in the tincan.xml may point to other files in the zip package, or to an external URL. The Activity ID must always be a full URL (or other IRI).';
+$string['tincanpackagetext'] = 'You can provide the Launch URL and Activity ID settings directly, or upload a zip package containing a tincan.xml file. The Activity ID must always be a full URL (or other IRI) AND it MUST match the Activity ID included in the tincan.xml or course.';
 
 $string['lrsheading'] = 'LRS settings';
 $string['lrsdefaults'] = 'LRS Default Settings';
@@ -118,7 +118,7 @@ $string['completionexpirygroup_help'] = 'This setting requires the "Completion b
 
 // Completion Description Details.
 $string['completiondetail:completionbyverb'] = 'Receive a "{$a}" statement';
-$string['completiondetail:completionexpiry'] = 'Expires after {$a} days';
+$string['completiondetail:completionexpiry'] = 'Completed within the last {$a} days';
 
 // View settings.
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';

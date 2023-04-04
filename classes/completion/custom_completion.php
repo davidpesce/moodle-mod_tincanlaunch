@@ -55,15 +55,15 @@ class custom_completion extends activity_custom_completion {
         $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
 
         // Retrieve expirydays (if set) and set expirydate.
-        $expirydate = null;
+        $expiryrangestartdate = null;
         $expirydays = $tincanlaunch->tincanexpiry;
         if ($expirydays > 0) {
             $expirydatetime = new \DateTime();
             $expirydatetime->sub(new \DateInterval('P'.$expirydays.'D'));
-            $expirydate = $expirydatetime->format('c');
+            $expiryrangestartdate = $expirydatetime->format('c');
         }
 
-        if ($rule == 'tincancompletionverb' && !empty($tincanlaunch->tincanverbid)) {
+        if (!empty($tincanlaunch->tincanverbid)) {
             // Retrieve statements from LRS matching actor, object, and completion verb
             $user = $DB->get_record('user', array ('id' => $userid));
             $statementquery = tincanlaunch_get_statements(
@@ -74,33 +74,33 @@ class custom_completion extends activity_custom_completion {
                 $tincanlaunch->tincanactivityid,
                 tincanlaunch_getactor($cm->instance, $user),
                 $tincanlaunch->tincanverbid,
-                $expirydate
+                $expiryrangestartdate
             );
+        }
     
-            // Determine if the statement exists.
-            if (!empty($statementquery->content) && $statementquery->success) {
-                foreach ($statementquery->content as $statement) {
-    
-                    // Check if the statement activity id matches the launched activity URI.
-                    $target = $statement->getTarget();
-                    $objectid = $target->getId();
-                    $objecttype = $target->getObjectType();
-                    if ($objecttype == "Activity" && $tincanlaunch->tincanactivityid == $objectid) {
-    
-                        // If expiry is set, see if the timestamp is within expiry.
-                        $statementtimestamp = $statement->getTimestamp();
-                        if ($expirydate !== null && $expirydate > $statementtimestamp){
-                            $status = true;
-                            break;
-                        } else if ($expirydate === null){
-                            $status = true;
-                            break;
-                        }
+        // Determine if the statement exists.
+        if (!empty($statementquery->content) && $statementquery->success) {
+            foreach ($statementquery->content as $statement) {
+
+                // Check if the statement activity id matches the launched activity URI.
+                $target = $statement->getTarget();
+                $objectid = $target->getId();
+                $objecttype = $target->getObjectType();
+                if ($objecttype == "Activity" && $tincanlaunch->tincanactivityid == $objectid) {
+
+                    // If expiry is set, see if the timestamp is within expiry.
+                    $statementtimestamp = $statement->getTimestamp();
+                    if ($expiryrangestartdate !== null && $expiryrangestartdate <= $statementtimestamp){
+                        $status = true;
+                        break;
+                    } else if ($expiryrangestartdate === null){
+                        $status = true;
+                        break;
                     }
                 }
             }
         }
-
+        
         return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
     }
 
