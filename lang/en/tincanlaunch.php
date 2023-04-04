@@ -108,13 +108,13 @@ $string['pluginname'] = 'xAPI Launch Link';
 
 // Verb completion settings.
 $string['completionverb'] = 'Verb';
-$string['completionverbgroup'] = 'Track completion by verb';
-$string['completionverbgroup_help'] = 'Moodle will look for statements where the actor is the current user, the object is the specified activity id and the verb is the one set here. If it finds a matching statement, the activity will be marked complete.';
+$string['completionverbgroup'] = 'Completion by verb';
+$string['completionverbgroup_help'] = 'Moodle will look for statements where the actor is the current user, the object is the specified activity id, and the verb is the one set here. If it finds a matching statement, the activity will be marked complete.';
 
 // Expiry completion settings.
 $string['completionexpiry'] = 'Expiry';
-$string['completionexpirygroup'] = 'Completion Expires After (days)';
-$string['completionexpirygroup_help'] = 'If checked, when looking for completion Moodle will only look at data stored in the LRS in the previous X days. It will unset completion for learners who had previously completed but whose completion has now expired.';
+$string['completionexpirygroup'] = 'Completion expires after (days)';
+$string['completionexpirygroup_help'] = 'This setting requires the "Completion by verb" setting enabled. Moodle will determine completion by filtering LRS statements stored within the last X days. It will unset completion for learners who had previously completed but whose completion has now expired.';
 
 // Completion Description Details.
 $string['completiondetail:completionbyverb'] = 'Receive a "{$a}" statement';

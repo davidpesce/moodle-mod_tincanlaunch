@@ -183,64 +183,53 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
+    /**
+     * Display module-specific activity completion rules.
+     * Part of the API defined by moodleform_mod
+     * @return array Array of string IDs of added items, empty array if none
+     */
     public function add_completion_rules() {
         $mform =& $this->_form;
 
-        // Add Verb Id setting.
+        $items = array();
+
         $verbgroup = array();
-        $verbgroup[] =& $mform->createElement(
-            'checkbox',
-            'completionverbenabled',
-            ' ',
-            get_string('completionverb', 'tincanlaunch')
-        );
-        $verbgroup[] =& $mform->createElement('text', 'tincanverbid', ' ', array('size' => '64'));
+
+        // Add completion form based on the xAPI verb.
+        $verbgroup[] = $mform->createElement('advcheckbox', 'completionverbenabled', null,
+            get_string('completionverb', 'tincanlaunch'));
+        $verbgroup[] = $mform->createElement('text', 'tincanverbid', null, array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
-
-        $mform->addGroup($verbgroup, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'), array(' '), false);
-        $mform->addGroupRule(
-            'completionverbgroup', array(
-                'tincanverbid' => array(
-                    array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client')
-                )
-            )
-        );
-
-        $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
-        $mform->disabledIf('tincanverbid', 'completionverbenabled', 'notchecked');
+        $mform->disabledIf('tincanverbid', 'completionverbenabled');
         $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed');
 
-        // Add Completion Expiry Date setting.
-        $completiongroup = array();
-        $completiongroup[] =& $mform->createElement(
-            'checkbox',
-            'completionexpiryenabled',
-            ' ',
-            get_string('completionexpiry', 'tincanlaunch')
-        );
-        $completiongroup[] =& $mform->createElement('text', 'tincanexpiry', ' ', array('size' => '64'));
+        $mform->addGroup($verbgroup, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'),
+            array(' '), false);
+        $mform->addGroupRule('completionverbgroup', array('tincanverbid' => array(
+            array(get_string('maximumchars', '', 255), 'maxlength', 255, 'client'))));
+        $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
+
+        $items[] = 'completionverbgroup';
+
+        // Add completion form item based on the above verb expiring after a period of time (days).
+        $expirygroup = array();
+        $expirygroup[] = $mform->createElement('advcheckbox', 'completionexpiryenabled', null,
+            get_string('completionexpiry', 'tincanlaunch'));
+        
+        $expirygroup[] = $mform->createElement('text', 'tincanexpiry', null, array('size' => '63'));
         $mform->setType('tincanexpiry', PARAM_TEXT);
-
-        $mform->addGroup(
-            $completiongroup,
-            'completionexpirygroup',
-            get_string('completionexpirygroup', 'tincanlaunch'),
-            array(' '),
-            false
-        );
-        $mform->addGroupRule(
-            'completionexpirygroup', array(
-                'tincanexpiry' => array(
-                    array(get_string('maximumchars', '', 10), 'maxlength', 10, 'client')
-                )
-            )
-        );
-
-        $mform->addHelpButton('completionexpirygroup', 'completionexpirygroup', 'tincanlaunch');
-        $mform->disabledIf('tincanexpiry', 'completionexpiryenabled', 'notchecked');
+        $mform->disabledIf('tincanexpiry', 'completionexpiryenabled');
         $mform->setDefault('tincanexpiry', '365');
+        $mform->addGroup($expirygroup, 'completionexpirygroup', get_string('completionexpirygroup', 'tincanlaunch'),
+            array(' '), false);
+        $mform->addGroupRule('completionexpirygroup', array('tincanexpiry' => array(
+            array(get_string('maximumchars', '', 10), 'maxlength', 10, 'client'))));
+        $mform->addHelpButton('completionexpirygroup', 'completionexpirygroup', 'tincanlaunch');
+        $mform->disabledIf('completionexpirygroup', 'completionverbenabled');
 
-        return array('completionverbgroup', 'completionexpirygroup');
+        $items[] = 'completionexpirygroup';
+
+        return $items;
     }
 
     public function completion_rule_enabled($data) {
