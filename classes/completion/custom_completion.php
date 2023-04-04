@@ -53,7 +53,8 @@ class custom_completion extends activity_custom_completion {
         $tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $cm->instance), '*', MUST_EXIST);
     
         $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
-    
+
+        // Retrieve expirydays (if set) and set expirydate.
         $expirydate = null;
         $expirydays = $tincanlaunch->tincanexpiry;
         if ($expirydays > 0) {
@@ -61,8 +62,8 @@ class custom_completion extends activity_custom_completion {
             $expirydatetime->sub(new \DateInterval('P'.$expirydays.'D'));
             $expirydate = $expirydatetime->format('c');
         }
-    
-        if (!empty($tincanlaunch->tincanverbid)) {
+
+        if ($rule == 'tincancompletionverb' && !empty($tincanlaunch->tincanverbid)) {
             // Retrieve statements from LRS matching actor, object, and completion verb
             $user = $DB->get_record('user', array ('id' => $userid));
             $statementquery = tincanlaunch_get_statements(
@@ -91,7 +92,7 @@ class custom_completion extends activity_custom_completion {
                         if ($expirydate !== null && $expirydate > $statementtimestamp){
                             $status = true;
                             break;
-                        } else {
+                        } else if ($expirydate === null){
                             $status = true;
                             break;
                         }
@@ -110,8 +111,8 @@ class custom_completion extends activity_custom_completion {
      */
     public static function get_defined_custom_rules(): array {
         return [
-            'completionverb',
-            'completionexpiry'
+            'tincancompletionverb',
+            'tincancompletioexpiry'
         ];
     }
 
@@ -121,9 +122,19 @@ class custom_completion extends activity_custom_completion {
      * @return array
      */
     public function get_custom_rule_descriptions(): array {
+        global $DB;
+
+        $cm = $this->cm;
+
+        $tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $cm->instance), '*', MUST_EXIST);
+        $tincanverbid = $tincanlaunch->tincanverbid;
+        $tincanverb = ucfirst(substr($tincanverbid, strrpos($tincanverbid, '/') + 1));
+
+        $tincanexpirydays = $tincanlaunch->tincanexpiry;
+
         return [
-            'completionverb' => get_string('completionverbgroup', 'tincanlaunch'),
-            'completionexpiry' => get_string('completionexpirygroup', 'tincanlaunch')
+            'tincancompletionverb' => get_string('completiondetail:completionbyverb', 'tincanlaunch', $tincanverb),
+            'tincancompletioexpiry' => get_string('completiondetail:completionexpiry', 'tincanlaunch', $tincanexpirydays)
         ];
     }
 
@@ -144,8 +155,8 @@ class custom_completion extends activity_custom_completion {
     public function get_sort_order(): array {
         return [
             'completionview',
-            'completionverb',
-            'completionexpiry'
+            'tincancompletionverb',
+            'tincancompletioexpiry'
         ];
     }
 }

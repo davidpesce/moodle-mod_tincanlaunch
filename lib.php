@@ -155,6 +155,44 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch) {
     return true;
 }
 
+/**
+ * Add a get_coursemodule_info function in case any tincanlaunch type wants to add 'extra' information
+ * for the course (see resource).
+ *
+ * Given a course_module object, this function returns any "extra" information that may be needed
+ * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
+ *
+ * @param stdClass $coursemodule The coursemodule object (record).
+ * @return cached_cm_info An object on information that the courses
+ *                        will know about (most noticeably, an icon).
+ */
+function tincanlaunch_get_coursemodule_info($coursemodule) {
+    global $DB;
+
+    $dbparams = ['id' => $coursemodule->instance];
+    $fields = 'id, course, name, intro, introformat, tincanlaunchurl, tincanactivityid, tincanverbid, tincanexpiry, overridedefaults, tincanmultipleregs, timecreated, timemodified';
+
+    if (!$tincanlaunch = $DB->get_record('tincanlaunch', $dbparams, $fields)) {
+        return false;
+    }
+
+    $result = new cached_cm_info();
+    $result->name = $tincanlaunch->name;
+
+    if ($coursemodule->showdescription) {
+        // Convert intro to html. Do not filter cached version, filters run at display time.
+        $result->content = format_module_intro('forum', $tincanlaunch, $coursemodule->id, false);
+    }
+
+    // Populate the custom completion rules as key => value pairs, but only if the completion mode is 'automatic'.
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $result->customdata['customcompletionrules']['tincancompletionverb'] = $tincanlaunch->tincanverbid;
+        $result->customdata['customcompletionrules']['tincancompletioexpiry'] = $tincanlaunch->tincanexpiry;
+    }
+
+    return $result;
+}
+
 function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
 
     // Data for tincanlaunch_lrs table.

@@ -116,6 +116,10 @@ $string['completionexpiry'] = 'Expiry';
 $string['completionexpirygroup'] = 'Completion Expires After (days)';
 $string['completionexpirygroup_help'] = 'If checked, when looking for completion Moodle will only look at data stored in the LRS in the previous X days. It will unset completion for learners who had previously completed but whose completion has now expired.';
 
+// Completion Description Details.
+$string['completiondetail:completionbyverb'] = 'Receive a "{$a}" statement';
+$string['completiondetail:completionexpiry'] = 'Expires after {$a} days';
+
 // View settings.
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';
 $string['tincanlaunchviewlastlaunched'] = 'Last launched';

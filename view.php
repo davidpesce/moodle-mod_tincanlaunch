@@ -23,7 +23,7 @@ namespace mod_tincanlaunch;
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once("../../config.php");
 require('header.php');
 require_login();
 
@@ -43,6 +43,13 @@ $PAGE->set_title(format_string($tincanlaunch->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 echo $OUTPUT->header();
+
+// Display the completion requirements.
+$cminfo = \cm_info::create($cm);
+$completiondetails = \core_completion\cm_completion_details::get_instance($cminfo, $USER->id); // Fetch completion information.
+$activitydates = \core\activity_dates::get_dates_for_module($cminfo, $USER->id); // Fetch activity dates.
+
+echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
 
 if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever.
     echo $OUTPUT->box(

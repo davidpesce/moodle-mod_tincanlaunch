@@ -82,5 +82,10 @@ foreach ($tincanlaunchs as $tincanlaunch) {
 
 }
 echo $OUTPUT->heading(get_string('modulenameplural', 'tincanlaunch'), 2);
+
+$completiondetails = \core_completion\cm_completion_details::get_instance($cminfo, $USER->id); // Fetch completion information. 
+$activitydates = \core\activity_dates::get_dates_for_module($cminfo, $USER->id); // Fetch activity dates.
+echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
+
 echo html_writer::table($table);
 echo $OUTPUT->footer();
