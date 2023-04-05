@@ -34,6 +34,7 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
         $paths = array();
 
         $paths[] = new restore_path_element('tincanlaunch', '/activity/tincanlaunch');
+        $paths[] = new restore_path_element('tincanlaunchlrs', '/activity/tincanlaunch/tincanlaunchlrs');
 
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
@@ -53,8 +54,22 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
         $this->apply_activity_instance($newitemid);
     }
 
+    protected function process_tincanlaunchlrs($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $data->tincanlaunchid = $this->get_new_parentid('tincanlaunch');
+
+        $newitemid = $DB->insert_record('tincanlaunch_lrs', $data);
+        $this->set_mapping('tincanlaunch_lrs', $oldid, $newitemid);
+    }
+
     protected function after_execute() {
         // Add tincanlaunch related files.
         $this->add_related_files('mod_tincanlaunch', 'intro', null);
+        $this->add_related_files('mod_tincanlaunch', 'package', null);
+        $this->add_related_files('mod_tincanlaunch', 'content', null);
     }
 }
