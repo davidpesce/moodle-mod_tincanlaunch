@@ -119,6 +119,8 @@ $string['completionexpirygroup_help'] = 'This setting requires the "Completion b
 // Completion Description Details.
 $string['completiondetail:completionbyverb'] = 'Receive a "{$a}" statement';
 $string['completiondetail:completionexpiry'] = 'Completed within the last {$a} days';
+$string['completiondetail:completionbyverbdesc'] = 'Student required to receive a <b>{$a}</b> statement.';
+$string['completiondetail:completionexpirydesc'] = 'Student must have completed within the last <b>{$a}</b> days.';
 
 // View settings.
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';

@@ -48,44 +48,45 @@ $PAGE->set_context($coursecontext);
 echo $OUTPUT->header();
 
 if (! $tincanlaunchs = get_all_instances_in_course('tincanlaunch', $course)) {
-    notice(get_string('notincanlaunchs', 'tincanlaunch'), new moodle_url('/course/view.php', array('id' => $course->id)));
+    notice(get_string('notincanlaunchs', 'tincanlaunch'),
+        new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
-if ($course->format == 'weeks') {
-    $table->head  = array(get_string('week'), get_string('name'));
-    $table->align = array('center', 'left');
-} else if ($course->format == 'topics') {
-    $table->head  = array(get_string('topic'), get_string('name'));
-    $table->align = array('center', 'left', 'left', 'left');
-} else {
-    $table->head  = array(get_string('name'));
-    $table->align = array('left', 'left', 'left');
-}
+$table = new html_table();
+//$table->attributes['class'] = 'generaltable mod_index';
+$table->head  = array (get_string('tincanlaunchname', 'tincanlaunch'), 'Section number', 'Custom completion requirements');
 
 foreach ($tincanlaunchs as $tincanlaunch) {
     if (!$tincanlaunch->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/tincanlaunch.php', array('id' => $tincanlaunch->coursemodule)),
+            new moodle_url('/mod/tincanlaunch/view.php', array('id' => $tincanlaunch->coursemodule)),
             format_string($tincanlaunch->name, true),
             array('class' => 'dimmed'));
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/tincanlaunch.php', array('id' => $tincanlaunch->coursemodule)),
+            new moodle_url('/mod/tincanlaunch/view.php', array('id' => $tincanlaunch->coursemodule)),
             format_string($tincanlaunch->name, true));
     }
 
-    if ($course->format == 'weeks' || $course->format == 'topics') {
-        $table->data[] = array($tincanlaunch->section, $link);
-    } else {
-        $table->data[] = array($link);
+    $completionrequirements = '';
+
+    $tincanverbid = $tincanlaunch->tincanverbid;
+    
+    if ($tincanverbid != '') {
+        $tincanverb = ucfirst(substr($tincanverbid, strrpos($tincanverbid, '/') + 1));
+        $description = get_string('completiondetail:completionbyverbdesc', 'tincanlaunch', $tincanverb);
+        $completionrequirements .= $description;
     }
+
+    if ($tincanlaunch->tincanexpiry > 0) {
+        $description = get_string('completiondetail:completionexpirydesc', 'tincanlaunch', $tincanlaunch->tincanexpiry);
+        $completionrequirements .= '<br/>' . $description;
+    }
+
+    $table->data[] = array($link, $tincanlaunch->section, $completionrequirements);
 
 }
 echo $OUTPUT->heading(get_string('modulenameplural', 'tincanlaunch'), 2);
-
-$completiondetails = \core_completion\cm_completion_details::get_instance($cminfo, $USER->id); // Fetch completion information. 
-$activitydates = \core\activity_dates::get_dates_for_module($cminfo, $USER->id); // Fetch activity dates.
-echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
 
 echo html_writer::table($table);
 echo $OUTPUT->footer();
