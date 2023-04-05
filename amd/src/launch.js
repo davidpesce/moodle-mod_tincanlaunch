@@ -16,12 +16,11 @@
 /**
  * Handles display of the launch attempt table (registrations).
  *
- * @package   mod_tincanlaunch
+ * @package
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author    David Pesce  (david.pesce [at] exputo [dt] com)
-
- * @module mod_tincanlaunch/launch
-*/
+ * @module    mod_tincanlaunch/launch
+ */
 
 define(['jquery', 'core/str'], function($, Str) {
 
@@ -68,13 +67,12 @@ define(['jquery', 'core/str'], function($, Str) {
 
                 // Add tabindex and cursor.
                 $(this).attr('tabindex', '0');
-                $(this).attr('style', 'cursor: pointer');
+                $(this).attr('class', 'btn btn-primary');
             });
 
             // Add details to new attempt link.
             var newregistrationid = $(SELECTORS.NEW_ATTEMPT_LINK).attr('id').substring(28);
             $(SELECTORS.NEW_ATTEMPT_LINK).attr('tabindex', '0');
-            $(SELECTORS.NEW_ATTEMPT_LINK).attr('style', 'cursor: pointer');
 
             $(SELECTORS.NEW_ATTEMPT_LINK).click(function() {
                 self.launchExperience(newregistrationid);

@@ -124,7 +124,7 @@ $string['completiondetail:completionexpiry'] = 'Completed within the last {$a} d
 $string['tincanlaunchviewfirstlaunched'] = 'First launched';
 $string['tincanlaunchviewlastlaunched'] = 'Last launched';
 $string['tincanlaunchviewlaunchlinkheader'] = 'Launch link';
-$string['tincanlaunchviewlaunchlink'] = 'launch';
+$string['tincanlaunchviewlaunchlink'] = 'Launch Existing Registration';
 $string['tincanlaunch:view'] = 'View xAPI activity';
 
 $string['tincanlaunch_completed'] = 'Experience complete!';

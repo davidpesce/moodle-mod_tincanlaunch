@@ -115,8 +115,8 @@ $tincanphputil = new \TinCan\Util();
 $registrationid = $tincanphputil->getUUID();
 
 // Display new registration attempt link.
-echo "<div id=tincanlaunch_newattempt><a id=tincanlaunch_newattemptlink-". $registrationid .">".
-    get_string('tincanlaunch_attempt', 'tincanlaunch') ."</a></div>";
+echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'. $registrationid .'>'.
+    get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
 
 // Add status placeholder.
 echo "<div id='tincanlaunch_status'></div>";
