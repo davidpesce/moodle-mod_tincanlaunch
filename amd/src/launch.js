@@ -55,12 +55,12 @@ export const init = () => {
         var registrationid = $(this).attr('id').substring(23);
 
         // Listen for keyUp event.
-        $(this).keyup(function(e) {
-            keyTest(e.keyCode, registrationid);
+        $(this).on("keyup", function(e) {
+            keyTest(e.key, registrationid);
         });
 
         // Listen for click event.
-        $(this).click(function() {
+        $(this).on("click", function() {
             launchExperience(registrationid);
         });
 
@@ -73,12 +73,12 @@ export const init = () => {
     var newregistrationid = $(SELECTORS.NEW_ATTEMPT_LINK).attr('id').substring(28);
     $(SELECTORS.NEW_ATTEMPT_LINK).attr('tabindex', '0');
 
-    $(SELECTORS.NEW_ATTEMPT_LINK).click(function() {
+    $(SELECTORS.NEW_ATTEMPT_LINK).on("click", function() {
         launchExperience(newregistrationid);
     });
 
-    $(SELECTORS.NEW_ATTEMPT_LINK).keyup(function(e) {
-        keyTest(e.keyCode, newregistrationid);
+    $(SELECTORS.NEW_ATTEMPT_LINK).on("keyup", function(e) {
+        keyTest(e.key, newregistrationid);
     });
 
     // Add status para.
@@ -95,7 +95,7 @@ export const init = () => {
 };
 
 const keyTest = (keycode, registrationid) => {
-    if (keycode === 13 || keycode === 32) {
+    if (keycode === 'Enter' || keycode === ' ') {
         launchExperience(registrationid);
     }
 };
@@ -113,7 +113,7 @@ const launchExperience = (registrationid) => {
     ];
     $(SELECTORS.REGISTRATION).val(registrationid);
 
-    $(SELECTORS.LAUNCH_FORM).submit();
+    $(SELECTORS.LAUNCH_FORM).trigger("submit");
     $(SELECTORS.NEW_ATTEMPT).remove();
     $(SELECTORS.ATTEMPT_TABLE).remove();
 
