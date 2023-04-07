@@ -152,13 +152,4 @@ echo "<div id='tincanlaunch_status'></div>";
 // New AMD module.
 $PAGE->requires->js_call_amd('mod_tincanlaunch/launch', 'init');
 
-// Add a form to be posted based on the attempt selected.
-?>
-    <form id="launchform" action="launch.php" method="get" target="_blank">
-        <input id="launchform_registration" name="launchform_registration" type="hidden" value="default">
-        <input id="id" name="id" type="hidden" value="<?php echo $id ?>">
-        <input id="n" name="n" type="hidden" value="<?php echo $n ?>">
-    </form>
-<?php
-
 echo $OUTPUT->footer();

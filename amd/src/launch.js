@@ -89,13 +89,6 @@ export const init = () => {
         });
     }
 
-    // Add status para.
-    let statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
-
-    // Add completion span.
-    let completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
-    $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
-
     // Periodically check completion
     setInterval(function() {
         $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id + '&n=' + n);
@@ -109,6 +102,26 @@ const keyTest = (keycode, registrationid) => {
 };
 
 const launchExperience = (registrationid) => {
+    // Add status para.
+    let statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
+
+    // Add completion span.
+    let completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
+    $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
+
+    const spawnedWindow = window.open('launch.php?launchform_registration=' + registrationid + '&id=' + id + '&n=' + n);
+
+    // Check every second to see if the spawned window was closed.
+    const checkWindow = setInterval(() => {
+        if (spawnedWindow.closed) {
+            window.console.log('xAPI content window was closed.');
+            clearInterval(checkWindow); // Stop checking for window closure
+
+            // Redirect to the course page.
+            window.location.href = "complete.php?id=" + id + "&n=" + n;
+        }
+    }, 1000);
+
     let stringsToRetrieve = [
         {
             key: 'tincanlaunch_progress',
@@ -119,9 +132,8 @@ const launchExperience = (registrationid) => {
             component: 'tincanlaunch'
         }
     ];
-    $(SELECTORS.REGISTRATION).val(registrationid);
+    // $(SELECTORS.REGISTRATION).val(registrationid);
 
-    $(SELECTORS.LAUNCH_FORM).trigger("submit");
     $(SELECTORS.NEW_ATTEMPT).remove();
     $(SELECTORS.ATTEMPT_TABLE).remove();
 
