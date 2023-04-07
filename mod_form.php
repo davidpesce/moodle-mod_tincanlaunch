@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/course/moodleform_mod.php');
+
 /**
  * The main tincanlaunch configuration form
  *
@@ -24,18 +30,12 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-
-/**
- * Module instance settings form
- */
 class mod_tincanlaunch_mod_form extends moodleform_mod {
 
     /**
-     * Defines forms elements
+     * Called to define this moodle form
+     *
+     * @return void
      */
     public function definition() {
 
@@ -79,10 +79,8 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
         $mform->setDefault('tincanactivityid', 'https://example.com/example-activity');
-        // End required Fields for Activity.
 
-        // New local package upload.
-
+        // Package upload.
         $filemanageroptions = array();
         $filemanageroptions['accepted_types'] = array('.zip');
         $filemanageroptions['maxbytes'] = 0;
@@ -169,13 +167,19 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->disabledIf('tincanlaunchuseactoremail', 'overridedefaults');
         // End advanced settings.
 
-        // Behavior settings.
-        $mform->addElement('header', 'behaviorheading', get_string('behaviorheading', 'tincanlaunch'));
+        // Apearance settings.
+        $mform->addElement('header', 'appearanceheading', get_string('appearanceheading', 'tincanlaunch'));
 
-        // Allow multiple ongoing registrations.
+        // Simplified launch
+        $mform->addElement('advcheckbox', 'tincansimplelaunchnav', get_string('tincansimplelaunchnav', 'tincanlaunch'));
+        $mform->setDefault('tincansimplelaunchnav', 0);
+        $mform->addHelpButton('tincansimplelaunchnav', 'tincansimplelaunchnav', 'tincanlaunch');
+        
+        // Allow multiple registrations
         $mform->addElement('advcheckbox', 'tincanmultipleregs', get_string('tincanmultipleregs', 'tincanlaunch'));
-        $mform->addHelpButton('tincanmultipleregs', 'tincanmultipleregs', 'tincanlaunch');
         $mform->setDefault('tincanmultipleregs', 1);
+        $mform->hideIf('tincanmultipleregs', 'tincansimplelaunchnav', 'checked');
+        $mform->addHelpButton('tincanmultipleregs', 'tincanmultipleregs', 'tincanlaunch');
 
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
@@ -201,7 +205,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $verbgroup[] = $mform->createElement('text', 'tincanverbid', null, array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
         $mform->disabledIf('tincanverbid', 'completionverbenabled');
-        $mform->setDefault('tincanverbid', 'http://adlnet.gov/expapi/verbs/completed');
+        
 
         $mform->addGroup($verbgroup, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'),
             array(' '), false);
@@ -219,7 +223,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $expirygroup[] = $mform->createElement('text', 'tincanexpiry', null, array('size' => '63'));
         $mform->setType('tincanexpiry', PARAM_TEXT);
         $mform->disabledIf('tincanexpiry', 'completionexpiryenabled');
-        $mform->setDefault('tincanexpiry', '365');
         $mform->addGroup($expirygroup, 'completionexpirygroup', get_string('completionexpirygroup', 'tincanlaunch'),
             array(' '), false);
         $mform->addGroupRule('completionexpirygroup', array('tincanexpiry' => array(
@@ -232,6 +235,12 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         return $items;
     }
 
+    /**
+     * Determines if completion is enabled for this module.
+     *
+     * @param array $data
+     * @return bool
+     */
     public function completion_rule_enabled($data) {
         if (!empty($data['completionverbenabled']) && !empty($data['tincanverbid'])) {
             return true;
@@ -242,24 +251,11 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         return false;
     }
 
-    public function get_data() {
-        $data = parent::get_data();
-        if (!$data) {
-            return $data;
-        }
-        if (!empty($data->completionunlocked)) {
-            // Turn off completion settings if the checkboxes aren't ticked.
-            $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
-            if (empty($data->completionverbenabled) || !$autocompletion) {
-                $data->tincanverbid = '';
-            }
-            if (empty($data->completionexpiryenabled) || !$autocompletion) {
-                $data->tincanexpiry = '';
-            }
-        }
-        return $data;
-    }
-
+    /**
+     * Any data processing needed before the form is displayed
+     * (needed to set up draft areas for editor and filemanager elements)
+     * @param array $defaultvalues
+     */
     public function data_preprocessing(&$defaultvalues) {
         parent::data_preprocessing($defaultvalues);
 
@@ -295,9 +291,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         );
         $defaultvalues['packagefile'] = $draftitemid;
 
-        // Set up the completion checkboxes which aren't part of standard data.
-        // We also make the default value (if you turn on the checkbox) for those
-        // numbers to be 1, this will not apply unless checkbox is ticked.
+        // This is needed to persist the default values (after the initial activity creation).
         if (!empty($defaultvalues['tincanverbid'])) {
             $defaultvalues['completionverbenabled'] = 1;
         } else {
@@ -308,9 +302,39 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         } else {
             $defaultvalues['tincanexpiry'] = 365;
         }
-
     }
-    // Validate the form elements after submitting (server-side).
+
+    /**
+     * Allows module to modify the data returned by form get_data().
+     * This method is also called in the bulk activity completion form.
+     *
+     * @param stdClass $data the form data to be modified.
+     */
+    public function data_postprocessing($data) {
+        parent::data_postprocessing($data);
+
+        if (!empty($data->completionunlocked)) {
+            // Turn off completion settings if the checkboxes aren't ticked.
+            $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
+            if (empty($data->completionverbenabled) || !$autocompletion) {
+                $data->tincanverbid = '';
+            }
+            if (empty($data->completionexpiryenabled) || !$autocompletion) {
+                $data->tincanexpiry = '';
+            }
+        }
+
+        // If simplified launch is enabled, we must disable multiple registrations.
+        if ($data->tincansimplelaunchnav == 1) {
+            $data->tincanmultipleregs = 0;
+        }
+    }
+
+    /**
+     * Perform minimal validation on the settings form
+     * @param array $data
+     * @param array $files
+     */
     public function validation($data, $files) {
         global $USER;
         $errors = parent::validation($data, $files);

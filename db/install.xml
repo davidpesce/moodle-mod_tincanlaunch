@@ -17,6 +17,7 @@
         <FIELD NAME="tincanexpiry" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="365" SEQUENCE="false" COMMENT="Number of days to expire completion after"/>
         <FIELD NAME="overridedefaults" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Determines if the activity is inheriting the global defaults or has overriden them at the activity level."/>
         <FIELD NAME="tincanmultipleregs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="1" />
+        <FIELD NAME="tincansimplelaunchnav" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="0" />
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>

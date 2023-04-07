@@ -35,7 +35,7 @@ class backup_tincanlaunch_activity_structure_step extends backup_activity_struct
         $tincanlaunch = new backup_nested_element('tincanlaunch', array('id'), array(
             'name', 'intro', 'introformat', 'tincanlaunchurl', 'tincanactivityid',
             'tincanverbid', 'tincanexpiry', 'overridedefaults', 'tincanmultipleregs',
-            'timecreated', 'timemodified'));
+            'tincansimplelaunchnav', 'timecreated', 'timemodified'));
 
         $tincanlaunchlrs = new backup_nested_element('tincanlaunchlrs', array('id'), 
             array( 'lrsendpoint', 'lrsauthentication', 'lrslogin', 'lrspass',

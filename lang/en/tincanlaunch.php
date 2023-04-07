@@ -83,16 +83,16 @@ $string['tincanpackage_help'] = 'If you have a packaged xAPI course, you can upl
 $string['tincanpackagetitle'] = 'Launch settings';
 $string['tincanpackagetext'] = 'You can provide the Launch URL and Activity ID settings directly, or upload a zip package containing a tincan.xml file. The Activity ID must always be a full URL (or other IRI) AND it MUST match the Activity ID included in the tincan.xml or course.';
 
-$string['lrsheading'] = 'LRS settings';
+$string['lrsheading'] = 'Override default LRS settings';
 $string['lrsdefaults'] = 'LRS Default Settings';
 $string['lrssettingdescription'] = 'By default, this activity uses the global LRS settings found in Site administration > Plugins > Activity modules > xAPI Launch Link. To change the settings for this specific activity, select Unlock Defaults.';
 $string['overridedefaults'] = 'Unlock Defaults';
 $string['overridedefaults_help'] = 'Allows activity to have different LRS settings than the site-wide, default LRS settings.';
 
-$string['behaviorheading'] = 'Module behavior';
+$string['appearanceheading'] = 'Appearance';
 
 $string['tincanmultipleregs'] = 'Allow multiple registrations.';
-$string['tincanmultipleregs_help'] = 'If selected, allow the learner to start more than one registration for the activity. Learners can always return to any registrations they have started, even if this setting is unchecked.';
+$string['tincanmultipleregs_help'] = 'If selected, allow the learner to start more than one registration for the activity. If unchecked, only the most recent registration will be displayed. <b>This setting cannot be used when simplified launch is enabled.</b>';
 
 $string['apCreationFailed'] = 'Failed to create Watershed Activity Provider.';
 
@@ -146,8 +146,12 @@ $string['tincanlaunch:addinstance'] = 'Add a new xAPI activity to a course';
 $string['expirecredentials'] = 'Expire credentials';
 $string['checkcompletion'] = 'Check Completion';
 
-// User profile fields.
+// Custom user profile fields.
 $string['profilefields'] = 'User profile fields to sync to Agent Profile';
-$string['profilefields_desc'] = 'If selected, the Moodle user profile fields will be sent to the LRS under the actors agent profile.';
+$string['profilefields_desc'] = 'If selected, the custom user profile fields selected will be sent to the LRS under the actors agent profile.';
 
 $string['returntocourse'] = 'Return to course';
+
+// Simplified Navigation
+$string['tincansimplelaunchnav'] = 'Enable simplified launch';
+$string['tincansimplelaunchnav_help'] = 'If selected, the user will bypass the registration screen and the course will be automatically launched using the most recent registration. If no prior registration is found, one will be created. <b>Enabling this setting will disable the multiple registrations setting.</b>';

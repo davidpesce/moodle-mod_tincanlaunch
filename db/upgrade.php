@@ -60,6 +60,18 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018103000, 'tincanlaunch');
     }
 
+    if ($oldversion < 2023040300) {
+        $table = new xmldb_table('tincanlaunch');
+        $field = new xmldb_field('tincansimplelaunchnav', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0, 'tincanmultipleregs');
+
+        // Add field tincansimplelaunchnav.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2023040300, 'tincanlaunch');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

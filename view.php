@@ -74,9 +74,13 @@ if ($statuscode != 200 && $statuscode != 404) {
     die();
 }
 
+$lrshasregistrationdata = ($statuscode == 200);
+
 // Success from LRS request.
-if ($statuscode == 200) {
+if ($lrshasregistrationdata) {
+
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
+    $simplifiedregid = '';
 
     foreach ($registrationdatafromlrs as $key => $item) {
 
@@ -84,11 +88,13 @@ if ($statuscode == 200) {
             $reason = "Excepted array, found " . $registrationdatafromlrs[$key];
             throw new \moodle_exception($reason, 'tincanlaunch', '', $warnings[$reason]);
         }
+
         array_push(
             $registrationdatafromlrs[$key],
             "<a id='tincanrelaunch_attempt-".$key."'>"
             . get_string('tincanlaunchviewlaunchlink', 'tincanlaunch') . "</a>"
         );
+
         $registrationdatafromlrs[$key]['created'] = date_format(
             date_create($registrationdatafromlrs[$key]['created']),
             'D, d M Y H:i:s'
@@ -97,26 +103,48 @@ if ($statuscode == 200) {
             date_create($registrationdatafromlrs[$key]['lastlaunched']),
             'D, d M Y H:i:s'
         );
+
+        // For single registration, select the the most recent.
+        if ($tincanlaunch->tincanmultipleregs == 0) {
+            $simplifiedregid = $key;
+            $registrationdatafromlrs = array($registrationdatafromlrs[$key]);
+            break;
+        }
     }
-    $table = new \html_table();
-    $table->id = 'tincanlaunch_attempttable';
-    $table->caption = get_string('modulenameplural', 'tincanlaunch');
-    $table->head = array(
-        get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
-        get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
-    );
-    $table->data = $registrationdatafromlrs;
-    echo \html_writer::table($table);
+
+    // Generate a registration id for any new attempt.
+    $tincanphputil = new \TinCan\Util();
+    $newregistrationid = $tincanphputil->getUUID();
+
+    // Classic launch navigation.
+    if ($tincanlaunch->tincansimplelaunchnav == 0) {
+        $table = new \html_table();
+        $table->id = 'tincanlaunch_attempttable';
+
+        $table->caption = get_string('modulenameplural', 'tincanlaunch');
+        $table->head = array(
+            get_string('tincanlaunchviewfirstlaunched', 'tincanlaunch'),
+            get_string('tincanlaunchviewlastlaunched', 'tincanlaunch'),
+            get_string('tincanlaunchviewlaunchlinkheader', 'tincanlaunch')
+        );
+
+        $table->data = $registrationdatafromlrs;
+        echo \html_writer::table($table);
+
+        // Multiple registrations for standard launch navigation - Display new registration attempt link.
+        if ($tincanlaunch->tincanmultipleregs == 1) {
+            echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'. $newregistrationid .'>'.
+                get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
+        }
+    } else { // Simplified Navigation
+        // Determine the appropriate registration id to use
+        $registrationid = $simplifiedregid;
+        if ($lrshasregistrationdata == false) {
+            $registrationid = $newregistrationid;
+        }
+        echo "<div id=tincanlaunch_simplified><a id=tincanlaunch_simplifiedlink-" . $registrationid . ">" . "</a></div>";
+    }
 }
-
-// Generate a registration id for any new attempt.
-$tincanphputil = new \TinCan\Util();
-$registrationid = $tincanphputil->getUUID();
-
-// Display new registration attempt link.
-echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'. $registrationid .'>'.
-    get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
 
 // Add status placeholder.
 echo "<div id='tincanlaunch_status'></div>";

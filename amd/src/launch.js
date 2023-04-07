@@ -36,6 +36,8 @@ let SELECTORS = {
     LAUNCH_FORM: '#launchform',
     MAINCONTENT: '#maincontent',
     NEW_ATTEMPT: '#tincanlaunch_newattempt',
+    SIMPLIFIED: '#tincanlaunch_simplified',
+    SIMPLIFIED_LINK: '[id^=tincanlaunch_simplifiedlink-]',
     NEW_ATTEMPT_LINK: '[id^=tincanlaunch_newattemptlink-]',
     REATTEMPT: '[id^=tincanrelaunch_attempt-]',
     REGISTRATION: '#launchform_registration',
@@ -50,43 +52,49 @@ export const init = () => {
     id = urlparams.get('id');
     n = urlparams.get('n');
 
-    // Iterate over table registrations and add necessary values.
-    $(SELECTORS.REATTEMPT).each(function() {
-        var registrationid = $(this).attr('id').substring(23);
+    // This is a simplified navigation launch
+    if ($(SELECTORS.SIMPLIFIED).length) {
+        let simplifiedid = $(SELECTORS.SIMPLIFIED_LINK).attr('id').substring(28);
+        launchExperience(simplifiedid);
+    } else {
+        // Iterate over existing registrations and add necessary values.
+        $(SELECTORS.REATTEMPT).each(function() {
+            let registrationid = $(this).attr('id').substring(23);
 
-        // Listen for keyUp event.
-        $(this).on("keyup", function(e) {
-            keyTest(e.key, registrationid);
+            // Listen for keyUp event.
+            $(this).on("keyup", function(e) {
+                keyTest(e.key, registrationid);
+            });
+
+            // Listen for click event.
+            $(this).on("click", function() {
+                launchExperience(registrationid);
+            });
+
+            // Add tabindex and cursor.
+            $(this).attr('tabindex', '0');
+            $(this).attr('class', 'btn btn-primary');
         });
 
-        // Listen for click event.
-        $(this).on("click", function() {
-            launchExperience(registrationid);
+        // Add details to new attempt link.
+        let newregistrationid = $(SELECTORS.NEW_ATTEMPT_LINK).attr('id').substring(28);
+        $(SELECTORS.NEW_ATTEMPT_LINK).attr('tabindex', '0');
+
+        $(SELECTORS.NEW_ATTEMPT_LINK).on("click", function() {
+            launchExperience(newregistrationid);
         });
 
-        // Add tabindex and cursor.
-        $(this).attr('tabindex', '0');
-        $(this).attr('class', 'btn btn-primary');
-    });
+        $(SELECTORS.NEW_ATTEMPT_LINK).on("keyup", function(e) {
+            keyTest(e.key, newregistrationid);
+        });
 
-    // Add details to new attempt link.
-    var newregistrationid = $(SELECTORS.NEW_ATTEMPT_LINK).attr('id').substring(28);
-    $(SELECTORS.NEW_ATTEMPT_LINK).attr('tabindex', '0');
+        // Add status para.
+        let statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
 
-    $(SELECTORS.NEW_ATTEMPT_LINK).on("click", function() {
-        launchExperience(newregistrationid);
-    });
-
-    $(SELECTORS.NEW_ATTEMPT_LINK).on("keyup", function(e) {
-        keyTest(e.key, newregistrationid);
-    });
-
-    // Add status para.
-    var statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
-
-    // Add completion span.
-    var completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
-    $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
+        // Add completion span.
+        let completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
+        $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
+    }
 
     // Periodically check completion
     setInterval(function() {
@@ -123,7 +131,7 @@ const launchExperience = (registrationid) => {
             $(SELECTORS.STATUSPARA).text(s[0]);
 
             // Return to course.
-            var exitpara = $("<p></p>").attr("id", SELECTORS.EXIT);
+            let exitpara = $("<p></p>").attr("id", SELECTORS.EXIT);
             exitpara.html("<a href='complete.php?id=" + id + "&n=" + n + "'>" + s[1] + "</a>");
             $(SELECTORS.STATUSPARA).after(exitpara);
     });

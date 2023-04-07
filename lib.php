@@ -170,7 +170,8 @@ function tincanlaunch_get_coursemodule_info($coursemodule) {
     global $DB;
 
     $dbparams = ['id' => $coursemodule->instance];
-    $fields = 'id, course, name, intro, introformat, tincanlaunchurl, tincanactivityid, tincanverbid, tincanexpiry, overridedefaults, tincanmultipleregs, timecreated, timemodified';
+    $fields = 'id, course, name, intro, introformat, tincanlaunchurl, tincanactivityid, tincanverbid, tincanexpiry,
+        overridedefaults, tincanmultipleregs, tincansimplelaunchnav, timecreated, timemodified';
 
     if (!$tincanlaunch = $DB->get_record('tincanlaunch', $dbparams, $fields)) {
         return false;
