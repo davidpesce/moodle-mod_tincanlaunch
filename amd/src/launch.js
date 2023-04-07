@@ -87,14 +87,14 @@ export const init = () => {
         $(SELECTORS.NEW_ATTEMPT_LINK).on("keyup", function(e) {
             keyTest(e.key, newregistrationid);
         });
-
-        // Add status para.
-        let statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
-
-        // Add completion span.
-        let completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
-        $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
     }
+
+    // Add status para.
+    let statuspara = $("<p></p>").attr("id", "tincanlaunch_status_para");
+
+    // Add completion span.
+    let completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
+    $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
 
     // Periodically check completion
     setInterval(function() {
