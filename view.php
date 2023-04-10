@@ -52,7 +52,7 @@ $activitydates = \core\activity_dates::get_dates_for_module($cminfo, $USER->id);
 
 echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
 
-if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings or whatever.
+if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings.
     echo $OUTPUT->box(
         format_module_intro('tincanlaunch', $tincanlaunch, $cm->id),
         'generalbox mod_introbox',
@@ -66,19 +66,17 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
 
 $statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
 
-// Some sort of failure occured.
-if ($statuscode != 200 && $statuscode != 404) {
+// Generate a registration id for any new attempt.
+$tincanphputil = new \TinCan\Util();
+$newregistrationid = $tincanphputil->getUUID();
+
+// Evaluate the LRS status code
+if ($statuscode != 200 && $statuscode != 404) { // Some error other than 404
     echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
         var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
     die();
-}
-
-$lrshasregistrationdata = ($statuscode == 200);
-
-// Success from LRS request.
-if ($lrshasregistrationdata) {
-
+} else if ($statuscode == 200) { // Registration data found on LRS.
     $registrationdatafromlrs = json_decode($getregistrationdatafromlrsstate->content->getContent(), true);
     $simplifiedregid = '';
 
@@ -112,10 +110,6 @@ if ($lrshasregistrationdata) {
         }
     }
 
-    // Generate a registration id for any new attempt.
-    $tincanphputil = new \TinCan\Util();
-    $newregistrationid = $tincanphputil->getUUID();
-
     // Classic launch navigation.
     if ($tincanlaunch->tincansimplelaunchnav == 0) {
         $table = new \html_table();
@@ -137,12 +131,15 @@ if ($lrshasregistrationdata) {
                 get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
         }
     } else { // Simplified Navigation
-        // Determine the appropriate registration id to use
-        $registrationid = $simplifiedregid;
-        if ($lrshasregistrationdata == false) {
-            $registrationid = $newregistrationid;
-        }
-        echo "<div id=tincanlaunch_simplified><a id=tincanlaunch_simplifiedlink-" . $registrationid . ">" . "</a></div>";
+        // Utilize the simplified registration ID
+        echo "<div id=tincanlaunch_simplified><a id=tincanlaunch_simplifiedlink-" . $simplifiedregid . ">" . "</a></div>";
+    }
+} else { // No registration data on LRS - LRS will return 404 status - {"errorId": "0c621409...","message": "No State found"}
+    if ($tincanlaunch->tincansimplelaunchnav == 1){
+        echo "<div id=tincanlaunch_simplified><a id=tincanlaunch_simplifiedlink-" . $newregistrationid . ">" . "</a></div>";
+    } else {
+        echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'. $newregistrationid .'>'.
+        get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
     }
 }
 
@@ -150,6 +147,7 @@ if ($lrshasregistrationdata) {
 echo "<div id='tincanlaunch_status'></div>";
 
 // New AMD module.
-$PAGE->requires->js_call_amd('mod_tincanlaunch/launch', 'init');
+$courseid = $tincanlaunch->course;
+$PAGE->requires->js_call_amd('mod_tincanlaunch/launch', 'init', [$courseid]);
 
 echo $OUTPUT->footer();

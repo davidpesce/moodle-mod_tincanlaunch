@@ -26,7 +26,8 @@ import $ from 'jquery';
 import * as Str from 'core/str';
 
 let id = '';
-let n = '';
+let cid = '';
+let simplifiedlaunch = false;
 
 let SELECTORS = {
     ATTEMPT_PROGRESS: '#tincanlaunch_attemptprogress',
@@ -45,15 +46,16 @@ let SELECTORS = {
     STATUSPARA: '#tincanlaunch_status_para'
 };
 
-export const init = () => {
+export const init = (courseid) => {
 
     // Retrieve id and n URL parameters
     let urlparams = new URLSearchParams(window.location.search);
     id = urlparams.get('id');
-    n = urlparams.get('n');
+    cid = courseid;
 
     // This is a simplified navigation launch
     if ($(SELECTORS.SIMPLIFIED).length) {
+        simplifiedlaunch = true;
         let simplifiedid = $(SELECTORS.SIMPLIFIED_LINK).attr('id').substring(28);
         launchExperience(simplifiedid);
     } else {
@@ -91,7 +93,7 @@ export const init = () => {
 
     // Periodically check completion
     setInterval(function() {
-        $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id + '&n=' + n);
+        $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id);
     }, 30000); // TODO: make this interval a configuration setting.
 };
 
@@ -109,7 +111,7 @@ const launchExperience = (registrationid) => {
     let completionspan = $("<span>").attr("id", "tincanlaunch_completioncheck");
     $(SELECTORS.STATUSDIV).append(statuspara, completionspan);
 
-    const spawnedWindow = window.open('launch.php?launchform_registration=' + registrationid + '&id=' + id + '&n=' + n);
+    const spawnedWindow = window.open('launch.php?launchform_registration=' + registrationid + '&id=' + id);
 
     // Check every second to see if the spawned window was closed.
     const checkWindow = setInterval(() => {
@@ -117,8 +119,15 @@ const launchExperience = (registrationid) => {
             window.console.log('xAPI content window was closed.');
             clearInterval(checkWindow); // Stop checking for window closure
 
+            // Perform a final completion check.
+            $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id);
+
             // Redirect to the course page.
-            window.location.href = "complete.php?id=" + id + "&n=" + n;
+            if (simplifiedlaunch) {
+                window.location.href = "/course/view.php?id=" + cid;
+            } else {
+                window.location.href = "view.php?id=" + id;
+            }
         }
     }, 1000);
 
@@ -130,9 +139,12 @@ const launchExperience = (registrationid) => {
         {
             key: 'returntocourse',
             component: 'tincanlaunch'
+        },
+        {
+            key: 'returntoregistrations',
+            component: 'tincanlaunch'
         }
     ];
-    // $(SELECTORS.REGISTRATION).val(registrationid);
 
     $(SELECTORS.NEW_ATTEMPT).remove();
     $(SELECTORS.ATTEMPT_TABLE).remove();
@@ -142,9 +154,14 @@ const launchExperience = (registrationid) => {
             // Attempt in progress.
             $(SELECTORS.STATUSPARA).text(s[0]);
 
-            // Return to course.
+            // Return to course or registrations table.
             let exitpara = $("<p></p>").attr("id", SELECTORS.EXIT);
-            exitpara.html("<a href='complete.php?id=" + id + "&n=" + n + "'>" + s[1] + "</a>");
+            if (simplifiedlaunch) {
+                exitpara.html("<a href='/course/view.php?id=" + cid + "'>" + s[1] + "</a>");
+            } else {
+                exitpara.html("<a href='/course/view.php?id=" + cid + "'>" + s[2] + "</a>");
+            }
+
             $(SELECTORS.STATUSPARA).after(exitpara);
     });
 };

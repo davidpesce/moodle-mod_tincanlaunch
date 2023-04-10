@@ -130,7 +130,7 @@ $string['tincanlaunchviewlaunchlink'] = 'Launch Existing Registration';
 $string['tincanlaunch:view'] = 'View xAPI activity';
 
 $string['tincanlaunch_completed'] = 'Experience complete!';
-$string['tincanlaunch_progress'] = 'Attempt launched in a new window. If you have closed that window, you can safely return to the course.';
+$string['tincanlaunch_progress'] = 'Attempt launched in a new window. If you have closed that window, you can safely navigate away from this page.';
 $string['tincanlaunch_attempt'] = 'Start New Registration';
 $string['tincanlaunch_notavailable'] = 'The Learning Record Store is not available. Please contact a system administrator. If you are the system administrator, go to Site admin / Development / Debugging and set Debug messages to DEVELOPER. Set it back to NONE or MINIMAL once the error details have been recorded.';
 $string['tincanlaunch_regidempty'] = 'Registration id not found. Please close this window.';
@@ -151,6 +151,7 @@ $string['profilefields'] = 'User profile fields to sync to Agent Profile';
 $string['profilefields_desc'] = 'If selected, the custom user profile fields selected will be sent to the LRS under the actors agent profile.';
 
 $string['returntocourse'] = 'Return to course';
+$string['returntoregistrations'] = 'Return to registrations table';
 
 // Simplified Navigation
 $string['tincansimplelaunchnav'] = 'Enable simplified launch';
