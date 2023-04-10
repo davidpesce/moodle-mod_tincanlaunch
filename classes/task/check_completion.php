@@ -65,26 +65,31 @@ class check_completion extends \core\task\scheduled_task {
 
                     // Query the Moodle DB to determine current completion state.
                     $oldstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
-                    echo ('Old completion state was '.$oldstate.'. ');
+                    if ($oldstate != COMPLETION_COMPLETE) {
+                        echo ('Old completion state is '.$oldstate.'. ');
 
-                    // Execute plugins 'tincanlaunch_get_completion_state' to determine if complete.
-                    $completion->update_state($cm, $possibleresult, $enrolment->userid);
-
-                    // Query the Moodle DB again to determine a change in completion state.
-                    $newstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
-                    echo ('New completion state is '.$newstate.'. '.PHP_EOL);
-
-                    if ($oldstate !== $newstate) {
-                        // Trigger Activity completed event.
-                        $event = \mod_tincanlaunch\event\activity_completed::create(array(
-                            'objectid' => $tincanlaunch->id,
-                            'context' => \context_module::instance($cm->id),
-                            'userid' => $enrolment->userid
-                        ));
-                        $event->add_record_snapshot('course_modules', $cm);
-                        $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
-                        $event->trigger();
+                        // Execute plugins 'tincanlaunch_get_completion_state' to determine if complete.
+                        $completion->update_state($cm, $possibleresult, $enrolment->userid);
+    
+                        // Query the Moodle DB again to determine a change in completion state.
+                        $newstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
+                        echo ('New completion state is '.$newstate.'. '.PHP_EOL);
+    
+                        if ($oldstate !== $newstate) {
+                            // Trigger Activity completed event.
+                            $event = \mod_tincanlaunch\event\activity_completed::create(array(
+                                'objectid' => $tincanlaunch->id,
+                                'context' => \context_module::instance($cm->id),
+                                'userid' => $enrolment->userid
+                            ));
+                            $event->add_record_snapshot('course_modules', $cm);
+                            $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+                            $event->trigger();
+                        }
+                    } else {
+                        echo ('Skipping as activity is already complete in Moodle.'.PHP_EOL);
                     }
+
                 }
             }
         }
