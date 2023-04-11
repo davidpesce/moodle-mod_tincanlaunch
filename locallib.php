@@ -117,8 +117,8 @@ function tincan_launched_statement($registrationid) {
 /**
  * Builds a Tin Can launch link for the current module and a given registration
  *
- * @param string $registrationid The Tin Can Registration UUID associated with the launch.
- * @return string launch link including querystring.
+ * @param string $registrationuuid The Tin Can Registration UUID associated with the launch.
+ * @return string Launch link including querystring.
  */
 function tincanlaunch_get_launch_url($registrationuuid) {
     global $tincanlaunch;
@@ -430,13 +430,10 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
 /**
  * Sends a request to the API.
  *
- * @param {String} [$auth] Auth string
- * @param {String} [$method] Method of the request e.g. POST.
- * @param {String} [$url] URL to request
- * @return {Array} Details of the response
- * @return {String} [metadata] Raw metadata of the response
- * @return {String} [content] Raw content of the response
- * @return {Integer} [status] HTTP status code of the response e.g. 201
+ * @param string $auth Auth string
+ * @param string $method Method of the request e.g. POST.
+ * @param string $url URL to request
+ * @return array Details of the response
  */
 function tincanlaunch_send_api_request($auth, $method, $url) {
     $options = func_num_args() === 4 ? func_get_arg(3) : array();

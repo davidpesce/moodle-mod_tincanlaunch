@@ -75,7 +75,7 @@ function tincanlaunch_supports($feature) {
  * @param object $mform
  * @return int The id of the newly inserted tincanlaunch record
  */
-function tincanlaunch_add_instance(stdClass $tincanlaunch, $mform=null) {
+function tincanlaunch_add_instance($tincanlaunch, $mform=null) {
     global $DB;
 
     $tincanlaunch->timecreated = time();
@@ -114,7 +114,7 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch, $mform=null) {
  * @param object $mform
  * @return boolean Success/Fail
  */
-function tincanlaunch_update_instance(stdClass $tincanlaunch, $mform = null) {
+function tincanlaunch_update_instance($tincanlaunch, $mform = null) {
     global $DB;
 
     $tincanlaunch->timemodified = time();

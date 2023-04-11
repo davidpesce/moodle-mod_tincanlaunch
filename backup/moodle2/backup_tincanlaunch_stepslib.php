@@ -31,6 +31,11 @@
  */
 class backup_tincanlaunch_activity_structure_step extends backup_activity_structure_step {
 
+    /**
+     * Define the structure of the activity to be backed up.
+     *
+     * @return backup_nested_element $activitystructure the element to wrap
+     */
     protected function define_structure() {
 
         // Define each element separated.
