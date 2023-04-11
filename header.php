@@ -33,7 +33,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $tincanlaunch  = $DB->get_record('tincanlaunch', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
-    print_error(get_string('idmissing', 'tincanlaunch'));
+    throw new moodle_exception('idmissing', 'tincanlaunch');
 }
 
 require_login($course, true, $cm);

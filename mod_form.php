@@ -170,12 +170,12 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         // Apearance settings.
         $mform->addElement('header', 'appearanceheading', get_string('appearanceheading', 'tincanlaunch'));
 
-        // Simplified launch
+        // Simplified launch.
         $mform->addElement('advcheckbox', 'tincansimplelaunchnav', get_string('tincansimplelaunchnav', 'tincanlaunch'));
         $mform->setDefault('tincansimplelaunchnav', 0);
         $mform->addHelpButton('tincansimplelaunchnav', 'tincansimplelaunchnav', 'tincanlaunch');
-        
-        // Allow multiple registrations
+
+        // Allow multiple registrations.
         $mform->addElement('advcheckbox', 'tincanmultipleregs', get_string('tincanmultipleregs', 'tincanlaunch'));
         $mform->setDefault('tincanmultipleregs', 1);
         $mform->hideIf('tincanmultipleregs', 'tincansimplelaunchnav', 'checked');
@@ -205,7 +205,6 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $verbgroup[] = $mform->createElement('text', 'tincanverbid', null, array('size' => '64'));
         $mform->setType('tincanverbid', PARAM_TEXT);
         $mform->disabledIf('tincanverbid', 'completionverbenabled');
-        
 
         $mform->addGroup($verbgroup, 'completionverbgroup', get_string('completionverbgroup', 'tincanlaunch'),
             array(' '), false);
@@ -219,7 +218,7 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $expirygroup = array();
         $expirygroup[] = $mform->createElement('advcheckbox', 'completionexpiryenabled', null,
             get_string('completionexpiry', 'tincanlaunch'));
-        
+
         $expirygroup[] = $mform->createElement('text', 'tincanexpiry', null, array('size' => '63'));
         $mform->setType('tincanexpiry', PARAM_TEXT);
         $mform->disabledIf('tincanexpiry', 'completionexpiryenabled');

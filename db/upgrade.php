@@ -62,7 +62,8 @@ function xmldb_tincanlaunch_upgrade($oldversion) {
 
     if ($oldversion < 2023040300) {
         $table = new xmldb_table('tincanlaunch');
-        $field = new xmldb_field('tincansimplelaunchnav', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0, 'tincanmultipleregs');
+        $field = new xmldb_field('tincansimplelaunchnav', XMLDB_TYPE_INTEGER, '1', null,
+            XMLDB_NOTNULL, null, 0, 'tincanmultipleregs');
 
         // Add field tincansimplelaunchnav.
         if (!$dbman->field_exists($table, $field)) {

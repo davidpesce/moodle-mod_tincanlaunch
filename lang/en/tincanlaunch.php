@@ -153,6 +153,6 @@ $string['profilefields_desc'] = 'If selected, the custom user profile fields sel
 $string['returntocourse'] = 'Return to course';
 $string['returntoregistrations'] = 'Return to registrations table';
 
-// Simplified Navigation
+// Simplified Navigation.
 $string['tincansimplelaunchnav'] = 'Enable simplified launch';
 $string['tincansimplelaunchnav_help'] = 'If selected, the user will bypass the registration screen and the course will be automatically launched using the most recent registration. If no prior registration is found, one will be created. <b>Enabling this setting will disable the multiple registrations setting.</b>';

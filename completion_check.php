@@ -36,7 +36,7 @@ if ($tincanlaunch->tincanexpiry > 0) {
 }
 
 if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-    // Query to get the cached completion state (if available)
+    // Query to get the cached completion state (if available).
     $oldstate = $completion->get_data($cm, false, 0);
 
     // If cached state is completed, we can skip the check.

@@ -70,11 +70,11 @@ class check_completion extends \core\task\scheduled_task {
 
                         // Execute plugins 'tincanlaunch_get_completion_state' to determine if complete.
                         $completion->update_state($cm, $possibleresult, $enrolment->userid);
-    
+
                         // Query the Moodle DB again to determine a change in completion state.
                         $newstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
                         echo ('New completion state is '.$newstate.'. '.PHP_EOL);
-    
+
                         if ($oldstate !== $newstate) {
                             // Trigger Activity completed event.
                             $event = \mod_tincanlaunch\event\activity_completed::create(array(

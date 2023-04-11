@@ -53,7 +53,7 @@ if (! $tincanlaunchs = get_all_instances_in_course('tincanlaunch', $course)) {
 }
 
 $table = new html_table();
-//$table->attributes['class'] = 'generaltable mod_index';
+
 $table->head  = array (get_string('tincanlaunchname', 'tincanlaunch'), 'Section number', 'Custom completion requirements');
 
 foreach ($tincanlaunchs as $tincanlaunch) {
@@ -71,7 +71,7 @@ foreach ($tincanlaunchs as $tincanlaunch) {
     $completionrequirements = '';
 
     $tincanverbid = $tincanlaunch->tincanverbid;
-    
+
     if ($tincanverbid != '') {
         $tincanverb = ucfirst(substr($tincanverbid, strrpos($tincanverbid, '/') + 1));
         $description = get_string('completiondetail:completionbyverbdesc', 'tincanlaunch', $tincanverb);

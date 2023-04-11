@@ -70,8 +70,8 @@ $statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
 $tincanphputil = new \TinCan\Util();
 $newregistrationid = $tincanphputil->getUUID();
 
-// Evaluate the LRS status code
-if ($statuscode != 200 && $statuscode != 404) { // Some error other than 404
+// Evaluate the LRS status code.
+if ($statuscode != 200 && $statuscode != 404) { // Some error other than 404.
     echo $OUTPUT->notification(get_string('tincanlaunch_notavailable', 'tincanlaunch'), 'error');
     debugging("<p>Error attempting to get registration data from State API.</p><pre>" .
         var_dump($getregistrationdatafromlrsstate) . "</pre>", DEBUG_DEVELOPER);
@@ -127,15 +127,15 @@ if ($statuscode != 200 && $statuscode != 404) { // Some error other than 404
 
         // Multiple registrations for standard launch navigation - Display new registration attempt link.
         if ($tincanlaunch->tincanmultipleregs == 1) {
-            echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'. $newregistrationid .'>'.
-                get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
+            echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'.
+                $newregistrationid .'>'. get_string('tincanlaunch_attempt', 'tincanlaunch') .'</a></div>';
         }
     } else { // Simplified Navigation
-        // Utilize the simplified registration ID
+        // Utilize the simplified registration ID.
         echo "<div id=tincanlaunch_simplified><a id=tincanlaunch_simplifiedlink-" . $simplifiedregid . ">" . "</a></div>";
     }
-} else { // No registration data on LRS - LRS will return 404 status - {"errorId": "0c621409...","message": "No State found"}
-    if ($tincanlaunch->tincansimplelaunchnav == 1){
+} else { // No registration data on LRS - LRS will return 404 status - {"errorId": "0c621409...","message": "No State found"}.
+    if ($tincanlaunch->tincansimplelaunchnav == 1) {
         echo "<div id=tincanlaunch_simplified><a id=tincanlaunch_simplifiedlink-" . $newregistrationid . ">" . "</a></div>";
     } else {
         echo '<div id=tincanlaunch_newattempt><a class="btn btn-primary" id=tincanlaunch_newattemptlink-'. $newregistrationid .'>'.

@@ -149,7 +149,7 @@ if ($lrsrespond != 204) {
     die();
 }
 
-// Set completion for module_viewed
+// Set completion for module_viewed.
 $completion = new \completion_info($course);
 $completion->set_module_viewed($cm);
 

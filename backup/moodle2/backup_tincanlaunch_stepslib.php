@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Structure step to backup one tincanlaunch activity
  */
@@ -37,7 +35,7 @@ class backup_tincanlaunch_activity_structure_step extends backup_activity_struct
             'tincanverbid', 'tincanexpiry', 'overridedefaults', 'tincanmultipleregs',
             'tincansimplelaunchnav', 'timecreated', 'timemodified'));
 
-        $tincanlaunchlrs = new backup_nested_element('tincanlaunchlrs', array('id'), 
+        $tincanlaunchlrs = new backup_nested_element('tincanlaunchlrs', array('id'),
             array( 'lrsendpoint', 'lrsauthentication', 'lrslogin', 'lrspass',
             'customacchp', 'useactoremail', 'lrsduration'));
 
@@ -47,7 +45,7 @@ class backup_tincanlaunch_activity_structure_step extends backup_activity_struct
         $tincanlaunch->set_source_table('tincanlaunch', array('id' => backup::VAR_ACTIVITYID));
         $tincanlaunchlrs->set_source_table('tincanlaunch_lrs', array('tincanlaunchid' => backup::VAR_PARENTID));
 
-        // Define file annotations
+        // Define file annotations.
         $tincanlaunch->annotate_files('mod_tincanlaunch', 'intro', null);
         $tincanlaunch->annotate_files('mod_tincanlaunch', 'package', null);
         $tincanlaunch->annotate_files('mod_tincanlaunch', 'content', null);

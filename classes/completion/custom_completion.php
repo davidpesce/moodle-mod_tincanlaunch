@@ -20,12 +20,10 @@ namespace mod_tincanlaunch\completion;
 
 use core_completion\activity_custom_completion;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Activity custom completion subclass for the tincanlaunch activity.
  *
- * Class for defining mod_tincanlaunch custom completion rules and fetching the 
+ * Class for defining mod_tincanlaunch custom completion rules and fetching the
  * completion statuses of the custom completion rules for a given tincanlaunch
  * instance and a user.
  *
@@ -51,7 +49,7 @@ class custom_completion extends activity_custom_completion {
         $cm = $this->cm;
 
         $tincanlaunch = $DB->get_record('tincanlaunch', array('id' => $cm->instance), '*', MUST_EXIST);
-    
+
         $tincanlaunchsettings = tincanlaunch_settings($cm->instance);
 
         // Retrieve expirydays (if set) and set expirydate.
@@ -64,7 +62,7 @@ class custom_completion extends activity_custom_completion {
         }
 
         if (!empty($tincanlaunch->tincanverbid)) {
-            // Retrieve statements from LRS matching actor, object, and completion verb
+            // Retrieve statements from LRS matching actor, object, and completion verb.
             $user = $DB->get_record('user', array ('id' => $userid));
             $statementquery = tincanlaunch_get_statements(
                 $tincanlaunchsettings['tincanlaunchlrsendpoint'],
@@ -77,7 +75,7 @@ class custom_completion extends activity_custom_completion {
                 $expiryrangestartdate
             );
         }
-    
+
         // Determine if the statement exists.
         if (!empty($statementquery->content) && $statementquery->success) {
             foreach ($statementquery->content as $statement) {
@@ -90,17 +88,17 @@ class custom_completion extends activity_custom_completion {
 
                     // If expiry is set, see if the timestamp is within expiry.
                     $statementtimestamp = $statement->getTimestamp();
-                    if ($expiryrangestartdate !== null && $expiryrangestartdate <= $statementtimestamp){
+                    if ($expiryrangestartdate !== null && $expiryrangestartdate <= $statementtimestamp) {
                         $status = true;
                         break;
-                    } else if ($expiryrangestartdate === null){
+                    } else if ($expiryrangestartdate === null) {
                         $status = true;
                         break;
                     }
                 }
             }
         }
-        
+
         return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
     }
 

@@ -53,7 +53,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_decode_contents() {
+    public static function define_decode_contents() {
         $contents = array();
 
         $contents[] = new restore_decode_content('tincanlaunch', array('intro'), 'tincanlaunch');
@@ -67,7 +67,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_decode_rules() {
+    public static function define_decode_rules() {
         $rules = array();
 
         // List of tincanlaunchs in course.
@@ -93,7 +93,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_restore_log_rules() {
+    public static function define_restore_log_rules() {
         $rules = array();
 
         $rules[] = new restore_log_rule('tincanlaunch', 'add', 'view.php?id={course_module}', '{tincanlaunch}');
@@ -115,7 +115,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_restore_log_rules_for_course() {
+    public static function define_restore_log_rules_for_course() {
         $rules = array();
 
         $rules[] = new restore_log_rule('tincanlaunch', 'view all', 'index.php?id={course}', null);
