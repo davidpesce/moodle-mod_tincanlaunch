@@ -24,6 +24,10 @@
 
 /**
  * Structure step to backup one tincanlaunch activity
+ *
+ * @package    mod_tincanlaunch
+ * @copyright  2016 onward Remote-Learner.net Inc
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_tincanlaunch_activity_structure_step extends backup_activity_structure_step {
 

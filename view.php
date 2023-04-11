@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_tincanlaunch;
-
 /**
  * Displays an instance of tincanlaunch.
  *
@@ -23,6 +21,8 @@ namespace mod_tincanlaunch;
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_tincanlaunch;
 
 require_once("../../config.php");
 require('header.php');

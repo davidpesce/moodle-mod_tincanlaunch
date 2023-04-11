@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/* For global tincan settings  */
+/**
+ * Tincanlaunch admin settings.
+ *
+ * @package mod_tincanlaunch
+ * @copyright  2013 Andrew Downes
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 
 defined('MOODLE_INTERNAL') || die;
 

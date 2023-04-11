@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_tincanlaunch
+ * Check tincanlaunch activity completion task.
+ *
+ * @package    mod_tincanlaunch
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,11 +27,27 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(dirname(dirname(__FILE__))).'/lib.php');
 require_once($CFG->dirroot.'/lib/completionlib.php');
 
+/**
+ * Check tincanlaunch activity completion task.
+ *
+ * @package    mod_tincanlaunch
+ * @copyright  2013 Andrew Downes
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class check_completion extends \core\task\scheduled_task {
+
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
     public function get_name() {
         return get_string('checkcompletion', 'tincanlaunch');
     }
 
+    /**
+     * Perform the scheduled task.
+     */
     public function execute() {
         global $DB;
 

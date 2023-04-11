@@ -27,6 +27,13 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_stepslib.php');    // Because it exists (must).
 require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_settingslib.php'); // Because it exists (optional).
 
+/**
+ * Description of tincanlaunch backup task
+ *
+ * @package    mod_tincanlaunch
+ * @copyright  2016 onward Remote-Learner.net Inc
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class backup_tincanlaunch_activity_task extends backup_activity_task {
 
     /**

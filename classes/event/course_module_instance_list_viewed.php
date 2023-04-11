@@ -18,6 +18,7 @@
  * The mod_tincanlaunch instance list viewed event.
  *
  * @package    mod_tincanlaunch
+ * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

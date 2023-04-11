@@ -20,7 +20,7 @@
  * All the tincanlaunch specific functions, needed to implement the module
  * logic, should go here. Never include this file from your lib.php!
  *
- * @package mod_tincanlaunch
+ * @package    mod_tincanlaunch
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,8 +32,6 @@ require_once("$CFG->dirroot/mod/tincanlaunch/lib.php");
  * Send a statement that the activity was launched.
  * This is useful for debugging - if the 'launched' statement is present in the LRS, you know the activity was at least launched.
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string/UUID $registrationid The Tin Can Registration UUID associated with the launch.
  * @return TinCan LRS Response
  */
@@ -119,9 +117,7 @@ function tincan_launched_statement($registrationid) {
 /**
  * Builds a Tin Can launch link for the current module and a given registration
  *
- * @package  mod_tincanlaunch
- * @category tincan
- * @param string/UUID $registrationid The Tin Can Registration UUID associated with the launch.
+ * @param string $registrationid The Tin Can Registration UUID associated with the launch.
  * @return string launch link including querystring.
  */
 function tincanlaunch_get_launch_url($registrationuuid) {
@@ -192,11 +188,11 @@ function tincanlaunch_get_launch_url($registrationuuid) {
  * Used with Learning Locker integration to fetch credentials from the LRS.
  * This process is not part of the xAPI specification or the Tin Can launch spec.
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $basiclogin login/key for the LRS
  * @param string $basicpass pass/secret for the LRS
  * @param string $url LRS endpoint URL
+ * @param DateTime $expiry expiry date for the credentials
+ * @param string $registrationuuid registration UUID for the launch
  * @return array the response of the LRS (Note: not a TinCan LRS Response object)
  */
 function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $expiry, $registrationuuid) {
@@ -277,9 +273,7 @@ function tincanlaunch_get_creds_learninglocker($basiclogin, $basicpass, $url, $e
  * By default, PHP escapes slashes when encoding into JSON. This cause problems for Tin Can,
  * so this function unescapes the slashes after encoding.
  *
- * @package  mod_tincanlaunch
- * @category tincan
- * @param object or array $obj object or array encode to JSON
+ * @param object $obj object or array encode to JSON
  * @return string/JSON JSON encoded object or array
  */
 function tincanlaunch_myjson_encode($obj) {
@@ -289,8 +283,6 @@ function tincanlaunch_myjson_encode($obj) {
 /**
  * Save data to the state. Note: registration is not used as this is a general bucket of data against the activity/learner.
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $data data to store as document
  * @param string $key id to store the document against
  * @param string $etag etag associated with the document last time it was fetched (may be Null if document is new)
@@ -323,10 +315,8 @@ function tincanlaunch_get_global_parameters_and_save_state($data, $key, $etag) {
  * Note: registration is not used as this is a general bucket of data against the activity/learner.
  * Note: fetches a new etag before storing. Will ALWAYS overwrite existing contents of the document.
  *
- * @package  mod_tincanlaunch
- * @category tincan
- * @param string $data data to store as document
  * @param string $key id to store the document against
+ * @param string $data data to store as document
  * @return TinCan LRS Response
  */
 function tincanlaunch_get_global_parameters_and_save_agentprofile($key, $data) {
@@ -355,8 +345,6 @@ function tincanlaunch_get_global_parameters_and_save_agentprofile($key, $data) {
 /**
  * Get data from the state. Note: registration is not used as this is a general bucket of data against the activity/learner.
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $key id to store the document against
  * @return TinCan LRS Response containing the response code and data or error message
  */
@@ -382,11 +370,8 @@ function tincanlaunch_get_global_parameters_and_get_state($key) {
 /**
  * Get the current language of the current user and return it as an RFC 5646 language tag
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @return string RFC 5646 language tag
  */
-
 function tincanlaunch_get_moodle_language() {
     $lang = current_language();
     $langarr = explode('_', $lang);
@@ -402,8 +387,6 @@ function tincanlaunch_get_moodle_language() {
  * Used with Watershed integration to fetch credentials from the LRS.
  * This process is not part of the xAPI specification or the Tin Can launch spec.
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $login login for Watershed
  * @param string $pass pass for Watershed
  * @param string $endpoint LRS endpoint URL
@@ -450,14 +433,11 @@ function tincanlaunch_get_creds_watershed($login, $pass, $endpoint, $expiry) {
  * @param {String} [$auth] Auth string
  * @param {String} [$method] Method of the request e.g. POST.
  * @param {String} [$url] URL to request
- * @param {Array} [$options] Array of optional properties.
- * @param {String} [content] Content of the request (should be JSON).
  * @return {Array} Details of the response
  * @return {String} [metadata] Raw metadata of the response
  * @return {String} [content] Raw content of the response
  * @return {Integer} [status] HTTP status code of the response e.g. 201
  */
-
 function tincanlaunch_send_api_request($auth, $method, $url) {
     $options = func_num_args() === 4 ? func_get_arg(3) : array();
 

@@ -26,6 +26,13 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/restore_tincanlaunch_stepslib.php'); // Because it exists (must).
 
+/**
+ * Description of tincanlaunch restore task
+ *
+ * @package    mod_tincanlaunch
+ * @copyright  2016 onward Remote-Learner.net Inc
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_tincanlaunch_activity_task extends restore_activity_task {
 
     /**
@@ -87,9 +94,9 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
 
     /**
      * Define the restore log rules that will be applied
-     * by the {@link restore_logs_processor} when restoring
+     * by the restore_logs_processor when restoring
      * tincanlaunch logs. It must return one array
-     * of {@link restore_log_rule} objects.
+     * of restore_log_rule objects.
      *
      * @return array
      */
@@ -105,9 +112,9 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
 
     /**
      * Define the restore log rules that will be applied
-     * by the {@link restore_logs_processor} when restoring
+     * by the restore_logs_processor when restoring
      * course logs. It must return one array
-     * of {@link restore_log_rule} objects.
+     * of restore_log_rule objects.
      *
      * Note this rules are applied when restoring course logs
      * by the restore final task, but are defined here at

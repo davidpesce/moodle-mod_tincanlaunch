@@ -70,11 +70,12 @@ function tincanlaunch_supports($feature) {
  * (defined by the form in mod_form.php) this function
  * will create a new instance and return the id number
  * of the new instance.
+ *
  * @param object $tincanlaunch An object from the form in mod_form.php
- * @global moodle_database $DB
+ * @param object $mform
  * @return int The id of the newly inserted tincanlaunch record
  */
-function tincanlaunch_add_instance(stdClass $tincanlaunch) {
+function tincanlaunch_add_instance(stdClass $tincanlaunch, $mform=null) {
     global $DB;
 
     $tincanlaunch->timecreated = time();
@@ -110,9 +111,10 @@ function tincanlaunch_add_instance(stdClass $tincanlaunch) {
  * will update an existing instance with new data.
  *
  * @param object $tincanlaunch An object from the form in mod_form.php
+ * @param object $mform
  * @return boolean Success/Fail
  */
-function tincanlaunch_update_instance(stdClass $tincanlaunch) {
+function tincanlaunch_update_instance(stdClass $tincanlaunch, $mform = null) {
     global $DB;
 
     $tincanlaunch->timemodified = time();
@@ -163,8 +165,7 @@ function tincanlaunch_update_instance(stdClass $tincanlaunch) {
  * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
  *
  * @param stdClass $coursemodule The coursemodule object (record).
- * @return cached_cm_info An object on information that the courses
- *                        will know about (most noticeably, an icon).
+ * @return cached_cm_info An object on information that the courses will know about (most noticeably, an icon).
  */
 function tincanlaunch_get_coursemodule_info($coursemodule) {
     global $DB;
@@ -194,6 +195,12 @@ function tincanlaunch_get_coursemodule_info($coursemodule) {
     return $result;
 }
 
+/**
+ * Builds the tincanlaunch_lrs object.
+ *
+ * @param stdClass $tincanlaunch The tincanlaunch object (record).
+ * @return stdClass An object with the LRS settings.
+ */
 function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
 
     // Data for tincanlaunch_lrs table.
@@ -213,8 +220,7 @@ function tincanlaunch_build_lrs_settings(stdClass $tincanlaunch) {
 /**
  * Removes an instance of the tincanlaunch from the database
  *
- * Given an ID of an instance of this module,
- * this function will permanently delete the instance
+ * Given an ID of an instance of this module, this function will permanently delete the instance
  * and any data that depends on it.
  *
  * @param int $id Id of the module instance
@@ -273,7 +279,6 @@ function tincanlaunch_print_recent_activity() {
  * as sending out mail, toggling flags etc ...
  *
  * @return boolean
- * @todo Finish documenting this function
  **/
 function tincanlaunch_cron() {
     return true;
@@ -282,7 +287,6 @@ function tincanlaunch_cron() {
 /**
  * Returns all other caps used in the module
  *
- * @example return array('moodle/site:accessallgroups');
  * @return array
  */
 function tincanlaunch_get_extra_capabilities() {
@@ -294,15 +298,12 @@ function tincanlaunch_get_extra_capabilities() {
 /**
  * Returns the lists of all browsable file areas within the given module context
  *
- * The file area 'intro' for the activity introduction field is added automatically
- * by {@link file_browser::get_file_info_context_module()}
- *
  * @param stdClass $course
  * @param stdClass $cm
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function tincanlaunch_get_file_areas() {
+function tincanlaunch_get_file_areas($course, $cm, $context) {
     $areas = array();
     $areas['content'] = get_string('areacontent', 'scorm');
     $areas['package'] = get_string('areapackage', 'scorm');
@@ -312,7 +313,6 @@ function tincanlaunch_get_file_areas() {
 /**
  * File browsing support for tincanlaunch file areas
  *
- * @package mod_tincanlaunch
  * @category files
  *
  * @param file_browser $browser
@@ -354,7 +354,6 @@ function tincanlaunch_get_file_info($browser, $areas, $context, $filearea, $file
 /**
  * Serves Tin Can content, introduction images and packages. Implements needed access control ;-)
  *
- * @package  mod_tincanlaunch
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
@@ -447,12 +446,10 @@ It looks like the standard Quiz module does that same thing, so I don't feel so 
  * Note: This takes the *first* activity from the tincan.xml file to be the activity intended
  * to be launched. It will not go hunting for launch URLs any activities listed below.
  * Based closely on code from the SCORM and (to a lesser extent) Resource modules.
- * @package  mod_tincanlaunch
- * @category tincan
+ *
  * @param object $tincanlaunch An object from the form in mod_form.php
  * @return array empty if no issue is found. Array of error message otherwise
  */
-
 function tincanlaunch_process_new_package($tincanlaunch) {
     global $DB, $CFG;
 
@@ -525,10 +522,9 @@ function tincanlaunch_process_new_package($tincanlaunch) {
 /**
  * Check that a Zip file contains a tincan.xml file in the right place. Used in mod_form.php.
  * Heavily based on scorm_validate_package in /mod/scorm/lib.php
- * @package  mod_tincanlaunch
- * @category tincan
+ *
  * @param stored_file $file a Zip file.
- * @return array empty if no issue is found. Array of error message otherwise
+ * @return array empty if no issue is found. Array of error message otherwise.
  */
 function tincanlaunch_validate_package($file) {
     $packer = get_file_packer('application/zip');
@@ -562,14 +558,12 @@ function tincanlaunch_validate_package($file) {
  * Fetches Statements from the LRS. This is used for completion tracking -
  * we check for a statement matching certain criteria for each learner.
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $url LRS endpoint URL
  * @param string $basiclogin login/key for the LRS
  * @param string $basicpass pass/secret for the LRS
  * @param string $version version of xAPI to use
  * @param string $activityid Activity Id to filter by
- * @param TinCan Agent $agent Agent to filter by
+ * @param TinCan $agent Aagent Agent to filter by
  * @param string $verb Verb Id to filter by
  * @param string $since Since date to filter by
  * @return TinCan LRS Response
@@ -620,11 +614,11 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
 }
 
 /**
- * Build a TinCan Agent based on the current user
+ * Build a TinCan Agent based on the current user.
  *
- * @package  mod_tincanlaunch
- * @category tincan
- * @return TinCan Agent $agent Agent
+ * @param object $instance tincanlaunch instance
+ * @param object $user User object
+ * @return TinCan $agent Agent
  */
 function tincanlaunch_getactor($instance, $user = false) {
     global $USER, $CFG;
@@ -669,8 +663,6 @@ function tincanlaunch_getactor($instance, $user = false) {
 /**
  * Returns the LRS settings relating to a Tin Can Launch module instance
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $instance The Moodle id for the Tin Can module instance.
  * @return array LRS settings to use
  */
@@ -712,8 +704,6 @@ function tincanlaunch_settings($instance) {
 /**
  * Should the global LRS settings be used instead of the instance specific ones?
  *
- * @package  mod_tincanlaunch
- * @category tincan
  * @param string $instance The Moodle id for the Tin Can module instance.
  * @return bool
  */

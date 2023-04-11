@@ -24,9 +24,18 @@
 
 /**
  * Structure step to restore one tincanlaunch activity
+ *
+ * @package    mod_tincanlaunch
+ * @copyright  2016 onward Remote-Learner.net Inc
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_tincanlaunch_activity_structure_step extends restore_activity_structure_step {
 
+    /**
+     * Define the structure of the activity to be restored.
+     *
+     * @return array Return the paths wrapped into standard activity structure.
+     */
     protected function define_structure() {
 
         $paths = array();
@@ -52,6 +61,11 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
         $this->apply_activity_instance($newitemid);
     }
 
+    /**
+     * Process overridden LRS details.
+     *
+     * @param array $data information
+     */
     protected function process_tincanlaunchlrs($data) {
         global $DB;
 
@@ -64,6 +78,10 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
         $this->set_mapping('tincanlaunch_lrs', $oldid, $newitemid);
     }
 
+    /**
+     * After restore process has finished, match files.
+     *
+     */
     protected function after_execute() {
         // Add tincanlaunch related files.
         $this->add_related_files('mod_tincanlaunch', 'intro', null);
