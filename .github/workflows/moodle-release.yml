@@ -4,7 +4,7 @@
 #
 # revision: 2021070201
 #
-name: Releasing in the Plugins directory
+name: Build and Release
 
 on:
   push:
@@ -55,7 +55,6 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: releasezip
-        path: mod_tincanlaunch.zip
     - name: Output artifact URL
       run: |
         ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/releasezip"
