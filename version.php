@@ -34,4 +34,4 @@ $plugin->supported = [311, 401];
 $plugin->cron      = 0;               // Period for cron to check this module (secs).
 $plugin->component = 'mod_tincanlaunch'; // To check on upgrade, that module sits in correct place.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.5';
+$plugin->release = '1.6';
