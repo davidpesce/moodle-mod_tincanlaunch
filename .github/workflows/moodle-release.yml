@@ -49,7 +49,7 @@ jobs:
           path: mod_tincanlaunch.zip
       - name: Output archive URL
         id: output-url
-        run: echo "URL=$(echo ${{ github.event.repository.html_url }}/actions/artifacts/${{ ${{ steps.releasezip.outputs.artifact_id }} }}/zip)" >> $GITHUB_ENV
+        run: echo "URL=$(echo ${{ github.event.repository.html_url }}/actions/artifacts/${{ steps.releasezip.outputs.artifact_id }} }}/zip)" >> $GITHUB_ENV
       - name: Call the service function
         id: add-version
         run: |
