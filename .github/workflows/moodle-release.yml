@@ -50,8 +50,8 @@ jobs:
       - name: Output archive URL
         id: output-url
         run: |
-        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/my_artifact"
-        echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/my_artifact"
+          echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
       - name: Call the service function
         id: add-version
         run: |
