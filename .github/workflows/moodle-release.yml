@@ -22,15 +22,8 @@ defaults:
     shell: bash
 
 jobs:
-  release-at-moodle-org:
+  build:
     runs-on: ubuntu-latest
-    env:
-      PLUGIN: mod_tincanlaunch
-      CURL: curl -s
-      ENDPOINT: https://moodle.org/webservice/rest/server.php
-      TOKEN: ${{ secrets.MOODLE_ORG_TOKEN }}
-      FUNCTION: local_plugins_add_version
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -47,11 +40,26 @@ jobs:
         with:
           name: releasezip
           path: mod_tincanlaunch.zip
-      - name: Output archive URL
-        id: output-url
-        run: |
-          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}"
-          echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
+  release-at-moodle-org:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      PLUGIN: mod_tincanlaunch
+      CURL: curl -s
+      ENDPOINT: https://moodle.org/webservice/rest/server.php
+      TOKEN: ${{ secrets.MOODLE_ORG_TOKEN }}
+      FUNCTION: local_plugins_add_version
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: releasezip
+        path: mod_tincanlaunch.zip
+    - name: Output artifact URL
+      run: |
+        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/releasezip"
+        echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
       - name: Call the service function
         id: add-version
         run: |
