@@ -43,7 +43,7 @@ jobs:
         run: |
           zip -r mod_tincanlaunch.zip . -x ".git/*"
       - name: Upload zip archive
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: releasezip
           path: mod_tincanlaunch.zip
@@ -62,7 +62,7 @@ jobs:
             echo "No tag name has been provided!"
             exit 1
           fi
-          ZIPURL="$URL"
+          ZIPURL="{$URL}"
           RESPONSE=$(${CURL} ${ENDPOINT} --data-urlencode "wstoken=${TOKEN}" \
                                          --data-urlencode "wsfunction=${FUNCTION}" \
                                          --data-urlencode "moodlewsrestformat=json" \
