@@ -32,6 +32,24 @@ jobs:
       FUNCTION: local_plugins_add_version
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Initialize and update submodule
+        run: |
+          git submodule update --init --recursive
+      - name: Create zip archive
+        run: |
+          zip -r "${{ github.event.inputs.tag }}".zip . -x ".git/*"
+      - name: Upload zip archive
+        uses: actions/upload-artifact@v2
+        with:
+          name: releasezip
+          path: "${{ github.event.inputs.tag }}".zip
+      - name: Output archive URL
+        id: output-url
+        run: echo "::set-output name=url::$(echo ${{ github.event.repository.html_url }}/actions/artifacts/${{ steps.upload.outputs.artifact_id }}/zip)"
       - name: Call the service function
         id: add-version
         run: |
@@ -44,7 +62,7 @@ jobs:
             echo "No tag name has been provided!"
             exit 1
           fi
-          ZIPURL="https://api.github.com/repos/${{ github.repository }}/zipball/${TAGNAME}"
+          ZIPURL="${{ steps.output-url.outputs.url }}"
           RESPONSE=$(${CURL} ${ENDPOINT} --data-urlencode "wstoken=${TOKEN}" \
                                          --data-urlencode "wsfunction=${FUNCTION}" \
                                          --data-urlencode "moodlewsrestformat=json" \
