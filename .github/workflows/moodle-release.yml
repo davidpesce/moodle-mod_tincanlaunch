@@ -49,7 +49,7 @@ jobs:
           path: mod_tincanlaunch.zip
       - name: Output archive URL
         id: output-url
-        run: echo "URL=$(echo ${{ github.event.repository.html_url }}/actions/artifacts/${{ steps.upload.outputs.artifact_id }}/zip)" >> $GITHUB_ENV
+        run: echo "URL=$(echo ${{ github.event.repository.html_url }}/actions/artifacts/${{ ${{ steps.releasezip.outputs.artifact_id }} }}/zip)" >> $GITHUB_ENV
       - name: Call the service function
         id: add-version
         run: |
@@ -62,7 +62,7 @@ jobs:
             echo "No tag name has been provided!"
             exit 1
           fi
-          ZIPURL="{$URL}"
+          ZIPURL="${URL}"
           RESPONSE=$(${CURL} ${ENDPOINT} --data-urlencode "wstoken=${TOKEN}" \
                                          --data-urlencode "wsfunction=${FUNCTION}" \
                                          --data-urlencode "moodlewsrestformat=json" \
