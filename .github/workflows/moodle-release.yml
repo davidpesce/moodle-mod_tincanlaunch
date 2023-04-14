@@ -36,9 +36,9 @@ jobs:
         run: |
           zip -r mod_tincanlaunch.zip . -x ".git/*"
       - name: Upload zip archive
-        uses: actions/upload-artifact@v3
-        with:
-          name: mod_tincanlaunch.zip
+        - uses: actions/upload-artifact@v3
+          with:
+            name: mod_tincanlaunch.zip
   release-at-moodle-org:
     needs: build
     runs-on: ubuntu-latest
@@ -51,9 +51,9 @@ jobs:
 
     steps:
     - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: mod_tincanlaunch.zip
+      - uses: actions/download-artifact@v3
+        with:
+          name: mod_tincanlaunch.zip
     - name: Output artifact URL
       run: |
         ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/releasezip"
