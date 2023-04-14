@@ -33,8 +33,7 @@ jobs:
         run: |
           git submodule update --init --recursive
       - name: Create zip archive
-        run: |
-          zip -r mod_tincanlaunch.zip . -x ".git/*"
+        run: zip -r mod_tincanlaunch.zip . -x ".git/*"
       - name: Upload zip archive
         - uses: actions/upload-artifact@v3
           with:
