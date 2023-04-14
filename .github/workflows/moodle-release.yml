@@ -39,6 +39,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mod_tincanlaunch.zip
+          path: mod_tincanlaunch.zip
   release-at-moodle-org:
     needs: build
     runs-on: ubuntu-latest
