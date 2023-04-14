@@ -57,7 +57,7 @@ jobs:
         name: mod_tincanlaunch.zip
     - name: Output artifact URL
       run: |
-        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/releasezip"
+        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/mod_tincanlaunch.zip"
         echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
     - name: Call the service function
       id: add-version
