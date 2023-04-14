@@ -22,24 +22,6 @@ defaults:
     shell: bash
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-      - name: Initialize and update submodule
-        run: |
-          git submodule update --init --recursive
-      - name: Create zip archive
-        run: |
-          zip -r mod_tincanlaunch.zip . -x ".git/*"
-      - name: Upload zip archive
-        uses: actions/upload-artifact@v3
-        with:
-          name: mod_tincanlaunch.zip
-          path: mod_tincanlaunch.zip
   release-at-moodle-org:
     needs: build
     runs-on: ubuntu-latest
@@ -51,14 +33,6 @@ jobs:
       FUNCTION: local_plugins_add_version
 
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: mod_tincanlaunch.zip
-    - name: Output artifact URL
-      run: |
-        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ github.run_number }}/mod_tincanlaunch.zip"
-        echo "ARTIFACT_URL=$ARTIFACT_URL" >> $GITHUB_ENV
     - name: Call the service function
       id: add-version
       run: |
@@ -71,7 +45,7 @@ jobs:
           echo "No tag name has been provided!"
           exit 1
         fi
-        ZIPURL="${ARTIFACT_URL}"
+        ZIPURL="https://api.github.com/repos/${{ github.repository }}/zipball/${TAGNAME}"
         RESPONSE=$(${CURL} ${ENDPOINT} --data-urlencode "wstoken=${TOKEN}" \
                                         --data-urlencode "wsfunction=${FUNCTION}" \
                                         --data-urlencode "moodlewsrestformat=json" \
