@@ -23,7 +23,6 @@ defaults:
 
 jobs:
   release-at-moodle-org:
-    needs: build
     runs-on: ubuntu-latest
     env:
       PLUGIN: mod_tincanlaunch
