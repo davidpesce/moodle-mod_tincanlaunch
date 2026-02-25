@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * English strings for tincanlaunch
  *
@@ -156,3 +155,12 @@ $string['returntoregistrations'] = 'Return to registrations table';
 // Simplified Navigation.
 $string['tincansimplelaunchnav'] = 'Enable simplified launch';
 $string['tincansimplelaunchnav_help'] = 'If selected, the user will bypass the registration screen and the course will be automatically launched using the most recent registration. If no prior registration is found, one will be created. <b>Enabling this setting will disable the multiple registrations setting.</b>';
+
+// Privacy API.
+$string['privacy:metadata:lrs'] = 'The xAPI LRS stores learning activity data sent from Moodle when users launch and interact with xAPI content.';
+$string['privacy:metadata:lrs:actor_name'] = 'The full name of the user is sent to the LRS to identify the learner in xAPI statements.';
+$string['privacy:metadata:lrs:actor_email'] = 'The email address of the user is sent to the LRS when "identify by email" is enabled.';
+$string['privacy:metadata:lrs:actor_account_name'] = 'The user\'s ID number or username is sent to the LRS when custom account homepage or fallback identification is used.';
+$string['privacy:metadata:lrs:registration'] = 'A registration UUID is generated for each attempt and sent to the LRS to track activity sessions.';
+$string['privacy:metadata:lrs:statements'] = 'xAPI statements about the user\'s learning activity (e.g. launched, completed) are stored in the LRS.';
+$string['privacy:metadata:lrs:agent_profile'] = 'User profile data including language preference and custom profile fields may be sent to the LRS agent profile.';

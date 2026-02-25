@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2015 Rustici Software
 
@@ -14,12 +28,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 class Person implements VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait;
+    use ArraySetterTrait;
+    use FromJSONTrait;
+
     protected $objectType = 'Person';
 
     protected $name;
@@ -37,14 +52,14 @@ class Person implements VersionableInterface
     }
 
     public function asVersion($version) {
-        $result = array(
-            'objectType' => $this->objectType
-        );
+        $result = [
+            'objectType' => $this->objectType,
+        ];
         if (isset($this->name)) {
             $result['name'] = $this->name;
         }
         if (isset($this->account)) {
-            $result['account'] = array();
+            $result['account'] = [];
             foreach ($this->account as $account) {
                 if (! $account instanceof AgentAccount && is_array($account)) {
                     $account = new AgentAccount($account);
@@ -65,20 +80,47 @@ class Person implements VersionableInterface
         return $result;
     }
 
-    public function getObjectType() { return $this->objectType; }
+    public function getObjectType() {
+        return $this->objectType;
+    }
 
-    public function setName($value) { $this->name = $value; return $this; }
-    public function getName() { return $this->name; }
+    public function setName($value) {
+        $this->name = $value;
+        return $this;
+    }
+    public function getName() {
+        return $this->name;
+    }
 
-    public function setMbox($value) { $this->mbox = $value; return $this; }
-    public function getMbox() { return $this->mbox; }
+    public function setMbox($value) {
+        $this->mbox = $value;
+        return $this;
+    }
+    public function getMbox() {
+        return $this->mbox;
+    }
 
-    public function setMbox_sha1sum($value) { $this->mbox_sha1sum = $value; return $this; }
-    public function getMbox_sha1sum() {return $this->mbox_sha1sum;}
+    public function setMbox_sha1sum($value) {
+        $this->mbox_sha1sum = $value;
+        return $this;
+    }
+    public function getMbox_sha1sum() {
+        return $this->mbox_sha1sum;
+    }
 
-    public function setOpenid($value) { $this->openid = $value; return $this; }
-    public function getOpenid() { return $this->openid; }
+    public function setOpenid($value) {
+        $this->openid = $value;
+        return $this;
+    }
+    public function getOpenid() {
+        return $this->openid;
+    }
 
-    public function setAccount($value) { $this->account = $value; return $this; }
-    public function getAccount() { return $this->account; }
+    public function setAccount($value) {
+        $this->account = $value;
+        return $this;
+    }
+    public function getAccount() {
+        return $this->account;
+    }
 }

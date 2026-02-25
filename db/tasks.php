@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'mod_tincanlaunch\task\check_completion',
         'blocking' => 0,
         'minute' => '01',
-        'hour' => '23'
-    )
-);
+        'hour' => '23',
+    ],
+];

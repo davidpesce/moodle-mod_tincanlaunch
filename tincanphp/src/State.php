@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,7 +28,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 class State extends Document
@@ -32,14 +45,15 @@ class State extends Document
 
         return $this;
     }
-    public function getActivity() { return $this->activity; }
+    public function getActivity() {
+        return $this->activity;
+    }
 
     public function setAgent($value) {
         if ((! $value instanceof Agent && ! $value instanceof Group) && is_array($value)) {
             if (isset($value['objectType']) && $value['objectType'] === 'Group') {
                 $value = new Group($value);
-            }
-            else {
+            } else {
                 $value = new Agent($value);
             }
         }
@@ -48,7 +62,9 @@ class State extends Document
 
         return $this;
     }
-    public function getAgent() { return $this->agent; }
+    public function getAgent() {
+        return $this->agent;
+    }
 
     public function setRegistration($value) {
         if (isset($value) && ! preg_match(Util::UUID_REGEX, $value)) {
@@ -59,5 +75,7 @@ class State extends Document
 
         return $this;
     }
-    public function getRegistration() { return $this->registration; }
+    public function getRegistration() {
+        return $this->registration;
+    }
 }

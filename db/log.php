@@ -27,9 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 
 global $DB;
 
-$logs = array(
-    array('module' => 'tincanlaunch', 'action' => 'add', 'mtable' => 'tincanlaunch', 'field' => 'name'),
-    array('module' => 'tincanlaunch', 'action' => 'update', 'mtable' => 'tincanlaunch', 'field' => 'name'),
-    array('module' => 'tincanlaunch', 'action' => 'view', 'mtable' => 'tincanlaunch', 'field' => 'name'),
-    array('module' => 'tincanlaunch', 'action' => 'view all', 'mtable' => 'tincanlaunch', 'field' => 'name')
-);
+$logs = [
+    ['module' => 'tincanlaunch', 'action' => 'add', 'mtable' => 'tincanlaunch', 'field' => 'name'],
+    ['module' => 'tincanlaunch', 'action' => 'update', 'mtable' => 'tincanlaunch', 'field' => 'name'],
+    ['module' => 'tincanlaunch', 'action' => 'view', 'mtable' => 'tincanlaunch', 'field' => 'name'],
+    ['module' => 'tincanlaunch', 'action' => 'view all', 'mtable' => 'tincanlaunch', 'field' => 'name'],
+];

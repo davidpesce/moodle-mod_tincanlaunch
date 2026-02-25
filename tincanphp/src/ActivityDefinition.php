@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,12 +28,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 class ActivityDefinition implements VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait;
+    use FromJSONTrait;
+    use AsVersionTrait;
 
     protected $type;
     protected $name;
@@ -51,14 +66,19 @@ class ActivityDefinition implements VersionableInterface
             $method = 'set' . ucfirst($k);
 
             if (! isset($this->$k)) {
-                $this->$method(array());
+                $this->$method([]);
             }
         }
     }
 
     // FEATURE: check URI?
-    public function setType($value) { $this->type = $value; return $this; }
-    public function getType() { return $this->type; }
+    public function setType($value) {
+        $this->type = $value;
+        return $this;
+    }
+    public function getType() {
+        return $this->type;
+    }
 
     public function setName($value) {
         if (! $value instanceof LanguageMap) {
@@ -69,7 +89,9 @@ class ActivityDefinition implements VersionableInterface
 
         return $this;
     }
-    public function getName() { return $this->name; }
+    public function getName() {
+        return $this->name;
+    }
 
     public function setDescription($value) {
         if (! $value instanceof LanguageMap) {
@@ -80,10 +102,17 @@ class ActivityDefinition implements VersionableInterface
 
         return $this;
     }
-    public function getDescription() { return $this->description; }
+    public function getDescription() {
+        return $this->description;
+    }
 
-    public function setMoreInfo($value) { $this->moreInfo = $value; return $this; }
-    public function getMoreInfo() { return $this->moreInfo; }
+    public function setMoreInfo($value) {
+        $this->moreInfo = $value;
+        return $this;
+    }
+    public function getMoreInfo() {
+        return $this->moreInfo;
+    }
 
     public function setExtensions($value) {
         if (! $value instanceof Extensions) {
@@ -94,22 +123,59 @@ class ActivityDefinition implements VersionableInterface
 
         return $this;
     }
-    public function getExtensions() { return $this->extensions; }
+    public function getExtensions() {
+        return $this->extensions;
+    }
 
-    public function setInteractionType($value) { $this->interactionType = $value; return $this; }
-    public function getInteractionType() { return $this->interactionType; }
-    public function setCorrectResponsesPattern($value) { $this->correctResponsesPattern = $value; return $this; }
-    public function getCorrectResponsesPattern() { return $this->correctResponsesPattern; }
+    public function setInteractionType($value) {
+        $this->interactionType = $value;
+        return $this;
+    }
+    public function getInteractionType() {
+        return $this->interactionType;
+    }
+    public function setCorrectResponsesPattern($value) {
+        $this->correctResponsesPattern = $value;
+        return $this;
+    }
+    public function getCorrectResponsesPattern() {
+        return $this->correctResponsesPattern;
+    }
 
     // TODO: make these arrays of InteractionComponents
-    public function setChoices($value) { $this->choices = $value; return $this; }
-    public function getChoices() { return $this->choices; }
-    public function setScale($value) { $this->scale = $value; return $this; }
-    public function getScale() { return $this->scale; }
-    public function setSource($value) { $this->source = $value; return $this; }
-    public function getSource() { return $this->source; }
-    public function setTarget($value) { $this->target = $value; return $this; }
-    public function getTarget() { return $this->target; }
-    public function setSteps($value) { $this->steps = $value; return $this; }
-    public function getSteps() { return $this->steps; }
+    public function setChoices($value) {
+        $this->choices = $value;
+        return $this;
+    }
+    public function getChoices() {
+        return $this->choices;
+    }
+    public function setScale($value) {
+        $this->scale = $value;
+        return $this;
+    }
+    public function getScale() {
+        return $this->scale;
+    }
+    public function setSource($value) {
+        $this->source = $value;
+        return $this;
+    }
+    public function getSource() {
+        return $this->source;
+    }
+    public function setTarget($value) {
+        $this->target = $value;
+        return $this;
+    }
+    public function getTarget() {
+        return $this->target;
+    }
+    public function setSteps($value) {
+        $this->steps = $value;
+        return $this;
+    }
+    public function getSteps() {
+        return $this->steps;
+    }
 }

@@ -23,15 +23,15 @@
  */
 
 require_once('../../config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
 require_once('locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT);
 
 if ($id) {
     $cm         = get_coursemodule_from_id('tincanlaunch', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $tincanlaunch  = $DB->get_record('tincanlaunch', array('id' => $cm->instance), '*', MUST_EXIST);
+    $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $tincanlaunch  = $DB->get_record('tincanlaunch', ['id' => $cm->instance], '*', MUST_EXIST);
 } else {
     throw new moodle_exception('idmissing', 'tincanlaunch');
 }

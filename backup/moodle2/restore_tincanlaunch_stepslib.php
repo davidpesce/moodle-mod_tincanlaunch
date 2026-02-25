@@ -30,7 +30,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_tincanlaunch_activity_structure_step extends restore_activity_structure_step {
-
     /**
      * Define the structure of the activity to be restored.
      *
@@ -38,7 +37,7 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
      */
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
 
         $paths[] = new restore_path_element('tincanlaunch', '/activity/tincanlaunch');
         $paths[] = new restore_path_element('tincanlaunchlrs', '/activity/tincanlaunch/tincanlaunchlrs');

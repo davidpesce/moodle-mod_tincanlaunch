@@ -34,7 +34,6 @@ require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/restore_tincanlau
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_tincanlaunch_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have.
      *
@@ -61,9 +60,9 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_decode_contents() {
-        $contents = array();
+        $contents = [];
 
-        $contents[] = new restore_decode_content('tincanlaunch', array('intro'), 'tincanlaunch');
+        $contents[] = new restore_decode_content('tincanlaunch', ['intro'], 'tincanlaunch');
 
         return $contents;
     }
@@ -75,7 +74,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_decode_rules() {
-        $rules = array();
+        $rules = [];
 
         // List of tincanlaunchs in course.
         $rules[] = new restore_decode_rule('TINCANLAUNCHINDEX', '/mod/tincanlaunch/index.php?id=$1', 'course');
@@ -101,7 +100,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_restore_log_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('tincanlaunch', 'add', 'view.php?id={course_module}', '{tincanlaunch}');
         $rules[] = new restore_log_rule('tincanlaunch', 'update', 'view.php?id={course_module}', '{tincanlaunch}');
@@ -123,7 +122,7 @@ class restore_tincanlaunch_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_restore_log_rules_for_course() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('tincanlaunch', 'view all', 'index.php?id={course}', null);
 

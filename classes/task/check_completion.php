@@ -23,9 +23,9 @@
  */
 
 namespace mod_tincanlaunch\task;
+
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(dirname(dirname(__FILE__))).'/lib.php');
-require_once($CFG->dirroot.'/lib/completionlib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/lib.php');
 
 /**
  * Check tincanlaunch activity completion task.
@@ -35,7 +35,6 @@ require_once($CFG->dirroot.'/lib/completionlib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class check_completion extends \core\task\scheduled_task {
-
     /**
      * Get a descriptive name for this task (shown to admins).
      *
@@ -51,63 +50,70 @@ class check_completion extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
-        $module = $DB->get_record('modules', array('name' => 'tincanlaunch'), '*', MUST_EXIST);
+        $module = $DB->get_record('modules', ['name' => 'tincanlaunch'], '*', MUST_EXIST);
         $modules = $DB->get_records('tincanlaunch');
-        $courses = array(); // Cache course data incase the multiple modules exist in a course.
+        $courses = []; // Cache course data in case multiple modules exist in a course.
 
         foreach ($modules as $tincanlaunch) {
-            echo ('Checking module id '.$tincanlaunch->id.'. '.PHP_EOL);
+            mtrace('Checking module id ' . $tincanlaunch->id . '.');
             $cm = $DB->get_record(
                 'course_modules',
-                array('module' => $module->id, 'instance' => $tincanlaunch->id),
+                ['module' => $module->id, 'instance' => $tincanlaunch->id],
                 '*',
-                MUST_EXIST
+                IGNORE_MISSING
             );
+            if (!$cm) {
+                mtrace('  Course module not found, skipping.');
+                continue;
+            }
             if (!isset($courses[$cm->course])) {
-                $courses[$cm->course] = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-                $courses[$cm->course]->enrolments = $DB->get_records('user_enrolments', array('status' => 0));
+                $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+                // Get enrolled user IDs for this specific course only.
+                $coursecontext = \context_course::instance($course->id);
+                $enrolledusers = get_enrolled_users($coursecontext, '', 0, 'u.id');
+                $course->enrolleduserids = array_keys($enrolledusers);
+                $courses[$cm->course] = $course;
             }
             $course = $courses[$cm->course];
             $completion = new \completion_info($course);
 
             // Determine if the activity has a completion expiration set.
-            if ($tincanlaunch->tincanexpiry > 0) { // Yes, completion expiry set.
+            if ($tincanlaunch->tincanexpiry > 0) {
                 $possibleresult = COMPLETION_UNKNOWN;
             } else {
                 $possibleresult = COMPLETION_COMPLETE;
             }
 
             if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-                foreach ($course->enrolments as $enrolment) {
-                    echo ('Checking user id '.$enrolment->userid.'. ');
+                foreach ($course->enrolleduserids as $userid) {
+                    mtrace('  Checking user id ' . $userid . '.');
 
                     // Query the Moodle DB to determine current completion state.
-                    $oldstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
+                    $oldstate = $completion->get_data($cm, false, $userid)->completionstate;
                     if ($oldstate != COMPLETION_COMPLETE) {
-                        echo ('Old completion state is '.$oldstate.'. ');
+                        mtrace('    Old completion state is ' . $oldstate . '.');
 
-                        // Execute plugins 'tincanlaunch_get_completion_state' to determine if complete.
-                        $completion->update_state($cm, $possibleresult, $enrolment->userid);
+                        // Update completion state based on LRS data.
+                        $completion->update_state($cm, $possibleresult, $userid);
 
                         // Query the Moodle DB again to determine a change in completion state.
-                        $newstate = $completion->get_data($cm, false, $enrolment->userid)->completionstate;
-                        echo ('New completion state is '.$newstate.'. '.PHP_EOL);
+                        $newstate = $completion->get_data($cm, false, $userid)->completionstate;
+                        mtrace('    New completion state is ' . $newstate . '.');
 
                         if ($oldstate !== $newstate) {
                             // Trigger Activity completed event.
-                            $event = \mod_tincanlaunch\event\activity_completed::create(array(
+                            $event = \mod_tincanlaunch\event\activity_completed::create([
                                 'objectid' => $tincanlaunch->id,
                                 'context' => \context_module::instance($cm->id),
-                                'userid' => $enrolment->userid
-                            ));
+                                'userid' => $userid,
+                            ]);
                             $event->add_record_snapshot('course_modules', $cm);
                             $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
                             $event->trigger();
                         }
                     } else {
-                        echo ('Skipping as activity is already complete in Moodle.'.PHP_EOL);
+                        mtrace('    Skipping - activity is already complete.');
                     }
-
                 }
             }
         }

@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,7 +28,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 use InvalidArgumentException;
@@ -23,9 +36,11 @@ use InvalidArgumentException;
  * An optional field that represents the outcome of a graded Activity achieved
  * by an actor.
  */
-class Score implements VersionableInterface, ComparableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
+class Score implements ComparableInterface, VersionableInterface {
+    use ArraySetterTrait;
+    use FromJSONTrait;
+    use AsVersionTrait;
+    use SignatureComparisonTrait;
 
     /**#@+
      * Class constants
@@ -79,7 +94,7 @@ class Score implements VersionableInterface, ComparableInterface
                 'raw'    => $aRawValue,
                 'min'    => $aMin,
                 'max'    => $aMax,
-                'scaled' => $aScaledValue
+                'scaled' => $aScaledValue,
             ];
         }
         $this->_fromArray($aRawValue);
@@ -93,12 +108,12 @@ class Score implements VersionableInterface, ComparableInterface
     public function setScaled($value) {
         if ($value < static::SCALE_MIN) {
             throw new InvalidArgumentException(
-                sprintf( "Value must be greater than or equal to %s [%s]", static::SCALE_MIN, $value)
+                sprintf("Value must be greater than or equal to %s [%s]", static::SCALE_MIN, $value)
             );
         }
         if ($value > static::SCALE_MAX) {
             throw new InvalidArgumentException(
-                sprintf( "Value must be less than or equal to %s [%s]", static::SCALE_MAX, $value)
+                sprintf("Value must be less than or equal to %s [%s]", static::SCALE_MAX, $value)
             );
         }
         $this->scaled = (float) $value;

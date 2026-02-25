@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,7 +28,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 class Extensions extends Map implements ComparableInterface
@@ -24,23 +37,23 @@ class Extensions extends Map implements ComparableInterface
 
         $keys = array_unique(
             array_merge(
-                isset($this->_map) ? array_keys($this->_map) : array(),
-                isset($sigMap) ? array_keys($sigMap) : array()
+                isset($this->_map) ? array_keys($this->_map) : [],
+                isset($sigMap) ? array_keys($sigMap) : []
             )
         );
 
         foreach ($keys as $key) {
             if (! isset($sigMap[$key])) {
-                return array('success' => false, 'reason' => "$key not in signature");
+                return ['success' => false, 'reason' => "$key not in signature"];
             }
             if (! isset($this->_map[$key])) {
-                return array('success' => false, 'reason' => "$key not in this");
+                return ['success' => false, 'reason' => "$key not in this"];
             }
             if ($this->_map[$key] != $sigMap[$key]) {
-                return array('success' => false, 'reason' => "$key does not match");
+                return ['success' => false, 'reason' => "$key does not match"];
             }
         }
 
-        return array('success' => true, 'reason' => null);
+        return ['success' => true, 'reason' => null];
     }
 }

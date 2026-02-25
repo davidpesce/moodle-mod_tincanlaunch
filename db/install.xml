@@ -16,8 +16,8 @@
         <FIELD NAME="tincanverbid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Launch URL"/>
         <FIELD NAME="tincanexpiry" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="365" SEQUENCE="false" COMMENT="Number of days to expire completion after"/>
         <FIELD NAME="overridedefaults" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Determines if the activity is inheriting the global defaults or has overriden them at the activity level."/>
-        <FIELD NAME="tincanmultipleregs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="1" />
-        <FIELD NAME="tincansimplelaunchnav" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="0" />
+        <FIELD NAME="tincanmultipleregs" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="1"/>
+        <FIELD NAME="tincansimplelaunchnav" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -36,8 +36,8 @@
         <FIELD NAME="lrsauthentication" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="LRS authentication type"/>
         <FIELD NAME="lrslogin" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS login (username)"/>
         <FIELD NAME="lrspass" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="LRS password"/>
-        <FIELD NAME="customacchp" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
-        <FIELD NAME="useactoremail" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="" DEFAULT="1"/>
+        <FIELD NAME="customacchp" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="useactoremail" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="1"/>
         <FIELD NAME="lrsduration" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Duration activity will remain active for."/>
       </FIELDS>
       <KEYS>

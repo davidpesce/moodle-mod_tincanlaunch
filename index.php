@@ -23,24 +23,24 @@
  */
 
 require_once('../../config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $id = required_param('id', PARAM_INT);
 
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 require_course_login($course);
 
 // Trigger instances list viewed event.
 $event = \mod_tincanlaunch\event\course_module_instance_list_viewed::create(
-    array('context' => context_course::instance($course->id))
+    ['context' => context_course::instance($course->id)]
 );
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
 $coursecontext = context_course::instance($course->id);
 
-$PAGE->set_url('/mod/tincanlaunch/index.php', array('id' => $id));
+$PAGE->set_url('/mod/tincanlaunch/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
@@ -48,24 +48,28 @@ $PAGE->set_context($coursecontext);
 echo $OUTPUT->header();
 
 if (! $tincanlaunchs = get_all_instances_in_course('tincanlaunch', $course)) {
-    notice(get_string('notincanlaunchs', 'tincanlaunch'),
-        new moodle_url('/course/view.php', array('id' => $course->id)));
+    notice(
+        get_string('notincanlaunchs', 'tincanlaunch'),
+        new moodle_url('/course/view.php', ['id' => $course->id])
+    );
 }
 
 $table = new html_table();
 
-$table->head  = array (get_string('tincanlaunchname', 'tincanlaunch'), 'Section number', 'Custom completion requirements');
+$table->head  = [get_string('tincanlaunchname', 'tincanlaunch'), 'Section number', 'Custom completion requirements'];
 
 foreach ($tincanlaunchs as $tincanlaunch) {
     if (!$tincanlaunch->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/tincanlaunch/view.php', array('id' => $tincanlaunch->coursemodule)),
+            new moodle_url('/mod/tincanlaunch/view.php', ['id' => $tincanlaunch->coursemodule]),
             format_string($tincanlaunch->name, true),
-            array('class' => 'dimmed'));
+            ['class' => 'dimmed']
+        );
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/tincanlaunch/view.php', array('id' => $tincanlaunch->coursemodule)),
-            format_string($tincanlaunch->name, true));
+            new moodle_url('/mod/tincanlaunch/view.php', ['id' => $tincanlaunch->coursemodule]),
+            format_string($tincanlaunch->name, true)
+        );
     }
 
     $completionrequirements = '';
@@ -83,8 +87,7 @@ foreach ($tincanlaunchs as $tincanlaunch) {
         $completionrequirements .= '<br/>' . $description;
     }
 
-    $table->data[] = array($link, $tincanlaunch->section, $completionrequirements);
-
+    $table->data[] = [$link, $tincanlaunch->section, $completionrequirements];
 }
 echo $OUTPUT->heading(get_string('modulenameplural', 'tincanlaunch'), 2);
 
