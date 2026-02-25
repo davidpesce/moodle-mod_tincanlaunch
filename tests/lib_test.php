@@ -479,11 +479,22 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Test the TINCANLAUNCH_STATE_REGISTRATIONS_KEY constant is defined.
+     * Test the registration key default and configurable behaviour.
      */
-    public function test_state_registrations_key_constant(): void {
-        $this->assertTrue(defined('TINCANLAUNCH_STATE_REGISTRATIONS_KEY'));
-        $this->assertEquals('http://tincanapi.co.uk/stateapikeys/registrations', TINCANLAUNCH_STATE_REGISTRATIONS_KEY);
+    public function test_registration_key(): void {
+        $this->resetAfterTest();
+        $default = 'http://tincanapi.co.uk/stateapikeys/registrations';
+
+        // Default value is returned when no config is set.
+        $this->assertEquals($default, tincanlaunch_get_registration_key());
+
+        // Custom value is returned when config is set.
+        set_config('tincanlaunchregistrationkey', 'https://example.com/custom/key', 'tincanlaunch');
+        $this->assertEquals('https://example.com/custom/key', tincanlaunch_get_registration_key());
+
+        // Falls back to default when config is empty.
+        set_config('tincanlaunchregistrationkey', '', 'tincanlaunch');
+        $this->assertEquals($default, tincanlaunch_get_registration_key());
     }
 
     /**

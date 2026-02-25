@@ -98,6 +98,13 @@ if ($ADMIN->fulltree) {
         1
     ));
 
+    $settings->add(new admin_setting_configtext(
+        'tincanlaunch/tincanlaunchregistrationkey',
+        get_string('tincanlaunchregistrationkey', 'tincanlaunch'),
+        get_string('tincanlaunchregistrationkey_help', 'tincanlaunch'),
+        'http://tincanapi.co.uk/stateapikeys/registrations'
+    ));
+
     $customfieldrecords = $DB->get_records('user_info_field');
     if ($customfieldrecords) {
         $customfields = [];
