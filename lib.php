@@ -516,8 +516,15 @@ function tincanlaunch_process_new_package($tincanlaunch) {
         // Skip if not. (The Moodle admin will need to enter the url manually).
         foreach ($manifest[0]["children"][0]["children"][0]["children"] as $property) {
             if ($property["name"] === "LAUNCH") {
-                $record->tincanlaunchurl = $CFG->wwwroot . "/pluginfile.php/" . $context->id . "/mod_tincanlaunch/"
-                . $manifestfile->get_filearea() . "/" . $property["tagData"];
+                // If the launch URL already has a scheme (e.g. https://), use it as-is.
+                // Otherwise, build a pluginfile.php URL for locally-hosted content.
+                $scheme = parse_url($property["tagData"], PHP_URL_SCHEME);
+                if (in_array($scheme, [null, false], true)) {
+                    $record->tincanlaunchurl = $CFG->wwwroot . "/pluginfile.php/" . $context->id
+                        . "/mod_tincanlaunch/" . $manifestfile->get_filearea() . "/" . $property["tagData"];
+                } else {
+                    $record->tincanlaunchurl = $property["tagData"];
+                }
             }
         }
     }

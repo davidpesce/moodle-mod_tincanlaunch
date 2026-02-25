@@ -179,7 +179,8 @@ function tincanlaunch_get_launch_url($registrationuuid, $tincanlaunch = null) {
     }
 
     // Build the URL to be returned.
-    $rtnstring = $tincanlaunch->tincanlaunchurl . "?" . http_build_query(
+    $queryseparator = parse_url($tincanlaunch->tincanlaunchurl, PHP_URL_QUERY) !== null ? '&' : '?';
+    $rtnstring = $tincanlaunch->tincanlaunchurl . $queryseparator . http_build_query(
         [
             "endpoint" => $url,
             "auth" => "Basic " . $basicauth,
