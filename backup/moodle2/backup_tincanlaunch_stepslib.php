@@ -40,8 +40,8 @@ class backup_tincanlaunch_activity_structure_step extends backup_activity_struct
         // Define each element separated.
         $tincanlaunch = new backup_nested_element('tincanlaunch', ['id'], [
             'name', 'intro', 'introformat', 'tincanlaunchurl', 'tincanactivityid',
-            'tincanverbid', 'tincanexpiry', 'overridedefaults', 'tincanmultipleregs',
-            'tincansimplelaunchnav', 'timecreated', 'timemodified']);
+            'tincanverbid', 'tincanexpiry', 'overridedefaults', 'tincanlaunchtype',
+            'tincanmultipleregs', 'tincansimplelaunchnav', 'timecreated', 'timemodified']);
 
         $tincanlaunchlrs = new backup_nested_element(
             'tincanlaunchlrs',

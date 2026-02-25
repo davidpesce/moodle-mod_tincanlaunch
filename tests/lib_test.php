@@ -93,6 +93,44 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * Test creating an instance with tincanlaunchtype = 1 (External URL).
+     */
+    public function test_add_instance_external_url_type(): void {
+        global $DB;
+
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_tincanlaunch');
+        $instance = $generator->create_instance([
+            'course' => $this->course->id,
+            'tincanlaunchtype' => 1,
+            'tincanlaunchurl' => 'https://example.com/external-activity/index.html',
+            'tincanactivityid' => 'https://example.com/external-activity',
+        ]);
+
+        $record = $DB->get_record('tincanlaunch', ['id' => $instance->id]);
+        $this->assertNotFalse($record);
+        $this->assertEquals(1, (int) $record->tincanlaunchtype);
+        $this->assertEquals('https://example.com/external-activity/index.html', $record->tincanlaunchurl);
+        $this->assertEquals('https://example.com/external-activity', $record->tincanactivityid);
+    }
+
+    /**
+     * Test creating an instance with tincanlaunchtype = 0 (Zip package).
+     */
+    public function test_add_instance_zip_package_type(): void {
+        global $DB;
+
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_tincanlaunch');
+        $instance = $generator->create_instance([
+            'course' => $this->course->id,
+            'tincanlaunchtype' => 0,
+        ]);
+
+        $record = $DB->get_record('tincanlaunch', ['id' => $instance->id]);
+        $this->assertNotFalse($record);
+        $this->assertEquals(0, (int) $record->tincanlaunchtype);
+    }
+
+    /**
      * Test creating a tincanlaunch instance with LRS override.
      */
     public function test_add_instance_with_lrs_override(): void {
