@@ -45,13 +45,6 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 echo $OUTPUT->header();
 
-// Display the completion requirements.
-$cminfo = \cm_info::create($cm);
-$completiondetails = \core_completion\cm_completion_details::get_instance($cminfo, $USER->id); // Fetch completion information.
-$activitydates = \core\activity_dates::get_dates_for_module($cminfo, $USER->id); // Fetch activity dates.
-
-echo $OUTPUT->activity_information($cminfo, $completiondetails, $activitydates);
-
 if ($tincanlaunch->intro) { // Conditions to show the intro can change to look for own settings.
     echo $OUTPUT->box(
         format_module_intro('tincanlaunch', $tincanlaunch, $cm->id),
