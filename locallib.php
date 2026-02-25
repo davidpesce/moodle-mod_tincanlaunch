@@ -420,7 +420,7 @@ function tincanlaunch_get_global_parameters_and_get_state($key, $tincanlaunch = 
 function tincanlaunch_get_moodle_language() {
     $lang = current_language();
     $langarr = explode('_', $lang);
-    if (count($langarr) == 2) {
+    if (count($langarr) >= 2) {
         return $langarr[0] . '-' . strtoupper($langarr[1]);
     } else {
         return $lang;
