@@ -27,12 +27,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['tincanlaunch_attempt'] = 'Nouvelle tentative';
+$string['tincanlaunch_completed'] = 'Expérience complète!';
+$string['tincanlaunch_notavailable'] = "L'apprentissage Record Store n'est pas disponible. S'il vous plaît contactez l'administrateur du système.";
+$string['tincanlaunch_progress'] = 'Tentative en cours';
 $string['tincanlaunchviewfirstlaunched'] = "D'abord lancé";
 $string['tincanlaunchviewlastlaunched'] = 'Dernier lancé';
-$string['tincanlaunchviewlaunchlinkheader'] = 'lien de lancement';
 $string['tincanlaunchviewlaunchlink'] = 'Lancement';
-
-$string['tincanlaunch_completed'] = 'Expérience complète!';
-$string['tincanlaunch_progress'] = 'Tentative en cours';
-$string['tincanlaunch_attempt'] = 'Nouvelle tentative';
-$string['tincanlaunch_notavailable'] = "L'apprentissage Record Store n'est pas disponible. S'il vous plaît contactez l'administrateur du système.";
+$string['tincanlaunchviewlaunchlinkheader'] = 'lien de lancement';

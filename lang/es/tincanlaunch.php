@@ -27,13 +27,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['tincanlaunch:view'] = 'Ver actividad xAPI.';
+$string['tincanlaunch_attempt'] = 'Nuevo intento';
+$string['tincanlaunch_completed'] = 'La experiencia completa!';
+$string['tincanlaunch_notavailable'] = 'The Learning Record Store no está disponible. Por favor, póngase en contacto con el administrador del sistema.';
+$string['tincanlaunch_progress'] = 'Intento en curso';
 $string['tincanlaunchviewfirstlaunched'] = 'Lanzado por primera vez';
 $string['tincanlaunchviewlastlaunched'] = 'Último puesto en marcha';
-$string['tincanlaunchviewlaunchlinkheader'] = 'Vínculo de Inicio';
 $string['tincanlaunchviewlaunchlink'] = 'Lanzamiento';
-
-$string['tincanlaunch_completed'] = 'La experiencia completa!';
-$string['tincanlaunch_progress'] = 'Intento en curso';
-$string['tincanlaunch_attempt'] = 'Nuevo intento';
-$string['tincanlaunch_notavailable'] = 'The Learning Record Store no está disponible. Por favor, póngase en contacto con el administrador del sistema.';
-$string['tincanlaunch:view'] = 'Ver actividad xAPI.';
+$string['tincanlaunchviewlaunchlinkheader'] = 'Vínculo de Inicio';

@@ -27,12 +27,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['tincanlaunch_attempt'] = '新しい試み';
+$string['tincanlaunch_completed'] = '完全な体験！';
+$string['tincanlaunch_notavailable'] = '学習の記録Storeは利用できません。システム管理者に連絡してください。';
+$string['tincanlaunch_progress'] = '進行中の試み';
 $string['tincanlaunchviewfirstlaunched'] = '最初に起動';
 $string['tincanlaunchviewlastlaunched'] = '最後 打ち上げ';
-$string['tincanlaunchviewlaunchlinkheader'] = '起動リンク';
 $string['tincanlaunchviewlaunchlink'] = '打ち上げ';
-
-$string['tincanlaunch_completed'] = '完全な体験！';
-$string['tincanlaunch_progress'] = '進行中の試み';
-$string['tincanlaunch_attempt'] = '新しい試み';
-$string['tincanlaunch_notavailable'] = '学習の記録Storeは利用できません。システム管理者に連絡してください。';
+$string['tincanlaunchviewlaunchlinkheader'] = '起動リンク';

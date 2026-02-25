@@ -27,12 +27,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['tincanlaunch_attempt'] = 'Yeni girişim';
+$string['tincanlaunch_completed'] = 'Deneyim tamamlandı!';
+$string['tincanlaunch_notavailable'] = 'Öğrenme Record Store mevcut değildir. Bir sistem yöneticisine başvurun.';
+$string['tincanlaunch_progress'] = 'Devam Denemesi';
 $string['tincanlaunchviewfirstlaunched'] = 'İlk başlattı';
 $string['tincanlaunchviewlastlaunched'] = 'Son başlattı';
-$string['tincanlaunchviewlaunchlinkheader'] = 'Lansmanı bağlantı';
 $string['tincanlaunchviewlaunchlink'] = 'Başlatmak';
-
-$string['tincanlaunch_completed'] = 'Deneyim tamamlandı!';
-$string['tincanlaunch_progress'] = 'Devam Denemesi';
-$string['tincanlaunch_attempt'] = 'Yeni girişim';
-$string['tincanlaunch_notavailable'] = 'Öğrenme Record Store mevcut değildir. Bir sistem yöneticisine başvurun.';
+$string['tincanlaunchviewlaunchlinkheader'] = 'Lansmanı bağlantı';

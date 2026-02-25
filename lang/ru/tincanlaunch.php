@@ -27,12 +27,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['tincanlaunch_attempt'] = 'Новый попытка';
+$string['tincanlaunch_completed'] = 'Опыт завершена!';
+$string['tincanlaunch_notavailable'] = 'Обучение Запись магазин не доступен. Пожалуйста, свяжитесь с системным администратором.';
+$string['tincanlaunch_progress'] = 'Попытка продолжается.';
 $string['tincanlaunchviewfirstlaunched'] = 'Проект был начат';
 $string['tincanlaunchviewlastlaunched'] = 'Последний запущенный';
-$string['tincanlaunchviewlaunchlinkheader'] = 'Запуск ссылка';
 $string['tincanlaunchviewlaunchlink'] = 'Запуск';
-
-$string['tincanlaunch_completed'] = 'Опыт завершена!';
-$string['tincanlaunch_progress'] = 'Попытка продолжается.';
-$string['tincanlaunch_attempt'] = 'Новый попытка';
-$string['tincanlaunch_notavailable'] = 'Обучение Запись магазин не доступен. Пожалуйста, свяжитесь с системным администратором.';
+$string['tincanlaunchviewlaunchlinkheader'] = 'Запуск ссылка';
