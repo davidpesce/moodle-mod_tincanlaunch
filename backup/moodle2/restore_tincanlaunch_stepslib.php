@@ -82,9 +82,18 @@ class restore_tincanlaunch_activity_structure_step extends restore_activity_stru
      *
      */
     protected function after_execute() {
+        global $DB;
+
         // Add tincanlaunch related files.
         $this->add_related_files('mod_tincanlaunch', 'intro', null);
         $this->add_related_files('mod_tincanlaunch', 'package', null);
         $this->add_related_files('mod_tincanlaunch', 'content', null);
+
+        // Recreate the grade item if the activity has grading enabled.
+        $activityid = $this->task->get_activityid();
+        $tincanlaunch = $DB->get_record('tincanlaunch', ['id' => $activityid]);
+        if ($tincanlaunch) {
+            tincanlaunch_grade_item_update($tincanlaunch);
+        }
     }
 }

@@ -71,7 +71,7 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue(tincanlaunch_supports(FEATURE_COMPLETION_HAS_RULES));
         $this->assertTrue(tincanlaunch_supports(FEATURE_BACKUP_MOODLE2));
         $this->assertEquals(MOD_PURPOSE_CONTENT, tincanlaunch_supports(FEATURE_MOD_PURPOSE));
-        $this->assertNull(tincanlaunch_supports(FEATURE_GRADE_HAS_GRADE));
+        $this->assertTrue(tincanlaunch_supports(FEATURE_GRADE_HAS_GRADE));
     }
 
     /**
@@ -719,5 +719,168 @@ final class lib_test extends \advanced_testcase {
 
         $result = tincanlaunch_match_statement_to_user($statement, $actormap);
         $this->assertNull($result);
+    }
+
+    /**
+     * Test grade_item_update creates a grade item with correct max.
+     */
+    public function test_grade_item_update(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $instance = $this->getDataGenerator()->create_module('tincanlaunch', [
+            'course' => $this->course->id,
+            'grade' => 100,
+        ]);
+
+        $result = tincanlaunch_grade_item_update($instance);
+        $this->assertEquals(GRADE_UPDATE_OK, $result);
+
+        $gradeitem = \grade_item::fetch([
+            'itemtype' => 'mod',
+            'itemmodule' => 'tincanlaunch',
+            'iteminstance' => $instance->id,
+            'courseid' => $this->course->id,
+        ]);
+
+        $this->assertNotFalse($gradeitem);
+        $this->assertEquals(GRADE_TYPE_VALUE, $gradeitem->gradetype);
+        $this->assertEquals(100, (int) $gradeitem->grademax);
+        $this->assertEquals(0, (int) $gradeitem->grademin);
+    }
+
+    /**
+     * Test grade_item_update with grade 0 results in no usable grade item.
+     */
+    public function test_grade_item_update_no_grade(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $instance = $this->getDataGenerator()->create_module('tincanlaunch', [
+            'course' => $this->course->id,
+            'grade' => 0,
+        ]);
+
+        $result = tincanlaunch_grade_item_update($instance);
+        $this->assertEquals(GRADE_UPDATE_OK, $result);
+
+        // With grade = 0, the grade item should be GRADE_TYPE_NONE or not exist.
+        $graderesult = grade_get_grades($this->course->id, 'mod', 'tincanlaunch', $instance->id);
+        if (!empty($graderesult->items)) {
+            $this->assertEquals(GRADE_TYPE_NONE, $graderesult->items[0]->gradetype);
+        } else {
+            // No grade item at all is also acceptable for grade = 0.
+            $this->assertEmpty($graderesult->items);
+        }
+    }
+
+    /**
+     * Test grade_item_delete removes the grade item.
+     */
+    public function test_grade_item_delete(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $instance = $this->getDataGenerator()->create_module('tincanlaunch', [
+            'course' => $this->course->id,
+            'grade' => 100,
+        ]);
+
+        // Ensure grade item exists.
+        tincanlaunch_grade_item_update($instance);
+        $gradeitem = \grade_item::fetch([
+            'itemtype' => 'mod',
+            'itemmodule' => 'tincanlaunch',
+            'iteminstance' => $instance->id,
+            'courseid' => $this->course->id,
+        ]);
+        $this->assertNotFalse($gradeitem);
+
+        // Delete it.
+        $result = tincanlaunch_grade_item_delete($instance);
+        $this->assertEquals(GRADE_UPDATE_OK, $result);
+    }
+
+    /**
+     * Test grade_item_update with user grades pushes grades correctly.
+     */
+    public function test_grade_item_update_with_grades(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $instance = $this->getDataGenerator()->create_module('tincanlaunch', [
+            'course' => $this->course->id,
+            'grade' => 100,
+        ]);
+
+        tincanlaunch_grade_item_update($instance);
+
+        // Push a grade for the student.
+        $grade = new \stdClass();
+        $grade->userid = $this->student->id;
+        $grade->rawgrade = 85.0;
+        $grades = [$this->student->id => $grade];
+
+        $result = tincanlaunch_grade_item_update($instance, $grades);
+        $this->assertEquals(GRADE_UPDATE_OK, $result);
+
+        // Retrieve and verify the grade.
+        $graderesult = grade_get_grades($this->course->id, 'mod', 'tincanlaunch', $instance->id, $this->student->id);
+        $this->assertNotEmpty($graderesult->items);
+        $this->assertNotEmpty($graderesult->items[0]->grades);
+        $this->assertEquals(85.0, (float) $graderesult->items[0]->grades[$this->student->id]->grade);
+    }
+
+    /**
+     * Test add_instance creates a grade item when grade > 0.
+     */
+    public function test_add_instance_creates_grade_item(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $instance = $this->getDataGenerator()->create_module('tincanlaunch', [
+            'course' => $this->course->id,
+            'grade' => 50,
+        ]);
+
+        $gradeitem = \grade_item::fetch([
+            'itemtype' => 'mod',
+            'itemmodule' => 'tincanlaunch',
+            'iteminstance' => $instance->id,
+            'courseid' => $this->course->id,
+        ]);
+
+        $this->assertNotFalse($gradeitem);
+        $this->assertEquals(GRADE_TYPE_VALUE, $gradeitem->gradetype);
+        $this->assertEquals(50, (int) $gradeitem->grademax);
+    }
+
+    /**
+     * Test delete_instance removes the grade item.
+     */
+    public function test_delete_instance_removes_grade_item(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $instance = $this->getDataGenerator()->create_module('tincanlaunch', [
+            'course' => $this->course->id,
+            'grade' => 100,
+        ]);
+
+        // Verify grade item exists.
+        $gradeitem = \grade_item::fetch([
+            'itemtype' => 'mod',
+            'itemmodule' => 'tincanlaunch',
+            'iteminstance' => $instance->id,
+            'courseid' => $this->course->id,
+        ]);
+        $this->assertNotFalse($gradeitem);
+
+        // Delete the instance.
+        tincanlaunch_delete_instance($instance->id);
+
+        // Verify grade item is deleted (fetch returns false for deleted items in clean state).
+        $graderesult = grade_get_grades($this->course->id, 'mod', 'tincanlaunch', $instance->id);
+        $this->assertEmpty($graderesult->items);
     }
 }

@@ -224,6 +224,50 @@ class check_completion extends \core\task\scheduled_task {
                 }
             }
 
+            // Grade sync: extract scores from already-fetched statements and push to gradebook.
+            if (!empty($tincanlaunch->grade) && $tincanlaunch->grade > 0) {
+                $userscores = [];
+                foreach ($statements as $statement) {
+                    $userid = tincanlaunch_match_statement_to_user($statement, $actormap);
+                    if ($userid === null) {
+                        continue;
+                    }
+
+                    $result = $statement->getResult();
+                    if ($result === null) {
+                        continue;
+                    }
+                    $score = $result->getScore();
+                    if ($score === null) {
+                        continue;
+                    }
+                    $scaled = $score->getScaled();
+                    if ($scaled === null) {
+                        continue;
+                    }
+
+                    // Clamp negative scores to 0 (xAPI allows -1.0 to 1.0).
+                    $scaled = max(0.0, (float) $scaled);
+
+                    // Keep highest score per user.
+                    if (!isset($userscores[$userid]) || $scaled > $userscores[$userid]) {
+                        $userscores[$userid] = $scaled;
+                    }
+                }
+
+                if (!empty($userscores)) {
+                    $grades = [];
+                    foreach ($userscores as $userid => $scaled) {
+                        $grade = new \stdClass();
+                        $grade->userid = $userid;
+                        $grade->rawgrade = $scaled * $tincanlaunch->grade;
+                        $grades[$userid] = $grade;
+                    }
+                    tincanlaunch_grade_item_update($tincanlaunch, $grades);
+                    mtrace('  Pushed grades for ' . count($grades) . ' user(s).');
+                }
+            }
+
             // Clear batch results after processing this module.
             custom_completion::set_batch_results(null);
         }

@@ -48,6 +48,7 @@ $string['errorlaunchurlempty'] = 'Launch URL is required when content type is Ex
 $string['eventactivitycompleted'] = 'Activity completed';
 $string['eventactivitylaunched'] = 'Activity launched';
 $string['expirecredentials'] = 'Expire credentials';
+$string['grade_help'] = 'Grades are derived from the xAPI result.score.scaled value on the completion verb statement. The highest score per user is used.';
 $string['idmissing'] = 'You must specify a course_module ID or an instance ID';
 $string['lrsdefaults'] = 'LRS Default Settings';
 $string['lrsheading'] = 'Override default LRS settings';

@@ -76,6 +76,8 @@ function tincanlaunch_supports($feature) {
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
+        case FEATURE_GRADE_HAS_GRADE:
+            return true;
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_CONTENT;
         default:
@@ -120,6 +122,8 @@ function tincanlaunch_add_instance($tincanlaunch, $mform = null) {
         tincanlaunch_process_new_package($tincanlaunch);
     }
 
+    tincanlaunch_grade_item_update($tincanlaunch);
+
     return $tincanlaunch->id;
 }
 
@@ -139,6 +143,11 @@ function tincanlaunch_update_instance($tincanlaunch, $mform = null) {
 
     $tincanlaunch->timemodified = time();
     $tincanlaunch->id = $tincanlaunch->instance;
+
+    // Ensure course is set (needed by grade API).
+    if (empty($tincanlaunch->course)) {
+        $tincanlaunch->course = $DB->get_field('tincanlaunch', 'course', ['id' => $tincanlaunch->id]);
+    }
 
     $tincanlaunchlrs = tincanlaunch_build_lrs_settings($tincanlaunch);
 
@@ -174,6 +183,8 @@ function tincanlaunch_update_instance($tincanlaunch, $mform = null) {
         tincanlaunch_process_new_package($tincanlaunch);
     }
 
+    tincanlaunch_grade_item_update($tincanlaunch);
+
     return true;
 }
 
@@ -192,7 +203,7 @@ function tincanlaunch_get_coursemodule_info($coursemodule) {
 
     $dbparams = ['id' => $coursemodule->instance];
     $fields = 'id, course, name, intro, introformat, tincanlaunchurl, tincanactivityid, tincanverbid, tincanexpiry,
-        overridedefaults, tincanmultipleregs, tincansimplelaunchnav, timecreated, timemodified';
+        overridedefaults, tincanmultipleregs, tincansimplelaunchnav, grade, timecreated, timemodified';
 
     if (!$tincanlaunch = $DB->get_record('tincanlaunch', $dbparams, $fields)) {
         return false;
@@ -253,6 +264,8 @@ function tincanlaunch_delete_instance($id) {
         return false;
     }
 
+    tincanlaunch_grade_item_delete($tincanlaunch);
+
     // Determine if there is a record of this (ever) in the tincanlaunch_lrs table.
     $strictness = IGNORE_MISSING;
     $tincanlaunchlrsid = $DB->get_field('tincanlaunch_lrs', 'id', ['tincanlaunchid' => $id], $strictness);
@@ -264,6 +277,84 @@ function tincanlaunch_delete_instance($id) {
     $DB->delete_records('tincanlaunch', ['id' => $tincanlaunch->id]);
 
     return true;
+}
+
+/**
+ * Creates or updates the grade item for this tincanlaunch instance.
+ *
+ * @param stdClass $tincanlaunch Record with at least id, course, name, grade fields.
+ * @param mixed $grades Optional array of grade objects, or 'reset'.
+ * @return int GRADE_UPDATE_OK, GRADE_UPDATE_FAILED, etc.
+ */
+function tincanlaunch_grade_item_update($tincanlaunch, $grades = null) {
+    global $CFG;
+    require_once($CFG->libdir . '/gradelib.php');
+
+    $params = [
+        'itemname' => $tincanlaunch->name,
+    ];
+
+    if (isset($tincanlaunch->grade) && $tincanlaunch->grade > 0) {
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax'] = $tincanlaunch->grade;
+        $params['grademin'] = 0;
+    } else {
+        $params['gradetype'] = GRADE_TYPE_NONE;
+    }
+
+    if ($grades === 'reset') {
+        $params['reset'] = true;
+        $grades = null;
+    }
+
+    return grade_update('mod/tincanlaunch', $tincanlaunch->course, 'mod', 'tincanlaunch', $tincanlaunch->id, 0, $grades, $params);
+}
+
+/**
+ * Deletes the grade item for this tincanlaunch instance.
+ *
+ * @param stdClass $tincanlaunch Record with at least id and course fields.
+ * @return int GRADE_UPDATE_OK or GRADE_UPDATE_FAILED.
+ */
+function tincanlaunch_grade_item_delete($tincanlaunch) {
+    global $CFG;
+    require_once($CFG->libdir . '/gradelib.php');
+
+    return grade_update(
+        'mod/tincanlaunch',
+        $tincanlaunch->course,
+        'mod',
+        'tincanlaunch',
+        $tincanlaunch->id,
+        0,
+        null,
+        ['deleted' => 1]
+    );
+}
+
+/**
+ * Update grades for the given users.
+ *
+ * @param stdClass $tincanlaunch Record from tincanlaunch table.
+ * @param int $userid Specific user, or 0 for all.
+ * @param bool $nullifnone If true, insert null grade for users with no grade.
+ */
+function tincanlaunch_update_grades($tincanlaunch, $userid = 0, $nullifnone = true) {
+    tincanlaunch_grade_item_update($tincanlaunch);
+}
+
+/**
+ * Returns user grades from the database.
+ *
+ * Grades are pushed by the scheduled task, not pulled on-demand,
+ * so this always returns false.
+ *
+ * @param stdClass $tincanlaunch Record from tincanlaunch table.
+ * @param int $userid Specific user, or 0 for all.
+ * @return bool Always false.
+ */
+function tincanlaunch_get_user_grades($tincanlaunch, $userid = 0) {
+    return false;
 }
 
 /**
