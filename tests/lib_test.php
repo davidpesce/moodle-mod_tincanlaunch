@@ -623,11 +623,10 @@ final class lib_test extends \advanced_testcase {
     /**
      * Test tincanlaunch_match_statement_to_user with mbox actor.
      */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
     public function test_match_statement_to_user_mbox(): void {
         $actormap = ['mailto:alice@example.com' => 10, 'mailto:bob@example.com' => 20];
 
-        // Suppress TinCanPHP deprecation notices (third-party library).
-        $olderror = error_reporting(E_ALL & ~E_DEPRECATED);
         $statement = new \TinCan\Statement([
             'actor' => [
                 'mbox' => 'mailto:alice@example.com',
@@ -638,18 +637,16 @@ final class lib_test extends \advanced_testcase {
         ]);
 
         $result = tincanlaunch_match_statement_to_user($statement, $actormap);
-        error_reporting($olderror);
         $this->assertEquals(10, $result);
     }
 
     /**
      * Test tincanlaunch_match_statement_to_user with account actor.
      */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
     public function test_match_statement_to_user_account(): void {
         $actormap = ['https://myinstitution.example.com|STU001' => 10];
 
-        // Suppress TinCanPHP deprecation notices (third-party library).
-        $olderror = error_reporting(E_ALL & ~E_DEPRECATED);
         $statement = new \TinCan\Statement([
             'actor' => [
                 'account' => [
@@ -663,18 +660,16 @@ final class lib_test extends \advanced_testcase {
         ]);
 
         $result = tincanlaunch_match_statement_to_user($statement, $actormap);
-        error_reporting($olderror);
         $this->assertEquals(10, $result);
     }
 
     /**
      * Test tincanlaunch_match_statement_to_user returns null for unknown actor.
      */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
     public function test_match_statement_to_user_unknown(): void {
         $actormap = ['mailto:alice@example.com' => 10];
 
-        // Suppress TinCanPHP deprecation notices (third-party library).
-        $olderror = error_reporting(E_ALL & ~E_DEPRECATED);
         $statement = new \TinCan\Statement([
             'actor' => [
                 'mbox' => 'mailto:unknown@example.com',
@@ -685,7 +680,6 @@ final class lib_test extends \advanced_testcase {
         ]);
 
         $result = tincanlaunch_match_statement_to_user($statement, $actormap);
-        error_reporting($olderror);
         $this->assertNull($result);
     }
 }

@@ -82,6 +82,7 @@ final class check_completion_test extends \advanced_testcase {
      * LRS query. We verify this by checking that clearing the cache causes
      * different code to execute (the TinCanPHP library is invoked).
      */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
     public function test_batch_results_cleared(): void {
         $this->resetAfterTest();
 
@@ -122,8 +123,6 @@ final class check_completion_test extends \advanced_testcase {
 
         // The TinCanPHP library will throw an error when trying to contact
         // the fake LRS. We catch this to confirm the fallback path ran.
-        // Suppress TinCanPHP deprecation notices (third-party library).
-        $olderror = error_reporting(E_ALL & ~E_DEPRECATED);
         $cc2 = new custom_completion($cminfo, $student->id);
         try {
             $state = $cc2->get_state('tincancompletionverb');
@@ -134,8 +133,6 @@ final class check_completion_test extends \advanced_testcase {
             // This confirms that clearing batch results causes the fallback
             // per-user LRS query path to execute.
             $this->assertStringContainsString('RemoteLRS', $e->getFile());
-        } finally {
-            error_reporting($olderror);
         }
     }
 
