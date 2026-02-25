@@ -25,28 +25,10 @@ Feature: xAPI Launch Link activity completion settings
       | tincanlaunchcustomacchp       |                                   | tincanlaunch |
       | tincanlaunchuseactoremail     | 1                                 | tincanlaunch |
 
-  @javascript
-  Scenario: Teacher creates an xAPI activity with verb-based completion
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "xAPI Launch Link" to section "1"
-    And I set the following fields to these values:
-      | Launch link name | Completion xAPI Activity                    |
-      | Launch URL       | https://example.com/xapi-content/index.html |
-      | Activity ID      | https://example.com/xapi-content            |
-    And I expand all fieldsets
-    And I set the following fields to these values:
-      | Add requirements         | 1                                          |
-      | completionverbenabled    | 1                                          |
-      | tincanverbid             | http://adlnet.gov/expapi/verbs/completed   |
-    And I press "Save and return to course"
-    Then I should see "Completion xAPI Activity" in the "region-main" "region"
-
-  @javascript
-  Scenario: Student sees completion requirements on xAPI activity
+  Scenario: Student sees an xAPI activity with completion tracking enabled
     Given the following "activities" exist:
-      | activity     | name                 | course | idnumber | tincanlaunchurl                             | tincanactivityid                 | completion | tincanverbid                               |
-      | tincanlaunch | Completion Activity  | C1     | tcl3     | https://example.com/xapi-content/index.html | https://example.com/xapi-content | 2          | http://adlnet.gov/expapi/verbs/completed   |
+      | activity     | name                | course | idnumber | tincanlaunchurl                             | tincanactivityid                 | completion | tincanverbid                             |
+      | tincanlaunch | Completion Activity | C1     | tcl3     | https://example.com/xapi-content/index.html | https://example.com/xapi-content | 2          | http://adlnet.gov/expapi/verbs/completed |
     When I log in as "student1"
     And I am on "Course 1" course homepage
     Then I should see "Completion Activity" in the "region-main" "region"

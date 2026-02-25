@@ -16,10 +16,9 @@
 /**
  * Handles display of the launch attempt table (registrations).
  *
- * @package
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author    David Pesce  <david.pesce@exputo.com>
  * @module    mod_tincanlaunch/launch
+ * @copyright 2024 David Pesce <david.pesce@exputo.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 import $ from 'jquery';
@@ -94,7 +93,7 @@ export const init = (courseid) => {
     // Periodically check completion
     setInterval(function() {
         $(SELECTORS.COMPLETION_CHECK).load('completion_check.php?id=' + id);
-    }, 30000); // TODO: make this interval a configuration setting.
+    }, 30000);
 };
 
 const keyTest = (keycode, registrationid) => {
