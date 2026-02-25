@@ -47,6 +47,7 @@ class mod_tincanlaunch_generator extends testing_module_generator {
             'tincanexpiry' => 365,
             'overridedefaults' => 0,
             'tincanmultipleregs' => 1,
+            'tincanlaunchtype' => 1,
             'tincansimplelaunchnav' => 0,
             'tincanlaunchlrsendpoint' => 'https://lrs.example.com/endpoint/',
             'tincanlaunchlrsauthentication' => 1,

@@ -50,29 +50,17 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $this->standard_intro_elements();
 
         $mform->addElement('header', 'packageheading', get_string('tincanpackagetitle', 'tincanlaunch'));
-        $mform->addElement(
-            'static',
-            'packagesettingsdescription',
-            get_string('tincanpackagetitle', 'tincanlaunch'),
-            get_string('tincanpackagetext', 'tincanlaunch')
-        );
 
-        // Start required Fields for Activity.
-        $mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), ['size' => '64']);
-        $mform->setType('tincanlaunchurl', PARAM_TEXT);
-        $mform->addRule('tincanlaunchurl', null, 'required', null, 'client');
-        $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
-        $mform->setDefault('tincanlaunchurl', 'https://example.com/example-activity/index.html');
+        // Content type selector.
+        $typeoptions = [
+            0 => get_string('tincanlaunchtype_zip', 'tincanlaunch'),
+            1 => get_string('tincanlaunchtype_external', 'tincanlaunch'),
+        ];
+        $mform->addElement('select', 'tincanlaunchtype', get_string('tincanlaunchtype', 'tincanlaunch'), $typeoptions);
+        $mform->addHelpButton('tincanlaunchtype', 'tincanlaunchtype', 'tincanlaunch');
+        $mform->setDefault('tincanlaunchtype', 1);
 
-        $mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), ['size' => '64']);
-        $mform->setType('tincanactivityid', PARAM_TEXT);
-        $mform->addRule('tincanactivityid', null, 'required', null, 'client');
-        $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
-        $mform->setDefault('tincanactivityid', 'https://example.com/example-activity');
-
-        // Package upload.
+        // Package upload — shown only for "Zip package".
         $filemanageroptions = [];
         $filemanageroptions['accepted_types'] = ['.zip'];
         $filemanageroptions['maxbytes'] = 0;
@@ -81,6 +69,23 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 
         $mform->addElement('filemanager', 'packagefile', get_string('tincanpackage', 'tincanlaunch'), null, $filemanageroptions);
         $mform->addHelpButton('packagefile', 'tincanpackage', 'tincanlaunch');
+        $mform->hideIf('packagefile', 'tincanlaunchtype', 'eq', 1);
+
+        // Launch URL — shown only for "External URL".
+        $mform->addElement('text', 'tincanlaunchurl', get_string('tincanlaunchurl', 'tincanlaunch'), ['size' => '64']);
+        $mform->setType('tincanlaunchurl', PARAM_TEXT);
+        $mform->addRule('tincanlaunchurl', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanlaunchurl', 'tincanlaunchurl', 'tincanlaunch');
+        $mform->setDefault('tincanlaunchurl', 'https://example.com/example-activity/index.html');
+        $mform->hideIf('tincanlaunchurl', 'tincanlaunchtype', 'eq', 0);
+
+        // Activity ID — shown only for "External URL".
+        $mform->addElement('text', 'tincanactivityid', get_string('tincanactivityid', 'tincanlaunch'), ['size' => '64']);
+        $mform->setType('tincanactivityid', PARAM_TEXT);
+        $mform->addRule('tincanactivityid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('tincanactivityid', 'tincanactivityid', 'tincanlaunch');
+        $mform->setDefault('tincanactivityid', 'https://example.com/example-activity');
+        $mform->hideIf('tincanactivityid', 'tincanlaunchtype', 'eq', 0);
 
         // Start advanced settings.
         $mform->addElement('header', 'lrsheading', get_string('lrsheading', 'tincanlaunch'));
@@ -339,6 +344,22 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         );
         $defaultvalues['packagefile'] = $draftitemid;
 
+        // Auto-detect content type when editing: if a package file exists, default to Zip package (0).
+        if (!empty($defaultvalues['instance'])) {
+            $fs = get_file_storage();
+            $files = $fs->get_area_files(
+                $this->context->id,
+                'mod_tincanlaunch',
+                'package',
+                0,
+                'id',
+                false
+            );
+            if (!empty($files)) {
+                $defaultvalues['tincanlaunchtype'] = 0;
+            }
+        }
+
         // This is needed to persist the default values (after the initial activity creation).
         $suffix = $this->get_suffix();
         if (!empty($defaultvalues['tincanverbid'])) {
@@ -390,7 +411,20 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
     public function validation($data, $files) {
         global $USER;
         $errors = parent::validation($data, $files);
-        if (!empty($data['packagefile'])) {
+
+        $tincanlaunchtype = isset($data['tincanlaunchtype']) ? (int) $data['tincanlaunchtype'] : 1;
+
+        if ($tincanlaunchtype === 1) {
+            // External URL mode: require launch URL and activity ID.
+            if (empty($data['tincanlaunchurl'])) {
+                $errors['tincanlaunchurl'] = get_string('errorlaunchurlempty', 'tincanlaunch');
+            }
+            if (empty($data['tincanactivityid'])) {
+                $errors['tincanactivityid'] = get_string('erroractivityidempty', 'tincanlaunch');
+            }
+        }
+
+        if ($tincanlaunchtype === 0 && !empty($data['packagefile'])) {
             $draftitemid = file_get_submitted_draft_itemid('packagefile');
 
             file_prepare_draft_area(
@@ -407,12 +441,11 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
             $fs = get_file_storage();
             $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id', false);
 
-            if (count($files) < 1) {
-                return $errors;
+            if (count($files) >= 1) {
+                $file = reset($files);
+                // Validate this TinCan package.
+                $errors = array_merge($errors, tincanlaunch_validate_package($file));
             }
-            $file = reset($files);
-            // Validate this TinCan package.
-            $errors = array_merge($errors, tincanlaunch_validate_package($file));
         }
         return $errors;
     }

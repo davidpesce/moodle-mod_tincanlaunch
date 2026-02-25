@@ -115,8 +115,8 @@ function tincanlaunch_add_instance($tincanlaunch, $mform = null) {
         }
     }
 
-    // Process uploaded file.
-    if (!empty($tincanlaunch->packagefile)) {
+    // Process uploaded file (only for Zip package content type).
+    if (!empty($tincanlaunch->packagefile) && empty($tincanlaunch->tincanlaunchtype)) {
         tincanlaunch_process_new_package($tincanlaunch);
     }
 
@@ -169,8 +169,8 @@ function tincanlaunch_update_instance($tincanlaunch, $mform = null) {
         return false;
     }
 
-    // Process uploaded file.
-    if (!empty($tincanlaunch->packagefile)) {
+    // Process uploaded file (only for Zip package content type).
+    if (!empty($tincanlaunch->packagefile) && empty($tincanlaunch->tincanlaunchtype)) {
         tincanlaunch_process_new_package($tincanlaunch);
     }
 
