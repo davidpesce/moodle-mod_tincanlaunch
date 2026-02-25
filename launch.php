@@ -47,7 +47,7 @@ if (empty($registrationid)) {
 
 // Get record(s) of registration(s) from the LRS state API.
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
-    TINCANLAUNCH_STATE_REGISTRATIONS_KEY
+    tincanlaunch_get_registration_key()
 );
 
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
@@ -91,7 +91,7 @@ uasort($registrationdata, function ($a, $b) {
 // This will prevent us sorting, but sorting could be done on output.
 $saveregistrationdata = tincanlaunch_get_global_parameters_and_save_state(
     $registrationdata,
-    TINCANLAUNCH_STATE_REGISTRATIONS_KEY,
+    tincanlaunch_get_registration_key(),
     $registrationdataetag
 );
 $lrsrespond = $saveregistrationdata->httpResponse['status'];

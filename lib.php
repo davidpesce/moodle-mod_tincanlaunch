@@ -30,8 +30,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/** @var string LRS State API key for storing registration data. */
-define('TINCANLAUNCH_STATE_REGISTRATIONS_KEY', 'http://tincanapi.co.uk/stateapikeys/registrations');
+/** @var string Default LRS State API key for storing registration data. */
+define('TINCANLAUNCH_STATE_REGISTRATIONS_KEY_DEFAULT', 'http://tincanapi.co.uk/stateapikeys/registrations');
+
+/**
+ * Returns the configured State API key for storing registration data.
+ *
+ * @return string The registration state key.
+ */
+function tincanlaunch_get_registration_key() {
+    $key = get_config('tincanlaunch', 'tincanlaunchregistrationkey');
+    if (!empty($key)) {
+        return $key;
+    }
+    return TINCANLAUNCH_STATE_REGISTRATIONS_KEY_DEFAULT;
+}
 
 // TinCanPHP - required for interacting with the LRS in tincanlaunch_get_statements.
 require_once($CFG->dirroot . '/mod/tincanlaunch/tincanphp/autoload.php');

@@ -54,7 +54,7 @@ if ($tincanlaunch->intro) { // Conditions to show the intro can change to look f
 }
 
 $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_state(
-    TINCANLAUNCH_STATE_REGISTRATIONS_KEY
+    tincanlaunch_get_registration_key()
 );
 
 $statuscode = $getregistrationdatafromlrsstate->httpResponse['status'];
