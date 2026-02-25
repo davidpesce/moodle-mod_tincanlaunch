@@ -537,4 +537,149 @@ final class lib_test extends \advanced_testcase {
         $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
+
+    /**
+     * Test tincanlaunch_build_actor_map with email (mbox) identification.
+     */
+    public function test_build_actor_map_email(): void {
+        $settings = [
+            'tincanlaunchcustomacchp' => '',
+            'tincanlaunchuseactoremail' => 1,
+        ];
+
+        $user1 = (object) ['id' => 10, 'idnumber' => '', 'email' => 'alice@example.com', 'username' => 'alice'];
+        $user2 = (object) ['id' => 20, 'idnumber' => '', 'email' => 'bob@example.com', 'username' => 'bob'];
+
+        $map = tincanlaunch_build_actor_map([$user1, $user2], $settings);
+
+        $this->assertArrayHasKey('mailto:alice@example.com', $map);
+        $this->assertEquals(10, $map['mailto:alice@example.com']);
+        $this->assertArrayHasKey('mailto:bob@example.com', $map);
+        $this->assertEquals(20, $map['mailto:bob@example.com']);
+    }
+
+    /**
+     * Test tincanlaunch_build_actor_map with custom account homepage (idnumber).
+     */
+    public function test_build_actor_map_account(): void {
+        $settings = [
+            'tincanlaunchcustomacchp' => 'https://myinstitution.example.com',
+            'tincanlaunchuseactoremail' => 1,
+        ];
+
+        $user1 = (object) ['id' => 10, 'idnumber' => 'STU001', 'email' => 'alice@example.com', 'username' => 'alice'];
+        $user2 = (object) ['id' => 20, 'idnumber' => 'STU002', 'email' => 'bob@example.com', 'username' => 'bob'];
+
+        $map = tincanlaunch_build_actor_map([$user1, $user2], $settings);
+
+        $this->assertArrayHasKey('https://myinstitution.example.com|STU001', $map);
+        $this->assertEquals(10, $map['https://myinstitution.example.com|STU001']);
+        $this->assertArrayHasKey('https://myinstitution.example.com|STU002', $map);
+        $this->assertEquals(20, $map['https://myinstitution.example.com|STU002']);
+    }
+
+    /**
+     * Test tincanlaunch_build_actor_map fallback to wwwroot + username.
+     */
+    public function test_build_actor_map_fallback(): void {
+        global $CFG;
+
+        $settings = [
+            'tincanlaunchcustomacchp' => '',
+            'tincanlaunchuseactoremail' => 0,
+        ];
+
+        $user1 = (object) ['id' => 10, 'idnumber' => '', 'email' => '', 'username' => 'alice'];
+
+        $map = tincanlaunch_build_actor_map([$user1], $settings);
+
+        $expectedkey = $CFG->wwwroot . '|alice';
+        $this->assertArrayHasKey($expectedkey, $map);
+        $this->assertEquals(10, $map[$expectedkey]);
+    }
+
+    /**
+     * Test tincanlaunch_build_actor_map with mixed identification strategies.
+     */
+    public function test_build_actor_map_mixed(): void {
+        $settings = [
+            'tincanlaunchcustomacchp' => 'https://myinstitution.example.com',
+            'tincanlaunchuseactoremail' => 1,
+        ];
+
+        // User1 has idnumber — should use account-based.
+        $user1 = (object) ['id' => 10, 'idnumber' => 'STU001', 'email' => 'alice@example.com', 'username' => 'alice'];
+        // User2 has no idnumber but has email — should use mbox.
+        $user2 = (object) ['id' => 20, 'idnumber' => '', 'email' => 'bob@example.com', 'username' => 'bob'];
+
+        $map = tincanlaunch_build_actor_map([$user1, $user2], $settings);
+
+        $this->assertArrayHasKey('https://myinstitution.example.com|STU001', $map);
+        $this->assertEquals(10, $map['https://myinstitution.example.com|STU001']);
+        $this->assertArrayHasKey('mailto:bob@example.com', $map);
+        $this->assertEquals(20, $map['mailto:bob@example.com']);
+    }
+
+    /**
+     * Test tincanlaunch_match_statement_to_user with mbox actor.
+     */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
+    public function test_match_statement_to_user_mbox(): void {
+        $actormap = ['mailto:alice@example.com' => 10, 'mailto:bob@example.com' => 20];
+
+        $statement = new \TinCan\Statement([
+            'actor' => [
+                'mbox' => 'mailto:alice@example.com',
+                'objectType' => 'Agent',
+            ],
+            'verb' => ['id' => 'http://adlnet.gov/expapi/verbs/completed'],
+            'object' => ['id' => 'https://example.com/activity', 'objectType' => 'Activity'],
+        ]);
+
+        $result = tincanlaunch_match_statement_to_user($statement, $actormap);
+        $this->assertEquals(10, $result);
+    }
+
+    /**
+     * Test tincanlaunch_match_statement_to_user with account actor.
+     */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
+    public function test_match_statement_to_user_account(): void {
+        $actormap = ['https://myinstitution.example.com|STU001' => 10];
+
+        $statement = new \TinCan\Statement([
+            'actor' => [
+                'account' => [
+                    'homePage' => 'https://myinstitution.example.com',
+                    'name' => 'STU001',
+                ],
+                'objectType' => 'Agent',
+            ],
+            'verb' => ['id' => 'http://adlnet.gov/expapi/verbs/completed'],
+            'object' => ['id' => 'https://example.com/activity', 'objectType' => 'Activity'],
+        ]);
+
+        $result = tincanlaunch_match_statement_to_user($statement, $actormap);
+        $this->assertEquals(10, $result);
+    }
+
+    /**
+     * Test tincanlaunch_match_statement_to_user returns null for unknown actor.
+     */
+    #[\PHPUnit\Framework\Attributes\IgnoreDeprecations]
+    public function test_match_statement_to_user_unknown(): void {
+        $actormap = ['mailto:alice@example.com' => 10];
+
+        $statement = new \TinCan\Statement([
+            'actor' => [
+                'mbox' => 'mailto:unknown@example.com',
+                'objectType' => 'Agent',
+            ],
+            'verb' => ['id' => 'http://adlnet.gov/expapi/verbs/completed'],
+            'object' => ['id' => 'https://example.com/activity', 'objectType' => 'Activity'],
+        ]);
+
+        $result = tincanlaunch_match_statement_to_user($statement, $actormap);
+        $this->assertNull($result);
+    }
 }

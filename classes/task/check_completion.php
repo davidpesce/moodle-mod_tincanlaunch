@@ -24,11 +24,16 @@
 
 namespace mod_tincanlaunch\task;
 
+use mod_tincanlaunch\completion\custom_completion;
+
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname(dirname(dirname(__FILE__))) . '/lib.php');
 
 /**
  * Check tincanlaunch activity completion task.
+ *
+ * Makes one batch LRS request per module (instead of per user) and uses the
+ * 'since' parameter to only fetch new statements since the last successful run.
  *
  * @package    mod_tincanlaunch
  * @copyright  2013 Andrew Downes
@@ -48,13 +53,20 @@ class check_completion extends \core\task\scheduled_task {
      * Perform the scheduled task.
      */
     public function execute() {
-        global $DB;
+        global $DB, $tincanlaunchsettings;
+
+        $runstarttime = (new \DateTime('now', new \DateTimeZone('UTC')))->format('c');
+        $lastsince = get_config('tincanlaunch', 'cron_last_successful_run');
+        $lrserror = false;
 
         $module = $DB->get_record('modules', ['name' => 'tincanlaunch'], '*', MUST_EXIST);
         $modules = $DB->get_records('tincanlaunch');
-        $courses = []; // Cache course data in case multiple modules exist in a course.
+        $courses = [];
 
         foreach ($modules as $tincanlaunch) {
+            // Reset the settings cache so each module gets its own LRS settings.
+            $tincanlaunchsettings = null;
+
             mtrace('Checking module id ' . $tincanlaunch->id . '.');
             $cm = $DB->get_record(
                 'course_modules',
@@ -68,54 +80,160 @@ class check_completion extends \core\task\scheduled_task {
             }
             if (!isset($courses[$cm->course])) {
                 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
-                // Get enrolled user IDs for this specific course only.
                 $coursecontext = \context_course::instance($course->id);
-                $enrolledusers = get_enrolled_users($coursecontext, '', 0, 'u.id');
+                $enrolledusers = get_enrolled_users($coursecontext, '', 0, 'u.id, u.idnumber, u.email, u.username,
+                    u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename');
+                $course->enrolledusers = $enrolledusers;
                 $course->enrolleduserids = array_keys($enrolledusers);
                 $courses[$cm->course] = $course;
             }
             $course = $courses[$cm->course];
             $completion = new \completion_info($course);
 
-            // Determine if the activity has a completion expiration set.
-            if ($tincanlaunch->tincanexpiry > 0) {
+            if (!$completion->is_enabled($cm) || empty($tincanlaunch->tincanverbid)) {
+                mtrace('  Completion not enabled or no verb set, skipping.');
+                continue;
+            }
+
+            // Determine the 'since' parameter for this module.
+            $since = null;
+            $hasexpiry = ($tincanlaunch->tincanexpiry > 0);
+
+            if ($hasexpiry) {
+                $expirydatetime = new \DateTime('now', new \DateTimeZone('UTC'));
+                $expirydatetime->sub(new \DateInterval('P' . $tincanlaunch->tincanexpiry . 'D'));
+                $expirysincedate = $expirydatetime->format('c');
+
+                // Use the older of last_cron_run and (now - expiry_days) so we catch expirations.
+                if (!empty($lastsince) && $lastsince < $expirysincedate) {
+                    $since = $lastsince;
+                } else {
+                    $since = $expirysincedate;
+                }
+            } else if (!empty($lastsince)) {
+                $since = $lastsince;
+            }
+
+            // Load LRS settings for this module.
+            $settings = tincanlaunch_settings($cm->instance);
+
+            mtrace('  Querying LRS for all users (batch)' . ($since ? ' since ' . $since : '') . '.');
+
+            // One LRS request for ALL users for this module.
+            $statementsresponse = tincanlaunch_get_statements_batch(
+                $settings['tincanlaunchlrsendpoint'],
+                $settings['tincanlaunchlrslogin'],
+                $settings['tincanlaunchlrspass'],
+                $settings['tincanlaunchlrsversion'],
+                $tincanlaunch->tincanactivityid,
+                $tincanlaunch->tincanverbid,
+                $since
+            );
+
+            if ($statementsresponse->success == false) {
+                mtrace('  ERROR: LRS query failed, skipping module.');
+                $lrserror = true;
+                continue;
+            }
+
+            // Build actor map from enrolled users.
+            $actormap = tincanlaunch_build_actor_map(array_values($course->enrolledusers), $settings);
+
+            // Determine the expiry range start date for filtering statement timestamps.
+            $expiryrangestartdate = null;
+            if ($hasexpiry) {
+                $expirydatetime = new \DateTime('now', new \DateTimeZone('UTC'));
+                $expirydatetime->sub(new \DateInterval('P' . $tincanlaunch->tincanexpiry . 'D'));
+                $expiryrangestartdate = $expirydatetime->format('c');
+            }
+
+            // Match statements to users and build batch results.
+            $batchresults = [];
+            $statements = is_array($statementsresponse->content) ? $statementsresponse->content : [];
+            foreach ($statements as $statement) {
+                $target = $statement->getTarget();
+                if ($target === null) {
+                    continue;
+                }
+                $objectid = $target->getId();
+                $objecttype = $target->getObjectType();
+                if ($objecttype !== "Activity" || $tincanlaunch->tincanactivityid !== $objectid) {
+                    continue;
+                }
+
+                // Check expiry on the statement timestamp.
+                if ($expiryrangestartdate !== null) {
+                    $statementtimestamp = $statement->getTimestamp();
+                    if ($statementtimestamp < $expiryrangestartdate) {
+                        continue;
+                    }
+                }
+
+                $userid = tincanlaunch_match_statement_to_user($statement, $actormap);
+                if ($userid !== null) {
+                    $batchresults[$userid] = true;
+                }
+            }
+
+            mtrace('  Found ' . count($batchresults) . ' user(s) with matching statements.');
+
+            // Populate the batch cache for custom_completion::get_state().
+            custom_completion::set_batch_results($batchresults);
+
+            // Determine the possible result for update_state.
+            if ($hasexpiry) {
                 $possibleresult = COMPLETION_UNKNOWN;
             } else {
                 $possibleresult = COMPLETION_COMPLETE;
             }
 
-            if ($completion->is_enabled($cm) && $tincanlaunch->tincanverbid) {
-                foreach ($course->enrolleduserids as $userid) {
-                    mtrace('  Checking user id ' . $userid . '.');
+            foreach ($course->enrolleduserids as $userid) {
+                $oldstate = $completion->get_data($cm, false, $userid)->completionstate;
+                $hascompleted = !empty($batchresults[$userid]);
 
-                    // Query the Moodle DB to determine current completion state.
-                    $oldstate = $completion->get_data($cm, false, $userid)->completionstate;
-                    if ($oldstate != COMPLETION_COMPLETE) {
-                        mtrace('    Old completion state is ' . $oldstate . '.');
+                // Only call update_state when something may change:
+                // - User is not complete and has a new matching statement, OR
+                // - Module has expiry and user is complete but has no qualifying statement (expired).
+                $needsupdate = false;
+                if ($oldstate != COMPLETION_COMPLETE && $hascompleted) {
+                    $needsupdate = true;
+                } else if ($hasexpiry && $oldstate == COMPLETION_COMPLETE && !$hascompleted) {
+                    $needsupdate = true;
+                }
 
-                        // Update completion state based on LRS data.
-                        $completion->update_state($cm, $possibleresult, $userid);
+                if (!$needsupdate) {
+                    continue;
+                }
 
-                        // Query the Moodle DB again to determine a change in completion state.
-                        $newstate = $completion->get_data($cm, false, $userid)->completionstate;
-                        mtrace('    New completion state is ' . $newstate . '.');
+                mtrace('    Updating user id ' . $userid . ' (old state: ' . $oldstate . ').');
 
-                        if ($oldstate !== $newstate) {
-                            // Trigger Activity completed event.
-                            $event = \mod_tincanlaunch\event\activity_completed::create([
-                                'objectid' => $tincanlaunch->id,
-                                'context' => \context_module::instance($cm->id),
-                                'userid' => $userid,
-                            ]);
-                            $event->add_record_snapshot('course_modules', $cm);
-                            $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
-                            $event->trigger();
-                        }
-                    } else {
-                        mtrace('    Skipping - activity is already complete.');
-                    }
+                $completion->update_state($cm, $possibleresult, $userid);
+
+                $newstate = $completion->get_data($cm, false, $userid)->completionstate;
+                mtrace('    New completion state is ' . $newstate . '.');
+
+                if ($oldstate !== $newstate) {
+                    $event = \mod_tincanlaunch\event\activity_completed::create([
+                        'objectid' => $tincanlaunch->id,
+                        'context' => \context_module::instance($cm->id),
+                        'userid' => $userid,
+                    ]);
+                    $event->add_record_snapshot('course_modules', $cm);
+                    $event->add_record_snapshot('tincanlaunch', $tincanlaunch);
+                    $event->trigger();
                 }
             }
+
+            // Clear batch results after processing this module.
+            custom_completion::set_batch_results(null);
+        }
+
+        // Persist the run start time if no LRS errors occurred.
+        if (!$lrserror) {
+            set_config('cron_last_successful_run', $runstarttime, 'tincanlaunch');
+            mtrace('Saved last successful run time: ' . $runstarttime);
+        } else {
+            mtrace('LRS errors occurred; not updating last successful run time.');
         }
     }
 }
