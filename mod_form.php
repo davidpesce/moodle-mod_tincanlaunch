@@ -216,60 +216,69 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
      */
     public function add_completion_rules() {
         $mform =& $this->_form;
+        $suffix = $this->get_suffix();
 
         $items = [];
+
+        $completionverbenabled = 'completionverbenabled' . $suffix;
+        $tincanverbid = 'tincanverbid' . $suffix;
+        $completionverbgroup = 'completionverbgroup' . $suffix;
 
         $verbgroup = [];
 
         // Add completion form based on the xAPI verb.
         $verbgroup[] = $mform->createElement(
             'advcheckbox',
-            'completionverbenabled',
+            $completionverbenabled,
             null,
             get_string('completionverb', 'tincanlaunch')
         );
-        $verbgroup[] = $mform->createElement('text', 'tincanverbid', null, ['size' => '64']);
-        $mform->setType('tincanverbid', PARAM_TEXT);
-        $mform->disabledIf('tincanverbid', 'completionverbenabled');
+        $verbgroup[] = $mform->createElement('text', $tincanverbid, null, ['size' => '64']);
+        $mform->setType($tincanverbid, PARAM_TEXT);
+        $mform->disabledIf($tincanverbid, $completionverbenabled);
 
         $mform->addGroup(
             $verbgroup,
-            'completionverbgroup',
+            $completionverbgroup,
             get_string('completionverbgroup', 'tincanlaunch'),
             [' '],
             false
         );
-        $mform->addGroupRule('completionverbgroup', ['tincanverbid' => [
+        $mform->addGroupRule($completionverbgroup, [$tincanverbid => [
             [get_string('maximumchars', '', 255), 'maxlength', 255, 'client']]]);
-        $mform->addHelpButton('completionverbgroup', 'completionverbgroup', 'tincanlaunch');
+        $mform->addHelpButton($completionverbgroup, 'completionverbgroup', 'tincanlaunch');
 
-        $items[] = 'completionverbgroup';
+        $items[] = $completionverbgroup;
 
         // Add completion form item based on the above verb expiring after a period of time (days).
+        $completionexpiryenabled = 'completionexpiryenabled' . $suffix;
+        $tincanexpiry = 'tincanexpiry' . $suffix;
+        $completionexpirygroup = 'completionexpirygroup' . $suffix;
+
         $expirygroup = [];
         $expirygroup[] = $mform->createElement(
             'advcheckbox',
-            'completionexpiryenabled',
+            $completionexpiryenabled,
             null,
             get_string('completionexpiry', 'tincanlaunch')
         );
 
-        $expirygroup[] = $mform->createElement('text', 'tincanexpiry', null, ['size' => '63']);
-        $mform->setType('tincanexpiry', PARAM_TEXT);
-        $mform->disabledIf('tincanexpiry', 'completionexpiryenabled');
+        $expirygroup[] = $mform->createElement('text', $tincanexpiry, null, ['size' => '63']);
+        $mform->setType($tincanexpiry, PARAM_TEXT);
+        $mform->disabledIf($tincanexpiry, $completionexpiryenabled);
         $mform->addGroup(
             $expirygroup,
-            'completionexpirygroup',
+            $completionexpirygroup,
             get_string('completionexpirygroup', 'tincanlaunch'),
             [' '],
             false
         );
-        $mform->addGroupRule('completionexpirygroup', ['tincanexpiry' => [
+        $mform->addGroupRule($completionexpirygroup, [$tincanexpiry => [
             [get_string('maximumchars', '', 10), 'maxlength', 10, 'client']]]);
-        $mform->addHelpButton('completionexpirygroup', 'completionexpirygroup', 'tincanlaunch');
-        $mform->disabledIf('completionexpirygroup', 'completionverbenabled');
+        $mform->addHelpButton($completionexpirygroup, 'completionexpirygroup', 'tincanlaunch');
+        $mform->disabledIf($completionexpirygroup, $completionverbenabled);
 
-        $items[] = 'completionexpirygroup';
+        $items[] = $completionexpirygroup;
 
         return $items;
     }
@@ -281,10 +290,11 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
      * @return bool
      */
     public function completion_rule_enabled($data) {
-        if (!empty($data['completionverbenabled']) && !empty($data['tincanverbid'])) {
+        $suffix = $this->get_suffix();
+        if (!empty($data['completionverbenabled' . $suffix]) && !empty($data['tincanverbid' . $suffix])) {
             return true;
         }
-        if (!empty($data['completionexpiryenabled']) && !empty($data['tincanexpiry'])) {
+        if (!empty($data['completionexpiryenabled' . $suffix]) && !empty($data['tincanexpiry' . $suffix])) {
             return true;
         }
         return false;
@@ -330,15 +340,16 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $defaultvalues['packagefile'] = $draftitemid;
 
         // This is needed to persist the default values (after the initial activity creation).
+        $suffix = $this->get_suffix();
         if (!empty($defaultvalues['tincanverbid'])) {
-            $defaultvalues['completionverbenabled'] = 1;
+            $defaultvalues['completionverbenabled' . $suffix] = 1;
         } else {
-            $defaultvalues['tincanverbid'] = 'http://adlnet.gov/expapi/verbs/completed';
+            $defaultvalues['tincanverbid' . $suffix] = 'http://adlnet.gov/expapi/verbs/completed';
         }
         if (!empty($defaultvalues['tincanexpiry'])) {
-            $defaultvalues['completionexpiryenabled'] = 1;
+            $defaultvalues['completionexpiryenabled' . $suffix] = 1;
         } else {
-            $defaultvalues['tincanexpiry'] = 365;
+            $defaultvalues['tincanexpiry' . $suffix] = 365;
         }
     }
 
@@ -353,11 +364,14 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
 
         if (!empty($data->completionunlocked)) {
             // Turn off completion settings if the checkboxes aren't ticked.
+            $suffix = $this->get_suffix();
             $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
-            if (empty($data->completionverbenabled) || !$autocompletion) {
+            $verbenabled = 'completionverbenabled' . $suffix;
+            $expiryenabled = 'completionexpiryenabled' . $suffix;
+            if (empty($data->$verbenabled) || !$autocompletion) {
                 $data->tincanverbid = '';
             }
-            if (empty($data->completionexpiryenabled) || !$autocompletion) {
+            if (empty($data->$expiryenabled) || !$autocompletion) {
                 $data->tincanexpiry = '';
             }
         }
