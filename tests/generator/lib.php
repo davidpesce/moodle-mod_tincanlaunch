@@ -49,6 +49,7 @@ class mod_tincanlaunch_generator extends testing_module_generator {
             'tincanmultipleregs' => 1,
             'tincanlaunchtype' => 1,
             'tincansimplelaunchnav' => 0,
+            'grade' => 0,
             'tincanlaunchlrsendpoint' => 'https://lrs.example.com/endpoint/',
             'tincanlaunchlrsauthentication' => 1,
             'tincanlaunchlrslogin' => 'testkey',

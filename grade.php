@@ -15,21 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version of tincanlaunch
- *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
+ * Redirect the user to the activity view when clicking a grade in the gradebook.
  *
  * @package    mod_tincanlaunch
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+require_once('../../config.php');
 
-$plugin->version   = 2026022502;      // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2024100700;      // Requires Moodle 4.5.
-$plugin->supported = [405, 501];      // Supported Moodle versions.
-$plugin->component = 'mod_tincanlaunch'; // To check on upgrade, that module sits in correct place.
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = 'v2.0.0-alpha';
+$id = required_param('id', PARAM_INT);
+
+$cm = get_coursemodule_from_instance('tincanlaunch', $id, 0, false, MUST_EXIST);
+$course = get_course($cm->course);
+
+require_login($course, false, $cm);
+
+redirect(new moodle_url('/mod/tincanlaunch/view.php', ['id' => $cm->id]));

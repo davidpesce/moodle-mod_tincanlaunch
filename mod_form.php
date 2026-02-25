@@ -208,6 +208,9 @@ class mod_tincanlaunch_mod_form extends moodleform_mod {
         $mform->hideIf('tincanmultipleregs', 'tincansimplelaunchnav', 'checked');
         $mform->addHelpButton('tincanmultipleregs', 'tincanmultipleregs', 'tincanlaunch');
 
+        // Grade settings.
+        $this->standard_grading_coursemodule_elements();
+
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
         // Add standard buttons, common to all modules.
