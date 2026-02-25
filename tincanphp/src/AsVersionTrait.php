@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,7 +28,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 use DomainException;
@@ -31,7 +44,7 @@ trait AsVersionTrait
      * @return array
      */
     public function asVersion($version) {
-        $result = array();
+        $result = [];
 
         foreach (get_object_vars($this) as $property => $value) {
             //
@@ -45,14 +58,12 @@ trait AsVersionTrait
 
             if ($value instanceof VersionableInterface) {
                 $value = $value->asVersion($version);
-            }
-            elseif (is_array($value) && !empty($value)) {
-                $tmp_value = array();
+            } else if (is_array($value) && !empty($value)) {
+                $tmp_value = [];
                 foreach ($value as $element) {
                     if ($element instanceof VersionableInterface) {
                         array_push($tmp_value, $element->asVersion($version));
-                    }
-                    else {
+                    } else {
                         array_push($tmp_value, $element);
                     }
                 }

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Defines the version of tincanlaunch
  *
@@ -28,10 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041300;      // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2021051700;      // Requires Moodle 3.11 version.
-$plugin->supported = [311, 401];
-$plugin->cron      = 0;               // Period for cron to check this module (secs).
+$plugin->version   = 2026022500;      // The current module version (Date: YYYYMMDDXX).
+$plugin->requires  = 2024100700;      // Requires Moodle 4.5.
+$plugin->supported = [405, 501];      // Supported Moodle versions.
 $plugin->component = 'mod_tincanlaunch'; // To check on upgrade, that module sits in correct place.
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = 'v1.63';
+$plugin->maturity  = MATURITY_ALPHA;
+$plugin->release   = 'v2.0.0-alpha';

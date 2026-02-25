@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,12 +28,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
-class Result implements VersionableInterface, ComparableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
+class Result implements ComparableInterface, VersionableInterface {
+    use ArraySetterTrait;
+    use FromJSONTrait;
+    use AsVersionTrait;
+    use SignatureComparisonTrait;
 
     protected $score;
     protected $success;
@@ -36,7 +51,7 @@ class Result implements VersionableInterface, ComparableInterface
         }
 
         if (! isset($this->extensions)) {
-            $this->setExtensions(array());
+            $this->setExtensions([]);
         }
     }
 
@@ -58,16 +73,38 @@ class Result implements VersionableInterface, ComparableInterface
 
         return $this;
     }
-    public function getScore() { return $this->score; }
+    public function getScore() {
+        return $this->score;
+    }
 
-    public function setSuccess($value) { $this->success = (bool) $value; return $this; }
-    public function getSuccess() { return $this->success; }
-    public function setCompletion($value) { $this->completion = (bool) $value; return $this; }
-    public function getCompletion() { return $this->completion; }
-    public function setDuration($value) { $this->duration = $value; return $this; }
-    public function getDuration() { return $this->duration; }
-    public function setResponse($value) { $this->response = $value; return $this; }
-    public function getResponse() { return $this->response; }
+    public function setSuccess($value) {
+        $this->success = (bool) $value;
+        return $this;
+    }
+    public function getSuccess() {
+        return $this->success;
+    }
+    public function setCompletion($value) {
+        $this->completion = (bool) $value;
+        return $this;
+    }
+    public function getCompletion() {
+        return $this->completion;
+    }
+    public function setDuration($value) {
+        $this->duration = $value;
+        return $this;
+    }
+    public function getDuration() {
+        return $this->duration;
+    }
+    public function setResponse($value) {
+        $this->response = $value;
+        return $this;
+    }
+    public function getResponse() {
+        return $this->response;
+    }
 
     public function setExtensions($value) {
         if (! $value instanceof Extensions) {
@@ -78,5 +115,7 @@ class Result implements VersionableInterface, ComparableInterface
 
         return $this;
     }
-    public function getExtensions() { return $this->extensions; }
+    public function getExtensions() {
+        return $this->extensions;
+    }
 }

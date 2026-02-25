@@ -39,7 +39,6 @@ namespace mod_tincanlaunch\event;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class activity_launched extends \core\event\base {
-
     /**
      * Init method.
      */
@@ -76,18 +75,7 @@ class activity_launched extends \core\event\base {
     public function get_url() {
         return new \moodle_url(
             '/mod/tincanlaunch/launch.php',
-            array('id' => $this->contextinstanceid, 'activityid' => $this->objectid)
+            ['id' => $this->contextinstanceid, 'activityid' => $this->objectid]
         );
     }
-
-    /**
-     * Replace add_to_log() statement.
-     *
-     * @return array of parameters to be passed to legacy add_to_log() function.
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'tincanlaunch', 'launch', 'launch.php?id=' . $this->contextinstanceid,
-                '', $this->contextinstanceid);
-    }
-
 }

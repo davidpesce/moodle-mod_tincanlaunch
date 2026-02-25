@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Chinese strings for tincanlaunch
  *
@@ -28,12 +27,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['tincanlaunch_attempt'] = '新的嘗試';
+$string['tincanlaunch_completed'] = '體驗完整的！';
+$string['tincanlaunch_notavailable'] = '學習記錄存儲不可用。請與系統管理員聯繫。';
+$string['tincanlaunch_progress'] = '嘗試進行中';
 $string['tincanlaunchviewfirstlaunched'] = '首次推出';
 $string['tincanlaunchviewlastlaunched'] = '最後 推出';
-$string['tincanlaunchviewlaunchlinkheader'] = '起動リンク';
 $string['tincanlaunchviewlaunchlink'] = '發射';
-
-$string['tincanlaunch_completed'] = '體驗完整的！';
-$string['tincanlaunch_progress'] = '嘗試進行中';
-$string['tincanlaunch_attempt'] = '新的嘗試';
-$string['tincanlaunch_notavailable'] = '學習記錄存儲不可用。請與系統管理員聯繫。';
+$string['tincanlaunchviewlaunchlinkheader'] = '起動リンク';

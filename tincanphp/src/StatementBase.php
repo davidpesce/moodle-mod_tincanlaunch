@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,12 +28,13 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
-abstract class StatementBase implements VersionableInterface, ComparableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
+abstract class StatementBase implements ComparableInterface, VersionableInterface {
+    use ArraySetterTrait;
+    use FromJSONTrait;
+    use AsVersionTrait;
+    use SignatureComparisonTrait;
 
     protected $actor;
     protected $verb;
@@ -66,36 +81,36 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
     }
 
     public function compareWithSignature($fromSig) {
-        foreach (array('actor', 'verb', 'target', 'context', 'result') as $property) {
+        foreach (['actor', 'verb', 'target', 'context', 'result'] as $property) {
             if (! isset($this->$property) && ! isset($fromSig->$property)) {
                 continue;
             }
             if (isset($this->$property) && ! isset($fromSig->$property)) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: value not in signature");
+                return ['success' => false, 'reason' => "Comparison of $property failed: value not in signature"];
             }
             if (isset($fromSig->$property) && ! isset($this->$property)) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: value not in this");
+                return ['success' => false, 'reason' => "Comparison of $property failed: value not in this"];
             }
 
             $result = $this->$property->compareWithSignature($fromSig->$property);
             if (! $result['success']) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: " . $result['reason']);
+                return ['success' => false, 'reason' => "Comparison of $property failed: " . $result['reason']];
             }
         }
 
         if (isset($this->timestamp) || isset($fromSig->timestamp)) {
             if (isset($this->timestamp) && ! isset($fromSig->timestamp)) {
-                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value not in signature');
+                return ['success' => false, 'reason' => 'Comparison of timestamp failed: value not in signature'];
             }
             if (isset($fromSig->timestamp) && ! isset($this->timestamp)) {
-                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value not in this');
+                return ['success' => false, 'reason' => 'Comparison of timestamp failed: value not in this'];
             }
 
-            $a = new \DateTime ($this->timestamp);
-            $b = new \DateTime ($fromSig->timestamp);
+            $a = new \DateTime($this->timestamp);
+            $b = new \DateTime($fromSig->timestamp);
 
             if ($a != $b) {
-                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value is not the same');
+                return ['success' => false, 'reason' => 'Comparison of timestamp failed: value is not the same'];
             }
 
             //
@@ -103,19 +118,18 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
             // even though it can store it, so manually check that
             //
             if ($a->format('u') !== $b->format('u')) {
-                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value is not the same');
+                return ['success' => false, 'reason' => 'Comparison of timestamp failed: value is not the same'];
             }
         }
 
-        return array('success' => true, 'reason' => null);
+        return ['success' => true, 'reason' => null];
     }
 
     public function setActor($value) {
         if ((! $value instanceof Agent && ! $value instanceof Group) && is_array($value)) {
             if (isset($value['objectType']) && $value['objectType'] === 'Group') {
                 $value = new Group($value);
-            }
-            else {
+            } else {
                 $value = new Agent($value);
             }
         }
@@ -124,7 +138,9 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
         return $this;
     }
-    public function getActor() { return $this->actor; }
+    public function getActor() {
+        return $this->actor;
+    }
 
     public function setVerb($value) {
         if (! $value instanceof Verb) {
@@ -135,31 +151,27 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
         return $this;
     }
-    public function getVerb() { return $this->verb; }
+    public function getVerb() {
+        return $this->verb;
+    }
 
     public function setTarget($value) {
         if (! $value instanceof StatementTargetInterface && is_array($value)) {
             if (isset($value['objectType'])) {
                 if ($value['objectType'] === 'Activity') {
                     $value = new Activity($value);
-                }
-                elseif ($value['objectType'] === 'Agent') {
+                } else if ($value['objectType'] === 'Agent') {
                     $value = new Agent($value);
-                }
-                elseif ($value['objectType'] === 'Group') {
+                } else if ($value['objectType'] === 'Group') {
                     $value = new Group($value);
-                }
-                elseif ($value['objectType'] === 'StatementRef') {
+                } else if ($value['objectType'] === 'StatementRef') {
                     $value = new StatementRef($value);
-                }
-                elseif ($value['objectType'] === 'SubStatement') {
+                } else if ($value['objectType'] === 'SubStatement') {
                     $value = new SubStatement($value);
-                }
-                else {
+                } else {
                     throw new \InvalidArgumentException('arg1 must implement the StatementTargetInterface objectType not recognized:' . $value['objectType']);
                 }
-            }
-            else {
+            } else {
                 $value = new Activity($value);
             }
         }
@@ -168,11 +180,17 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
         return $this;
     }
-    public function getTarget() { return $this->target; }
+    public function getTarget() {
+        return $this->target;
+    }
 
     // sugar methods
-    public function setObject($value) { return $this->setTarget($value); }
-    public function getObject() { return $this->getTarget(); }
+    public function setObject($value) {
+        return $this->setTarget($value);
+    }
+    public function getObject() {
+        return $this->getTarget();
+    }
 
     public function setResult($value) {
         if (! $value instanceof Result && is_array($value)) {
@@ -183,7 +201,9 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
         return $this;
     }
-    public function getResult() { return $this->result; }
+    public function getResult() {
+        return $this->result;
+    }
 
     public function setContext($value) {
         if (! $value instanceof Context && is_array($value)) {
@@ -194,18 +214,18 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
         return $this;
     }
-    public function getContext() { return $this->context; }
+    public function getContext() {
+        return $this->context;
+    }
 
     public function setTimestamp($value) {
         if (isset($value)) {
             if ($value instanceof \DateTime) {
                 // Use format('c') instead of format(\DateTime::ISO8601) due to bug in format(\DateTime::ISO8601) that generates an invalid timestamp.
                 $value = $value->format('c');
-            }
-            elseif (is_string($value)) {
+            } else if (is_string($value)) {
                 $value = $value;
-            }
-            else {
+            } else {
                 throw new \InvalidArgumentException('type of arg1 must be string or DateTime');
             }
         }
@@ -214,5 +234,7 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
         return $this;
     }
-    public function getTimestamp() { return $this->timestamp; }
+    public function getTimestamp() {
+        return $this->timestamp;
+    }
 }

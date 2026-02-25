@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Swedish strings for tincanlaunch
  *
@@ -58,12 +57,12 @@ $string['pluginname'] = 'Tin Can Launch Link';
 $string['tincanactivityid'] = 'Aktivitets-ID';
 $string['tincanactivityid_help'] = 'Den IRI som identifierar den primära aktivitet som startas.';
 $string['tincanlaunch'] = 'Tin Can Launch Link';
+$string['tincanlaunch:addinstance'] = 'Lägg till en ny TinCan (xAPI)-aktivitet till en kurs';
 $string['tincanlaunch_attempt'] = 'Starta ny registrering';
 $string['tincanlaunch_completed'] = 'Övning genomförd!';
 $string['tincanlaunch_notavailable'] = 'LRS (Learning Record Store) är inte tillgängligt. Kontakta din webbplatsadministratör. Om du är administratör, gå till Administration av webbplats / Utveckling / Felsökning (debugging) - och sätt Meddelanden om felsökning (debug) till UTVECKLARE. När du har fått tag på felmeddelanden, kom ihåg att återställa till INGA eller MINIMAL.';
 $string['tincanlaunch_progress'] = 'Försök pågår.';
 $string['tincanlaunch_regidempty'] = 'Registrerings-ID hittades inte. Stäng detta fönster.';
-$string['tincanlaunch:addinstance'] = 'Lägg till en ny TinCan (xAPI)-aktivitet till en kurs';
 $string['tincanlaunchcustomacchp'] = 'Anpassad hemsida för konto';
 $string['tincanlaunchcustomacchp_help'] = 'Om angivet, så kommer Totara använda denna hemsida i samband med ID-numret i användarens profilfält för att identifiera deltagaren. Om ID-numret inte är angett för deltagaren, så kommer de istället bli identifierade via e-postadress eller Totaras ID-nummer. Notera: om en deltagares ID förändras, så kommer de förlora tillgång till sina registreringar som hänger ihop med gamla ID:n, och genomförande-data kommer att nollställas. Rapporter i ditt LRS kan också påverkas.';
 $string['tincanlaunchlrsauthentication'] = 'LRS-integration';

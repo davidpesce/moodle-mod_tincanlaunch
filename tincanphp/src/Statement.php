@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 /*
     Copyright 2014 Rustici Software
 
@@ -14,7 +28,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 namespace TinCan;
 
 use InvalidArgumentException;
@@ -56,7 +69,7 @@ class Statement extends StatementBase
             }
         }
         if (! isset($this->attachments)) {
-            $this->setAttachments(array());
+            $this->setAttachments([]);
         }
     }
 
@@ -68,31 +81,31 @@ class Statement extends StatementBase
     }
 
     public function compareWithSignature($fromSig) {
-        foreach (array('id', 'attachments') as $property) {
+        foreach (['id', 'attachments'] as $property) {
             if (! isset($this->$property) && ! isset($fromSig->$property)) {
                 continue;
             }
             if (isset($this->$property) && ! isset($fromSig->$property)) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: value not in signature");
+                return ['success' => false, 'reason' => "Comparison of $property failed: value not in signature"];
             }
             if (isset($fromSig->$property) && ! isset($this->$property)) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: value not in this");
+                return ['success' => false, 'reason' => "Comparison of $property failed: value not in this"];
             }
         }
         if (isset($this->id)) {
             if ($this->id !== $fromSig->id) {
-                return array('success' => false, 'reason' => 'Comparison of id failed: value is not the same');
+                return ['success' => false, 'reason' => 'Comparison of id failed: value is not the same'];
             }
         }
         if (isset($this->attachments)) {
             if (count($this->attachments) !== count($fromSig->attachments)) {
-                return array('success' => false, 'reason' => 'Comparison of attachments list failed: array lengths differ');
+                return ['success' => false, 'reason' => 'Comparison of attachments list failed: array lengths differ'];
             }
 
             for ($i = 0; $i < count($this->attachments); $i++) {
                 $comparison = $this->attachments[$i]->compareWithSignature($fromSig->attachments[$i]);
                 if (! $comparison['success']) {
-                    return array('success' => false, 'reason' => "Comparison of attachment $i failed: " . $comparison['reason']);
+                    return ['success' => false, 'reason' => "Comparison of attachment $i failed: " . $comparison['reason']];
                 }
             }
         }
@@ -121,7 +134,7 @@ class Statement extends StatementBase
         return $result;
     }
 
-    public function sign($privateKeyFile, $privateKeyPass, $options = array()) {
+    public function sign($privateKeyFile, $privateKeyPass, $options = []) {
         if (! isset($options['version'])) {
             $options['version'] = Version::latest();
         }
@@ -129,15 +142,15 @@ class Statement extends StatementBase
             $options['algorithm'] = 'RS256';
         }
         if (! isset($options['display'])) {
-            $options['display'] = array(
-                'en-US' => 'Statement Signature'
-            );
+            $options['display'] = [
+                'en-US' => 'Statement Signature',
+            ];
         }
         if (! isset($options['signatureHeader'])) {
-            $options['signatureHeader'] = array();
+            $options['signatureHeader'] = [];
         }
 
-        if (! in_array($options['algorithm'], array('RS256', 'RS384', 'RS512'), true)) {
+        if (! in_array($options['algorithm'], ['RS256', 'RS384', 'RS512'], true)) {
             throw new \InvalidArgumentException("Invalid signing algorithm: '" . $options['algorithm'] . "'");
         }
 
@@ -146,27 +159,27 @@ class Statement extends StatementBase
 
         //
         // commands to generate required files:
-        //  openssl genrsa -aes256 -out private.key 2048
-        //  openssl req -new -x509 -key private.key -out cacert.pem -days 1095
+        // openssl genrsa -aes256 -out private.key 2048
+        // openssl req -new -x509 -key private.key -out cacert.pem -days 1095
         //
         $privateKey = openssl_pkey_get_private($privateKeyFile, $privateKeyPass);
         if (! $privateKey) {
             throw new \Exception('Unable to get private key: ' . openssl_error_string());
         }
 
-        $jwsHeader = array(
+        $jwsHeader = [
             'alg' => $options['algorithm'],
-            'TinCanPHP' => true
-        );
+            'TinCanPHP' => true,
+        ];
         if (isset($options['signatureHeader'])) {
             array_replace($jwsHeader, $options['signatureHeader']);
         }
 
         if (isset($options['x5c'])) {
-            $jwsHeader['x5c'] = array();
+            $jwsHeader['x5c'] = [];
 
             if (! is_array($options['x5c'])) {
-                $options['x5c'] = array($options['x5c']);
+                $options['x5c'] = [$options['x5c']];
             }
 
             foreach ($options['x5c'] as $cert) {
@@ -180,11 +193,11 @@ class Statement extends StatementBase
                 }
 
                 $x5c = preg_replace(
-                    array(
+                    [
                         "/^-----BEGIN CERTIFICATE-----\r?\n/",
                         "/-----END CERTIFICATE-----\r?\n$/",
-                        "/\r?\n/"
-                    ),
+                        "/\r?\n/",
+                    ],
                     '',
                     $x5c
                 );
@@ -197,19 +210,19 @@ class Statement extends StatementBase
         $jws->setPayload($serialization, false);
         $jws->sign($privateKey);
 
-        $attachment = array(
+        $attachment = [
             'contentType' => self::SIGNATURE_CONTENT_TYPE,
             'usageType'   => self::SIGNATURE_USAGE_TYPE,
             'content'     => $jws->getTokenString(),
             'display'     => $options['display'],
-        );
+        ];
         if (isset($options['description'])) {
             $attachment['description'] = $options['description'];
         }
         $this->addAttachment($attachment);
     }
 
-    public function verify($options = array()) {
+    public function verify($options = []) {
         if (! isset($options['version'])) {
             $options['version'] = Version::latest();
         }
@@ -225,14 +238,13 @@ class Statement extends StatementBase
             $signatureIndex++;
         }
         if ($signatureAttachment === null) {
-            return array('success' => false, 'reason' => "Unable to locate signature attachment (usage type)");
+            return ['success' => false, 'reason' => "Unable to locate signature attachment (usage type)"];
         }
 
         try {
             $jws = JWS::load($signatureAttachment->getContent());
-        }
-        catch (\InvalidArgumentException $e) {
-            return array('success' => false, 'reason' => 'Failed to load JWS: ' . $e);
+        } catch (\InvalidArgumentException $e) {
+            return ['success' => false, 'reason' => 'Failed to load JWS: ' . $e];
         }
 
         $header = $jws->getHeader();
@@ -242,30 +254,28 @@ class Statement extends StatementBase
         // to be specified and it is against the Tin Can spec anyways so we
         // want to fail hard on non-RS algorithms
         //
-        if (! in_array($header['alg'], array('RS256', 'RS384', 'RS512'), true)) {
+        if (! in_array($header['alg'], ['RS256', 'RS384', 'RS512'], true)) {
             throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $options['algorithm'] . "')");
         }
 
         if (isset($options['publicKey'])) {
             $publicKeyFile = $options['publicKey'];
-        }
-        elseif (isset($header['x5c'])) {
+        } else if (isset($header['x5c'])) {
             $cert = "-----BEGIN CERTIFICATE-----\r\n" . chunk_split($header['x5c'][0], 64, "\r\n") . "-----END CERTIFICATE-----\r\n";
             $cert = openssl_x509_read($cert);
             if (! $cert) {
-                return array('success' => false, 'reason' => 'failed to read cert in x5c: ' . openssl_error_string());
+                return ['success' => false, 'reason' => 'failed to read cert in x5c: ' . openssl_error_string()];
             }
             $publicKeyFile = openssl_pkey_get_public($cert);
             if (! $publicKeyFile) {
-                return array('success' => false, 'reason' => 'x5c failed to provide public key: ' . openssl_error_string());
+                return ['success' => false, 'reason' => 'x5c failed to provide public key: ' . openssl_error_string()];
             }
-        }
-        else {
-            return array('success' => false, 'reason' => 'No public key found or provided for verification');
+        } else {
+            return ['success' => false, 'reason' => 'No public key found or provided for verification'];
         }
 
         if (! $jws->verify($publicKeyFile)) {
-            return array('success' => false, 'reason' => 'Failed to verify signature');
+            return ['success' => false, 'reason' => 'Failed to verify signature'];
         }
 
         $payload = $jws->getPayload();
@@ -343,10 +353,10 @@ class Statement extends StatementBase
         $fromSerialization = new self($serialization);
         $comparison = $fromSerialization->compareWithSignature(new self($payload));
         if (! $comparison['success']) {
-            return array('success' => false, 'reason' => 'Statement to signature comparison failed: ' . $comparison['reason']);
+            return ['success' => false, 'reason' => 'Statement to signature comparison failed: ' . $comparison['reason']];
         }
 
-        return array('success' => true, 'jws' => $jws);
+        return ['success' => true, 'jws' => $jws];
     }
 
     public function setId($value) {
@@ -356,19 +366,21 @@ class Statement extends StatementBase
         $this->id = $value;
         return $this;
     }
-    public function getId() { return $this->id; }
-    public function hasId() { return isset($this->id); }
+    public function getId() {
+        return $this->id;
+    }
+    public function hasId() {
+        return isset($this->id);
+    }
 
     public function setStored($value) {
         if (isset($value)) {
             if ($value instanceof \DateTime) {
                 // Use format('c') instead of format(\DateTime::ISO8601) due to bug in format(\DateTime::ISO8601) that generates an invalid timestamp.
                 $value = $value->format('c');
-            }
-            elseif (is_string($value)) {
+            } else if (is_string($value)) {
                 $value = $value;
-            }
-            else {
+            } else {
                 throw new \InvalidArgumentException('type of arg1 must be string or DateTime');
             }
         }
@@ -377,7 +389,9 @@ class Statement extends StatementBase
 
         return $this;
     }
-    public function getStored() { return $this->stored; }
+    public function getStored() {
+        return $this->stored;
+    }
 
     public function setAuthority($value) {
         if (! $value instanceof Agent && is_array($value)) {
@@ -388,10 +402,17 @@ class Statement extends StatementBase
 
         return $this;
     }
-    public function getAuthority() { return $this->authority; }
+    public function getAuthority() {
+        return $this->authority;
+    }
 
-    public function setVersion($value) { $this->version = $value; return $this; }
-    public function getVersion() { return $this->version; }
+    public function setVersion($value) {
+        $this->version = $value;
+        return $this;
+    }
+    public function getVersion() {
+        return $this->version;
+    }
 
     public function setAttachments($value) {
         foreach ($value as $k => $v) {
@@ -404,8 +425,12 @@ class Statement extends StatementBase
 
         return $this;
     }
-    public function getAttachments() { return $this->attachments; }
-    public function hasAttachments() { return count($this->attachments) > 0; }
+    public function getAttachments() {
+        return $this->attachments;
+    }
+    public function hasAttachments() {
+        return count($this->attachments) > 0;
+    }
     public function hasAttachmentsWithContent() {
         if (! $this->hasAttachments()) {
             return false;

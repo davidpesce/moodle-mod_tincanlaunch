@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_stepslib.php');    // Because it exists (must).
-require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_settingslib.php'); // Because it exists (optional).
+require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_stepslib.php');
+require_once($CFG->dirroot . '/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch_settingslib.php');
 
 /**
  * Description of tincanlaunch backup task
@@ -35,7 +35,6 @@ require_once($CFG->dirroot.'/mod/tincanlaunch/backup/moodle2/backup_tincanlaunch
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_tincanlaunch_activity_task extends backup_activity_task {
-
     /**
      * Define (add) particular settings this activity can have.
      *
