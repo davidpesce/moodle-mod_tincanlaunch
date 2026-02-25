@@ -52,7 +52,7 @@ $getregistrationdatafromlrsstate = tincanlaunch_get_global_parameters_and_get_st
 
 $lrsrespond = $getregistrationdatafromlrsstate->httpResponse['status'];
 // Failed to connect to LRS.
-if ($lrsrespond != 200 && $lrsrespond != 404) {
+if ($lrsrespond != 200 && $lrsrespond != 204 && $lrsrespond != 404) {
     debugging("Error attempting to get registration data from State API. Status: " . $lrsrespond, DEBUG_DEVELOPER);
     throw new \moodle_exception('tincanlaunch_notavailable', 'tincanlaunch');
 }
@@ -72,7 +72,7 @@ $registrationdataforthisattempt = [
     ],
 ];
 
-// If registrationdata is null (could be from 404 above) create a new registration data array.
+// If registrationdata is null (could be from 204/404 above) create a new registration data array.
 if (is_null($registrationdata)) {
     $registrationdata = $registrationdataforthisattempt;
 } else if (array_key_exists($registrationid, $registrationdata)) {
