@@ -32,6 +32,18 @@ use core_completion\activity_custom_completion;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_completion extends activity_custom_completion {
+    /** @var array|null Batch results keyed by userid => bool, populated by cron. */
+    protected static ?array $batchresults = null;
+
+    /**
+     * Set batch results for the current module being processed by cron.
+     *
+     * @param array|null $results Map of userid => bool (true = completed), or null to clear.
+     */
+    public static function set_batch_results(?array $results): void {
+        self::$batchresults = $results;
+    }
+
     /**
      * Fetches the completion state for a given completion rule.
      *
@@ -42,6 +54,15 @@ class custom_completion extends activity_custom_completion {
         global $DB;
 
         $this->validate_rule($rule);
+
+        // If batch results are available (populated by cron), use them.
+        if (self::$batchresults !== null) {
+            if (isset(self::$batchresults[$this->userid])) {
+                return self::$batchresults[$this->userid] ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
+            }
+            // User not in batch results means no matching statement was found.
+            return COMPLETION_INCOMPLETE;
+        }
 
         $status = false;
         $userid = $this->userid;

@@ -640,6 +640,138 @@ function tincanlaunch_get_statements($url, $basiclogin, $basicpass, $version, $a
 }
 
 /**
+ * Fetches Statements from the LRS for ALL users (batch mode).
+ *
+ * Same as tincanlaunch_get_statements() but without the agent filter, so it
+ * returns statements for every user who has the matching activity + verb.
+ * Used by the cron task to make one LRS request per module instead of per user.
+ *
+ * @param string $url LRS endpoint URL
+ * @param string $basiclogin login/key for the LRS
+ * @param string $basicpass pass/secret for the LRS
+ * @param string $version version of xAPI to use
+ * @param string $activityid Activity Id to filter by
+ * @param string $verb Verb Id to filter by
+ * @param string|null $since Since date to filter by (ISO 8601)
+ * @return \TinCan\LRSResponse LRS Response
+ */
+function tincanlaunch_get_statements_batch($url, $basiclogin, $basicpass, $version, $activityid, $verb, $since = null) {
+
+    $lrs = new \TinCan\RemoteLRS($url, $version, $basiclogin, $basicpass);
+
+    $statementsquery = [
+        "verb" => new \TinCan\Verb(["id" => trim($verb)]),
+        "activity" => new \TinCan\Activity(["id" => trim($activityid)]),
+        "related_activities" => "false",
+        "format" => "canonical",
+    ];
+
+    if (!is_null($since)) {
+        $statementsquery["since"] = $since;
+    }
+
+    // Get all the statements from the LRS.
+    $statementsresponse = $lrs->queryStatements($statementsquery);
+
+    if ($statementsresponse->success == false) {
+        return $statementsresponse;
+    }
+
+    $allthestatements = $statementsresponse->content->getStatements();
+    $morestatementsurl = $statementsresponse->content->getMore();
+    while (!empty($morestatementsurl)) {
+        $morestmtsresponse = $lrs->moreStatements($morestatementsurl);
+        if ($morestmtsresponse->success == false) {
+            return $morestmtsresponse;
+        }
+        $morestatements = $morestmtsresponse->content->getStatements();
+        $morestatementsurl = $morestmtsresponse->content->getMore();
+        // Note: due to the structure of the arrays, array_merge does not work as expected.
+        foreach ($morestatements as $morestatement) {
+            array_push($allthestatements, $morestatement);
+        }
+    }
+
+    return new \TinCan\LRSResponse(
+        $statementsresponse->success,
+        $allthestatements,
+        $statementsresponse->httpResponse
+    );
+}
+
+/**
+ * Builds a reverse lookup map from xAPI actor identifiers to Moodle user IDs.
+ *
+ * Mirrors the identification logic in tincanlaunch_getactor(): if the module uses
+ * a custom account homepage and the user has an idnumber, key by idnumber; if
+ * useactoremail is set and user has email, key by mbox (mailto:email); otherwise
+ * key by wwwroot + username.
+ *
+ * @param array $users Array of user objects (must have id, idnumber, email, username).
+ * @param array $settings LRS settings from tincanlaunch_settings().
+ * @return array Map of identifier string => user ID.
+ */
+function tincanlaunch_build_actor_map(array $users, array $settings) {
+    global $CFG;
+
+    $map = [];
+    foreach ($users as $user) {
+        if ($user->idnumber && !empty($settings['tincanlaunchcustomacchp'])) {
+            // Account-based identification: custom homepage + idnumber.
+            $key = $settings['tincanlaunchcustomacchp'] . '|' . $user->idnumber;
+        } else if ($user->email && !empty($settings['tincanlaunchuseactoremail'])) {
+            // Email-based identification: mbox.
+            $key = 'mailto:' . $user->email;
+        } else {
+            // Fallback: wwwroot + username.
+            $key = $CFG->wwwroot . '|' . $user->username;
+        }
+        $map[$key] = $user->id;
+    }
+    return $map;
+}
+
+/**
+ * Matches an xAPI statement's actor to a Moodle user via the actor map.
+ *
+ * Extracts the actor identifier from a TinCan Statement and looks it up
+ * in the map built by tincanlaunch_build_actor_map().
+ *
+ * @param \TinCan\Statement $statement The xAPI statement.
+ * @param array $actormap Map of identifier string => user ID.
+ * @return int|null The matching Moodle user ID, or null if not found.
+ */
+function tincanlaunch_match_statement_to_user(\TinCan\Statement $statement, array $actormap) {
+    $actor = $statement->getActor();
+    if ($actor === null) {
+        return null;
+    }
+
+    // Try mbox identification.
+    $mbox = $actor->getMbox();
+    if (!empty($mbox)) {
+        if (isset($actormap[$mbox])) {
+            return $actormap[$mbox];
+        }
+    }
+
+    // Try account-based identification.
+    $account = $actor->getAccount();
+    if ($account !== null) {
+        $homepage = $account->getHomePage();
+        $name = $account->getName();
+        if (!empty($homepage) && !empty($name)) {
+            $key = $homepage . '|' . $name;
+            if (isset($actormap[$key])) {
+                return $actormap[$key];
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
  * Build a TinCan Agent based on the current user.
  *
  * @param object $instance tincanlaunch instance
