@@ -1,0 +1,17 @@
+# camp listing manifest — descriptive content for your plugin's page.
+# Edit freely and commit; camp ingests this file at each tagged release.
+# Schema: https://camp-registry.org/schema/listing.schema.json
+name: xAPI Launch Link
+summary: Launch xAPI content from Moodle courses using the Rustici launch
+  method, with statements recorded to your LRS.
+description: |
+  Adds an activity that launches xAPI (Tin Can) content packages from a
+  Moodle course using the [Rustici launch
+  method](https://github.com/RusticiSoftware/launch/blob/master/lms_lrs.md).
+  Learner activity is recorded as xAPI statements to the Learning Record
+  Store you configure, per activity or site-wide.
+labels:
+  - fully-free
+  - commercial-support-available
+links:
+  issues: https://github.com/davidpesce/moodle-mod_tincanlaunch/issues
