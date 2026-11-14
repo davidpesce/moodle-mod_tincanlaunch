@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+require_once($CFG->dirroot.'/course/moodleform_mod.php');
+
 /**
  * The main tincanlaunch configuration form
  *
@@ -24,9 +26,6 @@
  * @copyright  2013 Andrew Downes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-
 class mod_tincanlaunch_mod_form extends moodleform_mod {
     /**
      * Called to define this moodle form
